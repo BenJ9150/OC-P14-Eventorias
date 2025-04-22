@@ -1,0 +1,39 @@
+{
+  "configurations" : [
+    {
+      "id" : "F1D6A933-3727-48F8-89AE-AC7623793B29",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "codeCoverage" : {
+      "targets" : [
+        {
+          "containerPath" : "container:Eventorias.xcodeproj",
+          "identifier" : "43BDCD102DB24755004FD0C1",
+          "name" : "Eventorias"
+        }
+      ]
+    },
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:Eventorias.xcodeproj",
+      "identifier" : "43BDCD102DB24755004FD0C1",
+      "name" : "Eventorias"
+    },
+    "testExecutionOrdering" : "random"
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:Eventorias.xcodeproj",
+        "identifier" : "438054202DB287C200BECB9D",
+        "name" : "EventoriasTests"
+      }
+    }
+  ],
+  "version" : 1
+}

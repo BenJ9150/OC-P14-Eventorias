@@ -1,0 +1,13 @@
+//
+//  AuthRepository.swift
+//  Eventorias
+//
+//  Created by Benjamin LEFRANCOIS on 18/04/2025.
+//
+
+import Foundation
+
+protocol AuthRepository {
+    var currentUser: AuthUser? { get }
+    func signIn(withEmail email: String, password: String) async throws -> AuthUser
+}
