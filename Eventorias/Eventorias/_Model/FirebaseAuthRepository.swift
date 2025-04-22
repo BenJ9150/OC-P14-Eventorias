@@ -17,4 +17,8 @@ class FirebaseAuthRepository: AuthRepository {
     func signIn(withEmail email: String, password: String) async throws -> AuthUser {
         try await Auth.auth().signIn(withEmail: email, password: password).user
     }
+
+    func signOut() throws {
+        try Auth.auth().signOut()
+    }
 }

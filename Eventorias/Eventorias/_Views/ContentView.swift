@@ -8,17 +8,30 @@
 import SwiftUI
 
 struct ContentView: View {
+
+    @EnvironmentObject var authViewModel: AuthViewModel
+
     var body: some View {
         VStack {
+            Spacer()
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
             Text("Hello, world!")
+            Spacer()
+
+            Button("Sign out") {
+                authViewModel.signOut()
+            }
+            .buttonStyle(.borderedProminent)
         }
         .padding()
     }
 }
 
-#Preview {
+// MARK: - Preview
+
+@available(iOS 18.0, *)
+#Preview(traits: .withAuthViewModel()) {
     ContentView()
 }

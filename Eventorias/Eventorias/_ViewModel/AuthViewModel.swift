@@ -21,6 +21,7 @@ import SwiftUI
     @Published var emailError = ""
     @Published var pwdError = ""
     @Published var signInError = ""
+    @Published var signOutError = ""
 
     // MARK: Private properties
 
@@ -66,5 +67,20 @@ extension AuthViewModel {
         emailError = email.isEmpty ? AppError.emptyField.userMessage : ""
         pwdError = password.isEmpty ? AppError.emptyField.userMessage : ""
         return emailError.isEmpty && pwdError.isEmpty
+    }
+}
+
+// MARK: Sign out
+
+extension AuthViewModel {
+
+    func signOut() {
+        do {
+            try authRepo.signOut()
+        } catch let error as NSError {
+            print("💥 Sign out error \(error.code): \(error.localizedDescription)")
+            signOutError = AppError(forCode: error.code).userMessage
+        }
+        refreshCurrentUser()
     }
 }
