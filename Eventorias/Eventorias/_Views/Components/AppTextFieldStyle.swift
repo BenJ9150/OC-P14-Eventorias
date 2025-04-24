@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AppTextFieldStyle: TextFieldStyle {
+
     let title: String
     @Binding var error: String
 
@@ -24,6 +25,7 @@ struct AppTextFieldStyle: TextFieldStyle {
                     .foregroundStyle(Color.textGray)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 8)
+                    .accessibilityHidden(true)
                 configuration
                     .font(.callout)
                     .foregroundStyle(.white)
@@ -40,8 +42,21 @@ struct AppTextFieldStyle: TextFieldStyle {
                 .scaleEffect(error.isEmpty ? 0.8 : 1)
                 .opacity(error.isEmpty ? 0 : 1)
                 .frame(minHeight: 24)
+                .accessibilityHidden(true)
         }
         .animation(.interactiveSpring(duration: 0.3, extraBounce: 0.5), value: error)
+        .onChange(of: error) { _, newValue in
+            if newValue.isEmpty { return }
+            /// Haptic feedback
+            UIFeedbackGenerator.triggerError()
+            /// Voice Over alert
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                UIAccessibility.post(
+                    notification: .announcement,
+                    argument: "\(title) textfield error. \(error)"
+                )
+            }
+        }
     }
 }
 

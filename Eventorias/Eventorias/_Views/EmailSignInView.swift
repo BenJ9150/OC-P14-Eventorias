@@ -12,6 +12,8 @@ struct EmailSignInView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: AuthViewModel
 
+    @FocusState private var pwdIsFocused: Bool
+
     var body: some View {
         NavigationStack {
             ZStack {
@@ -43,6 +45,9 @@ struct EmailSignInView: View {
                     .foregroundStyle(.white)
                 }
             }
+            .onTapGesture {
+                hideKeyboard()
+            }
         }
     }
 }
@@ -58,10 +63,17 @@ private extension EmailSignInView {
                 .keyboardType(.emailAddress)
                 .textInputAutocapitalization(.never)
                 .textFieldStyle(AppTextFieldStyle(title: "Email", error: $viewModel.emailError))
-            
+                .submitLabel(.continue)
+                .onSubmit { pwdIsFocused = true }
+                           
             SecureField(appPrompt: "Enter your password", text: $viewModel.password)
                 .textContentType(.password)
                 .textFieldStyle(AppTextFieldStyle(title: "Password", error: $viewModel.pwdError))
+                .focused($pwdIsFocused)
+                .submitLabel(.join)
+                .onSubmit {
+                    Task { await viewModel.signIn() }
+                }
         }
     }
 }

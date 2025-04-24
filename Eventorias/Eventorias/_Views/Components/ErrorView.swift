@@ -27,12 +27,17 @@ struct ErrorView: View {
                 .font(.callout)
                 .multilineTextAlignment(.center)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Error. \(error)")
         .foregroundStyle(.white)
         .animation(
             .interactiveSpring(duration: 0.5, extraBounce: 0.5).repeatCount(3, autoreverses: false),
             value: animation
         )
         .onAppear {
+            /// Haptic feedback
+            UIFeedbackGenerator.triggerError()
+            /// Animation
             withAnimation {
                 appear = true
             }

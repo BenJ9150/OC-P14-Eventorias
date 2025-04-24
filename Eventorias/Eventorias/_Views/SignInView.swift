@@ -11,6 +11,7 @@ struct SignInView: View {
 
     @Environment(\.verticalSizeClass) var verticalSizeClass
     @EnvironmentObject var viewModel: AuthViewModel
+
     @State private var showEmailSignInView: Bool = false
 
     var body: some View {
@@ -60,6 +61,7 @@ private extension SignInView {
         Image("logo_eventorias")
             .resizable()
             .scaledToFit()
+            .accessibilityHidden(true)
     }
 }
 
@@ -88,11 +90,13 @@ private extension SignInView {
                 .multilineTextAlignment(.center)
                 .dynamicTypeSize(.xSmall ... .accessibility2)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibilityHidden(true)
 
             Button("Sign up") {
                 // TODO
             }
             .buttonStyle(AppButtonBorderless())
+            .accessibilityLabel("Don't have an account yet? Sign up")
         }
     }
 }
