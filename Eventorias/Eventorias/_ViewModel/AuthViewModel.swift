@@ -58,7 +58,12 @@ extension AuthViewModel {
             currentUser = try await authRepo.signIn(withEmail: email, password: password)
         } catch let error as NSError {
             print("💥 Sign in error \(error.code): \(error.localizedDescription)")
-            signInError = AppError(forCode: error.code).userMessage
+            let appError = AppError(forCode: error.code)
+            if appError == .invalidEmailFormat {
+                emailError = appError.userMessage
+            } else {
+                signInError = appError.userMessage
+            }
         }
         isConnecting = false
     }

@@ -21,10 +21,10 @@ enum AppError: Int {
     var userMessage: String {
         switch self {
         case .emptyField: return "This field is required."
-        case .invalidCredentials: return "Incorrect email or password."
-        case .invalidEmailFormat: return "Please enter a valid email address."
-        case .networkError: return "A network error occurred. Please check your internet connection and try again."
-        case .unknown: return "An error occurred. Please try again."
+        case .invalidCredentials: return "Incorrect email or password"
+        case .invalidEmailFormat: return "Please enter a valid email address"
+        case .networkError: return "A network error occurred. Please check your internet connection and try again"
+        case .unknown: return "An error has occured, please try again later"
         }
     }
 }

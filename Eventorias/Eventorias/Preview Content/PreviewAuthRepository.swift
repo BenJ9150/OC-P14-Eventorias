@@ -22,6 +22,7 @@ class PreviewAuthRepository: AuthRepository {
     }
 
     func signIn(withEmail email: String, password: String) async throws -> AuthUser {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         if let error = codeError {
             let appError = AppError(forCode: error)
             throw NSError(domain: appError.userMessage, code: appError.rawValue)

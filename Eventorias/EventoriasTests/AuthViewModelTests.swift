@@ -63,9 +63,9 @@ import XCTest
         // Then user is nil and error is displayed
         XCTAssertNil(viewModel.currentUser)
         XCTAssertEqual(viewModel.isConnecting, false)
-        XCTAssertEqual(viewModel.emailError, "")
+        XCTAssertEqual(viewModel.emailError, AppError.invalidEmailFormat.userMessage)
         XCTAssertEqual(viewModel.pwdError, "")
-        XCTAssertEqual(viewModel.signInError, AppError.invalidEmailFormat.userMessage)
+        XCTAssertEqual(viewModel.signInError, "")
     }
 
     func test_SignInInvalidCredentials() async {
