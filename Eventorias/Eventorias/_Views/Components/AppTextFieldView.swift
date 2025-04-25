@@ -1,5 +1,5 @@
 //
-//  AppTextFieldStyle.swift
+//  AppTextFieldView.swift
 //  Eventorias
 //
 //  Created by Benjamin LEFRANCOIS on 24/04/2025.
@@ -7,7 +7,49 @@
 
 import SwiftUI
 
-struct AppTextFieldStyle: TextFieldStyle {
+struct AppTextFieldView: View {
+    let title: String
+    @Binding var text: String
+    let prompt: String
+    @Binding var error: String
+    let isSecure: Bool
+
+    init(_ title: String, text: Binding<String>, prompt: String, error: Binding<String>, isSecure: Bool = false) {
+        self.title = title
+        self._text = text
+        self.prompt = prompt
+        self._error = error
+        self.isSecure = isSecure
+    }
+
+    var body: some View {
+        Group {
+            if isSecure {
+                SecureField("", text: $text, prompt: formattedPrompt)
+                    .textContentType(.password)
+            } else {
+                TextField("", text: $text, prompt: formattedPrompt)
+            }
+        }
+        .textInputAutocapitalization(.never)
+        .textFieldStyle(AppTextFieldStyle(title: title, error: $error))
+        .onChange(of: text) { oldValue, newValue in
+            if oldValue != newValue {
+                error.removeAll()
+            }
+        }
+    }
+
+    private var formattedPrompt: Text {
+        Text(prompt)
+            .font(.callout)
+            .foregroundStyle(Color.textLightGray)
+    }
+}
+
+// MARK: Custom textfield style
+
+fileprivate struct AppTextFieldStyle: TextFieldStyle {
 
     let title: String
     @Binding var error: String
@@ -60,45 +102,16 @@ struct AppTextFieldStyle: TextFieldStyle {
     }
 }
 
-extension TextField where Label == Text {
-    init(appPrompt: String, text: Binding<String>) {
-        self.init(
-            "",
-            text: text,
-            prompt: Text(appPrompt)
-                .font(.callout)
-                .foregroundStyle(Color.textLightGray)
-        )
-    }
-}
-
-extension SecureField where Label == Text {
-    init(appPrompt: String, text: Binding<String>) {
-        self.init(
-            "",
-            text: text,
-            prompt: Text(appPrompt)
-                .font(.callout)
-                .foregroundStyle(Color.textLightGray)
-        )
-    }
-}
-
 // MARK: - Preview
 
 #Preview {
+    @Previewable @State var text = ""
     @Previewable @State var error = ""
+
     VStack(spacing: 0) {
-        TextField(appPrompt: "Tap here to enter your description", text: .constant(""))
-            .textFieldStyle(AppTextFieldStyle(title: "Description"))
-
-        TextField(appPrompt: "Enter your email", text: .constant("test.com"))
-            .textFieldStyle(AppTextFieldStyle(title: "Email", error: $error))
-            .padding(.bottom)
-
-        SecureField(appPrompt: "Enter your password", text: .constant(""))
-            .textFieldStyle(AppTextFieldStyle(title: "Password"))
-
+        AppTextFieldView("Description", text: $text, prompt: "Tap here to enter your description", error: $error)
+        AppTextFieldView("Email", text: $text, prompt: "Enter your email", error: $error)
+        AppTextFieldView("Password", text: $text, prompt: "Enter your password", error: $error, isSecure: true)
         Spacer()
         Button("Test error") {
             error = "Enter valid email format!"

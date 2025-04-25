@@ -21,11 +21,17 @@ struct EmailSignInView: View {
                     .opacity(0.95)
                     .ignoresSafeArea()
 
+                /// Use scrollView to see all error text for high dynamic sizes
                 ScrollView {
                     textFields
                     signInButton
+                    if !viewModel.signInError.isEmpty {
+                        ErrorView(error: viewModel.signInError)
+                            .padding(.top, 24)
+                    }
                     forgotPwdButton
                 }
+                .animation(.easeInOut(duration: 0.3), value: viewModel.signInError)
                 .scrollIndicators(.hidden)
                 /// Set max width for iPad or iPhone in landscape
                 .frame(maxWidth: 440)
@@ -58,22 +64,24 @@ private extension EmailSignInView {
 
     var textFields: some View {
         VStack(spacing: 0) {
-            TextField(appPrompt: "Enter your email", text: $viewModel.email)
+            AppTextFieldView("Email", text: $viewModel.email, prompt: "Enter your email", error: $viewModel.emailError)
                 .textContentType(.emailAddress)
                 .keyboardType(.emailAddress)
-                .textInputAutocapitalization(.never)
-                .textFieldStyle(AppTextFieldStyle(title: "Email", error: $viewModel.emailError))
                 .submitLabel(.continue)
                 .onSubmit { pwdIsFocused = true }
-                           
-            SecureField(appPrompt: "Enter your password", text: $viewModel.password)
-                .textContentType(.password)
-                .textFieldStyle(AppTextFieldStyle(title: "Password", error: $viewModel.pwdError))
-                .focused($pwdIsFocused)
-                .submitLabel(.join)
-                .onSubmit {
-                    Task { await viewModel.signIn() }
-                }
+
+            AppTextFieldView(
+                "Password",
+                text: $viewModel.password,
+                prompt: "Enter your password",
+                error: $viewModel.pwdError,
+                isSecure: true
+            )
+            .focused($pwdIsFocused)
+            .submitLabel(.join)
+            .onSubmit {
+                Task { await viewModel.signIn() }
+            }
         }
     }
 }
@@ -82,29 +90,21 @@ private extension EmailSignInView {
 
 private extension EmailSignInView {
 
+    @ViewBuilder
     var signInButton: some View {
-        ZStack {
-            if viewModel.isConnecting {
-                AppProgressView()
-            } else {
-                VStack {
-                    if !viewModel.signInError.isEmpty {
-                        ErrorView(error: viewModel.signInError)
-                            .padding(.horizontal)
-                            .padding(.bottom)
-                    }
-                    Button {
-                        Task { await viewModel.signIn() }
-                    } label: {
-                        Text("Sign in")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(AppButtonPlain())
-                }
+        if viewModel.isConnecting {
+            AppProgressView()
+                .frame(minHeight: 52)
+        } else {
+            Button {
+                hideKeyboard()
+                Task { await viewModel.signIn() }
+            } label: {
+                Text("Sign in")
+                    .frame(maxWidth: .infinity)
             }
+            .buttonStyle(AppButtonPlain())
         }
-        .animation(.easeIn(duration: 0.2), value: viewModel.signInError)
-        .frame(minHeight: 52)
     }
 }
 
