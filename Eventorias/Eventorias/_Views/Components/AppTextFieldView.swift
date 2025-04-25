@@ -14,7 +14,13 @@ struct AppTextFieldView: View {
     @Binding var error: String
     let isSecure: Bool
 
-    init(_ title: String, text: Binding<String>, prompt: String, error: Binding<String>, isSecure: Bool = false) {
+    init(
+        _ title: String,
+        text: Binding<String>,
+        prompt: String,
+        error: Binding<String> = .constant(""),
+        isSecure: Bool = false
+    ) {
         self.title = title
         self._text = text
         self.prompt = prompt

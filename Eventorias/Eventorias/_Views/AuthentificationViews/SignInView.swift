@@ -13,6 +13,7 @@ struct SignInView: View {
     @EnvironmentObject var viewModel: AuthViewModel
 
     @State private var showEmailSignInView: Bool = false
+    @State private var showEmailSignUpView: Bool = false
 
     var body: some View {
         NavigationStack {
@@ -48,6 +49,9 @@ struct SignInView: View {
             }
             .navigationDestination(isPresented: $showEmailSignInView, destination: {
                 EmailSignInView()
+            })
+            .navigationDestination(isPresented: $showEmailSignUpView, destination: {
+                EmailSignUpView()
             })
         }
     }
@@ -93,7 +97,7 @@ private extension SignInView {
                 .accessibilityHidden(true)
 
             Button("Sign up") {
-                // TODO
+                showEmailSignUpView.toggle()
             }
             .buttonStyle(AppButtonBorderless())
             .accessibilityLabel("Don't have an account yet? Sign up")

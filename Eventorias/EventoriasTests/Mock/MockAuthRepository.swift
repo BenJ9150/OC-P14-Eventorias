@@ -10,15 +10,23 @@ import Foundation
 
 class MockAuthRepository: AuthRepository {
 
-    var currentUser: AuthUser?
-    private var codeError: Int?
+    // MARK: Init
 
+    private var codeError: Int?
     init(withError codeError: Int? = nil, isConnected: Bool = false) {
         self.codeError = codeError
         if isConnected {
-            currentUser = MockUser()
+            currentUser = MockUser(
+                email: "test@test.com",
+                displayName: "test",
+                photoURL: URL(string: "https://www.test.com")
+            )
         }
     }
+
+    // MARK: AuthRepository protocol
+
+    var currentUser: AuthUser?
 
     func signIn(withEmail email: String, password: String) async throws -> AuthUser {
         if let error = codeError {
@@ -43,5 +51,15 @@ class MockAuthRepository: AuthRepository {
             throw NSError(domain: appError.userMessage, code: appError.rawValue)
         }
         currentUser = nil
+    }
+
+    func createUser(withEmail email: String, password: String) async throws -> any Eventorias.AuthUser {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+        let user = MockUser(email: email)
+        currentUser = user
+        return user
     }
 }

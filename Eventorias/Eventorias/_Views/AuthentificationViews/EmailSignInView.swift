@@ -23,6 +23,7 @@ struct EmailSignInView: View {
 
                 /// Use scrollView to see all error text for high dynamic sizes
                 ScrollView {
+                    LargeTitleView(title: "Sign in with Email")
                     textFields
                     signInButton
                     if !viewModel.signInError.isEmpty {
@@ -127,7 +128,7 @@ private extension EmailSignInView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModel()) {
+#Preview(traits: .withAuthViewModelError()) {
     @Previewable @EnvironmentObject var viewModel: AuthViewModel
     EmailSignInView()
         .onAppear {

@@ -20,12 +20,7 @@ struct PasswordResetView: View {
 
                 /// Use scrollView to see all error text for high dynamic sizes
                 ScrollView {
-                    Text("Reset password")
-                        .font(.largeTitle)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.bottom)
-
+                    LargeTitleView(title: "Reset password")
                     AppTextFieldView("Email", text: $viewModel.email, prompt: "Enter your email", error: $viewModel.emailError)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)

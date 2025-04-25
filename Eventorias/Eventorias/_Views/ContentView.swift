@@ -17,7 +17,12 @@ struct ContentView: View {
             Image(systemName: "globe")
                 .imageScale(.large)
                 .foregroundStyle(.tint)
-            Text("Hello, world!")
+            if let name = authViewModel.currentUser?.displayName {
+                Text("Hello \(name)!")
+            } else {
+                Text("Hello!")
+            }
+            
             Spacer()
 
             Button("Sign out") {

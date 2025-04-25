@@ -10,12 +10,20 @@ import SwiftUI
 @MainActor class AuthViewModel: ObservableObject {
 
     private enum Action {
+        case signUp
         case signIn
         case resetPassword
         case signOut
     }
 
     @Published var currentUser: AuthUser?
+
+    // MARK: Sign up properties
+
+    @Published var isCreating = false
+    @Published var userName = ""
+    @Published var userPhoto = ""
+    @Published var signUpError = ""
 
     // MARK: Sign in properties
 
@@ -35,13 +43,13 @@ import SwiftUI
 
     // MARK: Private properties
 
-    private let authRepo: AuthRepository
+    private let authService: AuthService
 
     // MARK: Init
 
-    init(authRepo: AuthRepository = FirebaseAuthRepository()) {
-        self.authRepo = authRepo
-        self.currentUser = authRepo.currentUser
+    init(authService: AuthService = AuthService()) {
+        self.authService = authService
+        self.currentUser = authService.authRepo.currentUser
     }
 }
 
@@ -50,7 +58,29 @@ import SwiftUI
 extension AuthViewModel {
 
     func refreshCurrentUser() {
-        currentUser = authRepo.currentUser
+        currentUser = authService.authRepo.currentUser
+    }
+}
+
+// MARK: Sign up
+
+extension AuthViewModel {
+
+    func signUp() async {
+        signUpError = ""
+        guard validateCredentials() else {
+            return
+        }
+        isCreating = true
+        defer { isCreating = false }
+        do {
+            currentUser = try await authService.authRepo.createUser(withEmail: email, password: password)
+            if !userName.isEmpty {
+                try? await authService.updateUser(displayName: userName, photoURL: userPhoto)
+            }
+        } catch {
+            handleAuthRepoError(error, for: .signUp)
+        }
     }
 }
 
@@ -60,18 +90,16 @@ extension AuthViewModel {
 
     func signIn() async {
         signInError = ""
-        emailError = email.isEmpty ? AppError.emptyField.userMessage : ""
-        pwdError = password.isEmpty ? AppError.emptyField.userMessage : ""
-        guard emailError.isEmpty && pwdError.isEmpty else {
+        guard validateCredentials() else {
             return
         }
         isConnecting = true
+        defer { isConnecting = false }
         do {
-            currentUser = try await authRepo.signIn(withEmail: email, password: password)
+            currentUser = try await authService.authRepo.signIn(withEmail: email, password: password)
         } catch {
             handleAuthRepoError(error, for: .signIn)
         }
-        isConnecting = false
     }
 }
 
@@ -86,13 +114,13 @@ extension AuthViewModel {
             return
         }
         isReseting = true
+        defer { isReseting = false }
         do {
-            try await authRepo.sendPasswordReset(withEmail: email)
+            try await authService.authRepo.sendPasswordReset(withEmail: email)
             resetPasswordSuccess = "Password reset email sent successfully!"
         } catch {
             handleAuthRepoError(error, for: .resetPassword)
         }
-        isReseting = false
     }
 }
 
@@ -103,7 +131,7 @@ extension AuthViewModel {
     func signOut() {
         signOutError = ""
         do {
-            try authRepo.signOut()
+            try authService.authRepo.signOut()
         } catch {
             handleAuthRepoError(error, for: .signOut)
         }
@@ -123,6 +151,12 @@ extension AuthViewModel {
         let message = appError.userMessage
         
         switch action {
+        case .signUp:
+            if appError == .invalidEmailFormat {
+                emailError = message
+            } else {
+                signUpError = message
+            }
         case .signIn:
             if appError == .invalidEmailFormat {
                 emailError = message
@@ -134,5 +168,11 @@ extension AuthViewModel {
         case .signOut:
             signOutError = message
         }
+    }
+
+    private func validateCredentials() -> Bool {
+        emailError = email.isEmpty ? AppError.emptyField.userMessage : ""
+        pwdError = password.isEmpty ? AppError.emptyField.userMessage : ""
+        return emailError.isEmpty && pwdError.isEmpty
     }
 }

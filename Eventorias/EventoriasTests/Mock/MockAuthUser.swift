@@ -8,9 +8,24 @@
 import Foundation
 @testable import Eventorias
 
-struct MockUser: AuthUser {
-    var uid = UUID().uuidString
-    var email: String? = "test@eventorias.com"
-    var displayName: String? = "test"
-    var photoURL: URL? = nil
+class MockUser: AuthUser {
+
+    // MARK: init
+
+    init(email: String? = nil, displayName: String? = nil, photoURL: URL? = nil) {
+        self.email = email
+        self.displayName = displayName
+        self.photoURL = photoURL
+    }
+
+    // MARK: AuthUser protocol
+
+    let uid = UUID().uuidString
+    var email: String?
+    var displayName: String?
+    var photoURL: URL?
+
+    func createUserProfileChangeRequest() -> AuthUserProfile {
+        MockAuthUserProfile(user: self)
+    }
 }
