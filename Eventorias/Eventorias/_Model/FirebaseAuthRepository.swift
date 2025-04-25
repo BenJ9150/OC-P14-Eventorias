@@ -18,6 +18,10 @@ class FirebaseAuthRepository: AuthRepository {
         try await Auth.auth().signIn(withEmail: email, password: password).user
     }
 
+    func sendPasswordReset(withEmail email: String) async throws {
+        try await Auth.auth().sendPasswordReset(withEmail: email)
+    }
+
     func signOut() throws {
         try Auth.auth().signOut()
     }

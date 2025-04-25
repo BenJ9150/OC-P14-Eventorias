@@ -12,13 +12,13 @@ struct EmailSignInView: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: AuthViewModel
 
+    @State private var showPasswordResetView = false
     @FocusState private var pwdIsFocused: Bool
 
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.mainBackground
-                    .opacity(0.95)
+                Color.sheetBackground
                     .ignoresSafeArea()
 
                 /// Use scrollView to see all error text for high dynamic sizes
@@ -53,6 +53,9 @@ struct EmailSignInView: View {
             }
             .onTapGesture {
                 hideKeyboard()
+            }
+            .sheet(isPresented: $showPasswordResetView) {
+                PasswordResetView()
             }
         }
     }
@@ -114,7 +117,7 @@ private extension EmailSignInView {
 
     var forgotPwdButton: some View {
         Button("Forgot password?") {
-            // TODO
+            showPasswordResetView.toggle()
         }
         .buttonStyle(AppButtonBorderless())
         .padding(.top)

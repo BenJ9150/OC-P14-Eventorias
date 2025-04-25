@@ -32,6 +32,14 @@ class PreviewAuthRepository: AuthRepository {
         return user
     }
 
+    func sendPasswordReset(withEmail email: String) async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+    }
+
     func signOut() throws {
         if let error = codeError {
             let appError = AppError(forCode: error)

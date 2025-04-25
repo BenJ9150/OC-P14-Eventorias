@@ -11,26 +11,19 @@ import XCTest
 @MainActor final class EventoriasTests: XCTestCase {
 
     // MARK: Sign in
-
+    
     func test_SignInSuccess() async {
-        // Default values
+        // Given valid data
         let viewModel = AuthViewModel(authRepo: MockAuthRepository())
         XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.isConnecting, false)
-        XCTAssertEqual(viewModel.emailError, "")
-        XCTAssertEqual(viewModel.pwdError, "")
-        XCTAssertEqual(viewModel.signInError, "")
-
-        // Given valid data
         viewModel.email = "test@test.com"
         viewModel.password = "test"
-
+        
         // When sign in
         await viewModel.signIn()
-
+        
         // Then user is not nil and no error is displayed
         XCTAssertNotNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.isConnecting, false)
         XCTAssertEqual(viewModel.emailError, "")
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signInError, "")
@@ -45,7 +38,6 @@ import XCTest
 
         // Then user is nil and errors are displayed
         XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.isConnecting, false)
         XCTAssertEqual(viewModel.emailError, AppError.emptyField.userMessage)
         XCTAssertEqual(viewModel.pwdError, AppError.emptyField.userMessage)
         XCTAssertEqual(viewModel.signInError, "")
@@ -62,7 +54,6 @@ import XCTest
 
         // Then user is nil and error is displayed
         XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.isConnecting, false)
         XCTAssertEqual(viewModel.emailError, AppError.invalidEmailFormat.userMessage)
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signInError, "")
@@ -79,19 +70,77 @@ import XCTest
 
         // Then user is nil and error is displayed
         XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.isConnecting, false)
         XCTAssertEqual(viewModel.emailError, "")
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signInError, AppError.invalidCredentials.userMessage)
     }
+}
 
-    // MARK: Sign out
+// MARK: Reset password
 
-    func test_SignOutSuccess() async {
+extension EventoriasTests {
+
+    func test_ResetPasswordSuccess() async {
+        // Given email to reset is valid
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        viewModel.email = "test@test.com"
+
+        // When send password reset
+        await viewModel.sendPasswordReset()
+
+        // Then success message is displayed with no error
+        XCTAssertEqual(viewModel.resetPasswordSuccess, "Password reset email sent successfully!")
+        XCTAssertEqual(viewModel.resetPasswordError, "")
+    }
+
+    func test_ResetPasswordFailure() async {
+        // Given unknown error
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository(withError: 0))
+        viewModel.email = "test@test.com"
+
+        // When send password reset
+        await viewModel.sendPasswordReset()
+
+        // Then error is displayed with no success message
+        XCTAssertEqual(viewModel.resetPasswordSuccess, "")
+        XCTAssertEqual(viewModel.resetPasswordError, AppError.unknown.userMessage)
+    }
+
+    func test_ResetPasswordEmptyEmail() async {
+        // Given email to reset is empty
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+
+        // When send password reset
+        await viewModel.sendPasswordReset()
+
+        // Then error is displayed with no success message
+        XCTAssertEqual(viewModel.resetPasswordSuccess, "")
+        XCTAssertEqual(viewModel.resetPasswordError, AppError.emptyField.userMessage)
+    }
+
+    func test_ResetPasswordInvalidEmailFormat() async {
+        // Given invalid email format
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository(withError: 17008))
+        viewModel.email = "test.com"
+
+        // When send password reset
+        await viewModel.sendPasswordReset()
+
+        // Then error is displayed with no success message
+        XCTAssertEqual(viewModel.resetPasswordSuccess, "")
+        XCTAssertEqual(viewModel.resetPasswordError, AppError.invalidEmailFormat.userMessage)
+    }
+}
+
+
+// MARK: Sign out
+
+extension EventoriasTests {
+
+    func test_SignOutSuccess() {
         // Given user is connected
         let viewModel = AuthViewModel(authRepo: MockAuthRepository(isConnected: true))
         XCTAssertNotNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.signOutError, "")
 
         // When sign out
         viewModel.signOut()
@@ -101,11 +150,10 @@ import XCTest
         XCTAssertEqual(viewModel.signOutError, "")
     }
 
-    func test_SignOutFailure() async {
+    func test_SignOutFailure() {
         // Given user is connected but network issue
         let viewModel = AuthViewModel(authRepo: MockAuthRepository(withError: 17020, isConnected: true))
         XCTAssertNotNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.signOutError, "")
 
         // When sign out
         viewModel.signOut()

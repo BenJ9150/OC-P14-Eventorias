@@ -30,6 +30,13 @@ class MockAuthRepository: AuthRepository {
         return user
     }
 
+    func sendPasswordReset(withEmail email: String) async throws {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+    }
+
     func signOut() throws {
         if let error = codeError {
             let appError = AppError(forCode: error)
