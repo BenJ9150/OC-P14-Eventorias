@@ -7,6 +7,9 @@
 
 import Foundation
 import FirebaseAuth
+import FirebaseFirestore
+
+// MARK: FirebaseAuth
 
 extension FirebaseAuth.User: AuthUser {
     func createUserProfileChangeRequest() -> AuthUserProfile {
@@ -15,3 +18,11 @@ extension FirebaseAuth.User: AuthUser {
 }
 
 extension FirebaseAuth.UserProfileChangeRequest: AuthUserProfile {}
+
+// MARK: FirebaseFirestore
+
+extension QueryDocumentSnapshot: DocumentRepository {
+    func decodedData<T: Decodable>() throws -> T {
+        try data(as: T.self)
+    }
+}

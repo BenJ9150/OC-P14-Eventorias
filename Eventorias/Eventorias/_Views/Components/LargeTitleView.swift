@@ -17,6 +17,7 @@ struct LargeTitleView: View {
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.bottom, 24)
+            .accessibilityHidden(true)
     }
 }
 
