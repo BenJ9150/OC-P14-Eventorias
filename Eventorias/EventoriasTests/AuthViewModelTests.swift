@@ -32,23 +32,6 @@ import XCTest
         XCTAssertEqual(viewModel.signUpError, "")
     }
 
-    func test_SignUpFailure() async {
-        // Given valid data but network issue
-        let authRepo = MockAuthRepository(withError: 17020)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
-        viewModel.email = "test@test.com"
-        viewModel.password = "test"
-
-        // When sign up
-        await viewModel.signUp()
-
-        // Then user is nil and error is displayed
-        XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.emailError, "")
-        XCTAssertEqual(viewModel.pwdError, "")
-        XCTAssertEqual(viewModel.signUpError, AppError.networkError.userMessage)
-    }
-
     func test_SignUpEmptyFields() async {
         // Given empty sign up fields
         let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
@@ -78,6 +61,40 @@ import XCTest
         XCTAssertEqual(viewModel.emailError, AppError.invalidEmailFormat.userMessage)
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signUpError, "")
+    }
+
+    func test_SignUpEmailAlreadyExist() async {
+        // Given valid data but email already linked to an account
+        let authRepo = MockAuthRepository(withError: 17007)
+        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        viewModel.email = "test@test.com"
+        viewModel.password = "test"
+
+        // When sign up
+        await viewModel.signUp()
+
+        // Then user is nil and error is displayed
+        XCTAssertNil(viewModel.currentUser)
+        XCTAssertEqual(viewModel.emailError, "")
+        XCTAssertEqual(viewModel.pwdError, "")
+        XCTAssertEqual(viewModel.signUpError, AppError.emailAlreadyInUse.userMessage)
+    }
+
+    func test_SignUpWeakPassword() async {
+        // Given password does not meet requirements
+        let authRepo = MockAuthRepository(withError: 17026)
+        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        viewModel.email = "test@test.com"
+        viewModel.password = "test"
+
+        // When sign up
+        await viewModel.signUp()
+
+        // Then user is nil and error is displayed
+        XCTAssertNil(viewModel.currentUser)
+        XCTAssertEqual(viewModel.emailError, "")
+        XCTAssertEqual(viewModel.pwdError, "")
+        XCTAssertEqual(viewModel.signUpError, AppError.weakPassword.userMessage)
     }
 }
 

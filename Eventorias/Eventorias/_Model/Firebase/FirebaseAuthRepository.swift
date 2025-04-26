@@ -27,6 +27,22 @@ class FirebaseAuthRepository: AuthRepository {
     }
 
     func createUser(withEmail email: String, password: String) async throws -> AuthUser {
-        return try await Auth.auth().createUser(withEmail: email, password: password).user
+        do {
+            return try await Auth.auth().createUser(withEmail: email, password: password).user
+        } catch let nsError as NSError {
+            // Firebase issue for password does not meet requirements:
+            // Throw Code=17999 "An internal error has occurred, print and inspect the error details for more information."
+            // To fix this issue, try to find "PASSWORD_DOES_NOT_MEET_REQUIREMENTS" in the internal error:
+            
+            let firebaseAuthErrorKey = "FIRAuthErrorUserInfoDeserializedResponseKey"
+            let weakPasswordError = "PASSWORD_DOES_NOT_MEET_REQUIREMENTS"
+
+            if let underlyingError = nsError.userInfo[NSUnderlyingErrorKey] as? NSError,
+               let firebaseAuthError = underlyingError.userInfo[firebaseAuthErrorKey] as? [String: Any],
+               let message = firebaseAuthError["message"] as? String, message.contains(weakPasswordError) {
+                throw AuthErrorCode.weakPassword
+            }
+            throw nsError
+        }
     }
 }
