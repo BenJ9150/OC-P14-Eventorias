@@ -27,11 +27,11 @@ class EventService {
         }
     }
 
-    func fetchEventCategories() async throws -> [Category] {
+    func fetchEventCategories() async throws -> [EventCategory] {
         let documents = try await dbRepo.fetchDocuments(into: CollectionName.categories)
         
         return documents.compactMap { document in
-            guard var category: Category = try? document.decodedData() else {
+            guard var category: EventCategory = try? document.decodedData() else {
                 return nil
             }
             category.id = document.documentID

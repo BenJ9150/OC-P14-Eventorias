@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AppError: Int, Error { // 17007: The email address is already in use by another account.
+enum AppError: Int, Error {
     case emptyField
     case invalidCredentials = 17004
     case emailAlreadyInUse = 17007

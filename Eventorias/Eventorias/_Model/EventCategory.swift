@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Category: Identifiable, Codable {
+struct EventCategory: Identifiable, Codable {
     var id: String?
     var name: String
     var emoji: String

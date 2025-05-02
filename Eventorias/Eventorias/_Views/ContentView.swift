@@ -25,6 +25,36 @@ struct ContentView: View {
             
             Spacer()
 
+            Button("Fetch events") {
+                Task {
+                    do {
+                        let items: [Event] = try await EventService(dbRepo: FirestoreRepository()).fetchEvents()
+                        for item in items {
+                            print(item)
+                            print(" ")
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+            .buttonStyle(.borderedProminent)
+
+            Button("Fetch categories") {
+                Task {
+                    do {
+                        let items: [EventCategory] = try await EventService(dbRepo: FirestoreRepository()).fetchEventCategories()
+                        for item in items {
+                            print(item)
+                            print(" ")
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+            .buttonStyle(.borderedProminent)
+
             Button("Sign out") {
                 authViewModel.signOut()
             }
