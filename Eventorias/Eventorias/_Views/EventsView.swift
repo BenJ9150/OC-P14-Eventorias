@@ -29,8 +29,6 @@ struct EventsView: View {
 
 @available(iOS 18.0, *)
 #Preview {
-    let viewModel = EventsViewModel(
-        eventService: EventService(dbRepo: PreviewDatabaseRepository())
-    )
+    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
     EventsView(viewModel: viewModel)
 }

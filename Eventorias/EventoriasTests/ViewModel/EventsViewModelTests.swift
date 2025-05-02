@@ -14,8 +14,7 @@ import XCTest
 
     func test_FetchDataSuccess() async {
         // Given
-        let eventService = EventService(dbRepo: MockDatabaseRepository())
-        let viewModel = EventsViewModel(eventService: eventService)
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
 
         // When fetch data
         await viewModel.fetchData()
@@ -29,8 +28,8 @@ import XCTest
 
     func test_FetchDataFailure() async {
         // Given network error
-        let databaseRepo = MockDatabaseRepository(withNetworkError: true)
-        let viewModel = EventsViewModel(eventService: EventService(dbRepo: databaseRepo))
+        let eventRepo = MockEventRepository(withNetworkError: true)
+        let viewModel = EventsViewModel(eventRepo: eventRepo)
 
         // When fetch data
         await viewModel.fetchData()

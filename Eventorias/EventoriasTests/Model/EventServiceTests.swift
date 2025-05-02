@@ -42,7 +42,7 @@ final class EventServiceTests: XCTestCase {
         let eventService = EventService(dbRepo: MockDatabaseRepository())
 
         // When fetch event categories
-        let categories = try! await eventService.fetchEventCategories()
+        let categories = try! await eventService.fetchCategories()
 
         // Then a category exist
         XCTAssertEqual(categories[0].name, "Art & Exhibitions")
@@ -54,7 +54,7 @@ final class EventServiceTests: XCTestCase {
         let eventService = EventService(dbRepo: databaseRepo)
 
         // When fetch event categories
-        let categories = try! await eventService.fetchEventCategories()
+        let categories = try! await eventService.fetchCategories()
 
         // Then there is no event category
         XCTAssertTrue(categories.isEmpty)

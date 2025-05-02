@@ -7,7 +7,7 @@
 
 import Foundation
 
-class EventService {
+class EventService: EventRepository {
 
     private let dbRepo: DatabaseRepository
 
@@ -27,7 +27,7 @@ class EventService {
         }
     }
 
-    func fetchEventCategories() async throws -> [EventCategory] {
+    func fetchCategories() async throws -> [EventCategory] {
         let documents = try await dbRepo.fetchDocuments(into: CollectionName.categories)
         
         return documents.compactMap { document in

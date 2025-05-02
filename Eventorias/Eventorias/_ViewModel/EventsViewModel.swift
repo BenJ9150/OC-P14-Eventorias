@@ -16,12 +16,12 @@ import SwiftUI
 
     // MARK: Private properties
 
-    private let eventService: EventService
+    private let eventRepo: EventRepository
 
     // MARK: Init
 
-    init(eventService: EventService = EventService()) {
-        self.eventService = eventService
+    init(eventRepo: EventRepository = EventService()) {
+        self.eventRepo = eventRepo
     }
 }
 
@@ -35,8 +35,8 @@ extension EventsViewModel {
         defer { fetchingEvents = false }
 
         do {
-            categories = try await eventService.fetchEventCategories()
-            events = try await eventService.fetchEvents()
+            categories = try await eventRepo.fetchCategories()
+            events = try await eventRepo.fetchEvents()
 
         } catch let nsError as NSError {
             print("💥 Fetch events error \(nsError.code): \(nsError.localizedDescription)")
