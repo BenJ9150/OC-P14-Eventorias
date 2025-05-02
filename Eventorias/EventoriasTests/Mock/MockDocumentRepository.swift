@@ -12,9 +12,9 @@ class MockDocumentRepository: DocumentRepository {
 
     // MARK: Init
 
-    private var error: Bool
-    init(withError error: Bool) {
-        self.error = error
+    private var decodingError: Bool
+    init(withDecodingError decodingError: Bool) {
+        self.decodingError = decodingError
     }
 
     // MARK: DocumentRepository protocol
@@ -23,7 +23,7 @@ class MockDocumentRepository: DocumentRepository {
     
     func decodedData<T: Decodable>() throws -> T {
         /// Simulate decoding error
-        if error {
+        if decodingError {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: ""))
         }
 

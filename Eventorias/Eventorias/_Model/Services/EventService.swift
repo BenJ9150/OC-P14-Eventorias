@@ -11,7 +11,7 @@ class EventService {
 
     private let dbRepo: DatabaseRepository
 
-    init(dbRepo: DatabaseRepository) {
+    init(dbRepo: DatabaseRepository = FirestoreRepository()) {
         self.dbRepo = dbRepo
     }
 

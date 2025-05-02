@@ -25,7 +25,8 @@ final class EventServiceTests: XCTestCase {
 
     func test_FetchEventsFailure() async {
         // Given invalid data
-        let eventService = EventService(dbRepo: MockDatabaseRepository(withError: true))
+        let databaseRepo = MockDatabaseRepository(withDecodingError: true)
+        let eventService = EventService(dbRepo: databaseRepo)
 
         // When fetch events
         let events = try! await eventService.fetchEvents()
@@ -49,7 +50,8 @@ final class EventServiceTests: XCTestCase {
 
     func test_FetchCategoriesFailure() async {
         // Given invalid data
-        let eventService = EventService(dbRepo: MockDatabaseRepository(withError: true))
+        let databaseRepo = MockDatabaseRepository(withDecodingError: true)
+        let eventService = EventService(dbRepo: databaseRepo)
 
         // When fetch event categories
         let categories = try! await eventService.fetchEventCategories()

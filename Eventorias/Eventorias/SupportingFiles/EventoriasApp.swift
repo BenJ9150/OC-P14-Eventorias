@@ -12,6 +12,7 @@ struct EventoriasApp: App {
 
     @Environment(\.scenePhase) var scenePhase
     @StateObject private var authViewModel = AuthViewModel()
+    @StateObject private var eventsViewModel = EventsViewModel()
 
     /// Register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
@@ -21,13 +22,14 @@ struct EventoriasApp: App {
             if authViewModel.currentUser == nil {
                 SignInView()
             } else {
-                ContentView()
+                EventsView(viewModel: eventsViewModel)
             }
         }
         .environmentObject(authViewModel)
         .onChange(of: scenePhase) { _, newValue in
             if newValue == .active {
                 authViewModel.refreshCurrentUser()
+                Task { await eventsViewModel.fetchData() }
             }
         }
     }
