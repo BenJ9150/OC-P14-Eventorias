@@ -1,0 +1,117 @@
+[
+   {
+      "id":"art_exhibitions",
+      "emoji":"🎨",
+      "name":"Art & Exhibitions"
+   },
+   {
+      "id":"business_networking",
+      "emoji":"💼",
+      "name":"Business & Networking"
+   },
+   {
+      "id":"charity_volunteering",
+      "emoji":"💖",
+      "name":"Charity & Volunteering"
+   },
+   {
+      "id":"cinema_screenings",
+      "emoji":"🎬",
+      "name":"Cinema & Screenings"
+   },
+   {
+      "id":"competitions_challenges",
+      "emoji":"🏆",
+      "name":"Competitions & Challenges"
+   },
+   {
+      "id":"ecology_sustainability",
+      "emoji":"♻️",
+      "name":"Ecology & Sustainability"
+   },
+   {
+      "id":"education_workshops",
+      "emoji":"🎓",
+      "name":"Education & Workshops"
+   },
+   {
+      "id":"expos_international_fairs",
+      "emoji":"✈️",
+      "name":"Expos & International Fairs"
+   },
+   {
+      "id":"family_kids",
+      "emoji":"👶",
+      "name":"Family & Kids"
+   },
+   {
+      "id":"gaming_esports",
+      "emoji":"🎮",
+      "name":"Gaming & E-sports"
+   },
+   {
+      "id":"gastronomy",
+      "emoji":"🍴",
+      "name":"Gastronomy"
+   },
+   {
+      "id":"literature_book_signings",
+      "emoji":"📚",
+      "name":"Literature & Book Signings"
+   },
+   {
+      "id":"markets_flea_markets",
+      "emoji":"🏡",
+      "name":"Markets & Flea Markets"
+   },
+   {
+      "id":"music",
+      "emoji":"🎶",
+      "name":"Music"
+   },
+   {
+      "id":"performances_theater",
+      "emoji":"🎭",
+      "name":"Performances & Theater"
+   },
+   {
+      "id":"pets_adoptions",
+      "emoji":"🐾",
+      "name":"Pets & Adoptions"
+   },
+   {
+      "id":"photography_visual_arts",
+      "emoji":"📷",
+      "name":"Photography & Visual Arts"
+   },
+   {
+      "id":"social_events_nightlife",
+      "emoji":"🍻",
+      "name":"Social Events & Nightlife"
+   },
+   {
+      "id":"sports_wellness",
+      "emoji":"🏃‍♂️",
+      "name":"Sports & Wellness"
+   },
+   {
+      "id":"standup_comedy",
+      "emoji":"🎤",
+      "name":"Stand-up & Comedy"
+   },
+   {
+      "id":"technology_conferences",
+      "emoji":"💻",
+      "name":"Technology & Conferences"
+   },
+   {
+      "id":"travel_cultural_discovery",
+      "emoji":"🌍",
+      "name":"Travel & Cultural Discovery"
+   },
+   {
+      "id":"wellness_meditation",
+      "emoji":"🧘‍♀️",
+      "name":"Wellness & Meditation"
+   }
+]
