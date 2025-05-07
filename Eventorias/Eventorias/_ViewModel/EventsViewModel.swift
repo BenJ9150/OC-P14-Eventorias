@@ -13,6 +13,7 @@ import SwiftUI
     @Published var categories: [EventCategory] = []
     @Published var fetchingEvents = true
     @Published var fetchEventsError = ""
+    @Published var search = ""
 
     // MARK: Private properties
 

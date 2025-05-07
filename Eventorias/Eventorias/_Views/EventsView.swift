@@ -13,6 +13,7 @@ struct EventsView: View {
     @Environment(\.verticalSizeClass) var verticalSize
 
     @ObservedObject var viewModel: EventsViewModel
+    @FocusState private var searchBarIsFocused: Bool
 
     private var imageWidth: CGFloat {
         UIScreen.main.bounds.width <= 375 ? 110 : 136
@@ -34,16 +35,23 @@ struct EventsView: View {
                 if viewModel.fetchingEvents {
                     AppProgressView()
                 } else {
-                    ScrollView {
-                        if viewModel.fetchEventsError != "" {
-                            errorMessage
-                        } else {
-                            eventsList
-                                .padding()
+                    VStack(spacing: 0) {
+                        searchBarWithCancelBtn
+                        sortButton
+                        ScrollView {
+                            if viewModel.fetchEventsError != "" {
+                                errorMessage
+                            } else {
+                                eventsList
+                            }
                         }
+                        .scrollIndicators(.hidden)
                     }
-                    .scrollIndicators(.hidden)
+                    .padding(.horizontal)
                 }
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
         }
     }
@@ -151,15 +159,117 @@ private extension EventsView {
     }
 }
 
+// MARK: Sort button
+
+private extension EventsView {
+
+    var sortButton: some View {
+        HStack {
+            Button {
+                // sort
+            } label: {
+                HStack(spacing: 2) {
+                    HStack(spacing: 0) {
+                        Image(systemName: "arrow.up")
+                            .padding(.trailing, -7)
+                            .padding(.bottom, 9)
+                        Image(systemName: "arrow.down")
+                            .padding(.top, 9)
+                    }
+                    .font(.caption2)
+                    .fontWeight(.black)
+                    .scaleEffect(0.8)
+                    Text("Sorting")
+                        .font(.callout)
+                        .padding(.vertical, 8)
+                }
+                .foregroundStyle(.white)
+                .padding(.leading, 14)
+                .padding(.trailing, 16)
+                .frame(minHeight: 35)
+                .background(Capsule().fill(Color.itemBackground))
+            }
+            Spacer()
+        }
+        .padding(.bottom, 24)
+    }
+}
+
+// MARK: Search bar
+
+private extension EventsView {
+
+    var searchBarWithCancelBtn: some View {
+        ZStack {
+            if dynamicSize.isAccessibilitySize {
+                VStack(spacing: 0) {
+                    searchBar
+                    HStack {
+                        Spacer()
+                        cancelButton
+                    }
+                }
+            } else {
+                HStack(spacing: 0) {
+                    searchBar
+                    cancelButton
+                }
+            }
+        }
+        .animation(.easeIn(duration: 0.2), value: searchBarIsFocused)
+        .padding(.bottom, 12)
+    }
+
+    var searchBar: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "magnifyingglass")
+                .font(.subheadline)
+                .foregroundStyle(.white)
+                .padding(.vertical, 8)
+            TextField("Search", text: $viewModel.search, prompt: searchPrompt)
+                .foregroundStyle(.white)
+                .focused($searchBarIsFocused)
+                .submitLabel(.search)
+        }
+        .padding(.horizontal)
+        .frame(minHeight: 35)
+        .background(Capsule().fill(Color.itemBackground))
+        .onTapGesture {
+            /// Focus when clic on icon or around the prompt
+            searchBarIsFocused = true
+        }
+    }
+
+    var cancelButton: some View {
+        Button("Cancel") {
+            viewModel.search.removeAll()
+            searchBarIsFocused = false
+        }
+        .buttonStyle(AppButtonBorderless())
+        .frame(
+            width: searchBarIsFocused ? nil : 0,
+            height: searchBarIsFocused ? 35 : 0
+        )
+        .padding(.leading, searchBarIsFocused ? 16 : 0)
+        .scaleEffect(searchBarIsFocused ? 1 : 0)
+    }
+
+    var searchPrompt: Text {
+        Text("Search")
+            .font(.callout)
+            .foregroundColor(.textLightGray)
+    }
+}
+
 // MARK: - Preview
 
 #Preview {
-//    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: true))
+    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
+//    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: true))
 
     EventsView(viewModel: viewModel)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 Task { await viewModel.fetchData() }
             }
         }
