@@ -23,8 +23,6 @@ class PreviewEventRepository {
 extension PreviewEventRepository: EventRepository {
 
     func fetchEvents() async throws -> [Event] {
-//        try await Task.sleep(nanoseconds: 1_000_000_000)
-
         if networkError {
             throw AppError.networkError
         }

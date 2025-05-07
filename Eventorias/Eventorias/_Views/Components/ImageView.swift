@@ -11,27 +11,32 @@ struct ImageView: View {
 
     let url: String
 
+    @ViewBuilder
     var body: some View {
+        if url.isEmpty {
+            EmptyView()
+        } else {
             GeometryReader { geometry in
                 AsyncImage(url: URL(string: url)) { phase in
                     switch phase {
                     case .empty:
-                        ProgressView()
+                        AppProgressView()
+                            .scaleEffect(0.6)
                     case .success(let image):
                         image
                             .resizable()
                             .scaledToFill()
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                            .clipped()
                     default:
-                        Image(systemName: "photo")
+                        Image(systemName: "photo.badge.exclamationmark")
                             .foregroundStyle(.gray)
-                            .frame(width: geometry.size.width, height: geometry.size.height)
                     }
                 }
+                .frame(width: geometry.size.width, height: geometry.size.height)
+                .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
+    }
 }
 
 // MARK: - Preview

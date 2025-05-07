@@ -9,8 +9,8 @@ import SwiftUI
 
 struct EventsView: View {
 
-    @Environment(\.dynamicTypeSize) var dynamicTypeSize
-    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @Environment(\.dynamicTypeSize) var dynamicSize
+    @Environment(\.verticalSizeClass) var verticalSize
 
     @ObservedObject var viewModel: EventsViewModel
 
@@ -31,13 +31,40 @@ struct EventsView: View {
                 Color.sheetBackground
                     .ignoresSafeArea()
 
-                ScrollView {
-                    eventsList
-                        .padding()
+                if viewModel.fetchingEvents {
+                    AppProgressView()
+                } else {
+                    ScrollView {
+                        if viewModel.fetchEventsError != "" {
+                            errorMessage
+                        } else {
+                            eventsList
+                                .padding()
+                        }
+                    }
+                    .scrollIndicators(.hidden)
                 }
-                .scrollIndicators(.hidden)
             }
         }
+    }
+}
+
+// MARK: Error message
+
+private extension EventsView {
+
+    var errorMessage: some View {
+        VStack(spacing: 35) {
+            ErrorView(error: viewModel.fetchEventsError)
+                .frame(
+                    maxWidth: dynamicSize.isAccessibilitySize ? .infinity : 240
+                )
+            Button("Try again") {
+                Task { await viewModel.fetchData() }
+            }
+            .buttonStyle(AppButtonPlain(small: true))
+        }
+        .padding(.top, dynamicSize.isAccessibilitySize ? 48 : 180)
     }
 }
 
@@ -48,7 +75,7 @@ private extension EventsView {
     var eventsList: some View {
         LazyVGrid(columns: gridColumms, spacing: isPad ? 16 : 8) {
             ForEach(viewModel.events) { event in
-                if dynamicTypeSize.isAccessibilitySize && verticalSizeClass != .compact {
+                if dynamicSize.isAccessibilitySize && verticalSize != .compact {
                     eventItemHighSize(event)
                 } else {
                     eventItem(event)
@@ -127,10 +154,13 @@ private extension EventsView {
 // MARK: - Preview
 
 #Preview {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
+//    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
+    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: true))
 
     EventsView(viewModel: viewModel)
         .onAppear {
-            Task { await viewModel.fetchData() }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                Task { await viewModel.fetchData() }
+            }
         }
 }
