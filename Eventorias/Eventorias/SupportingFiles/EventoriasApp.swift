@@ -22,7 +22,7 @@ struct EventoriasApp: App {
             if authViewModel.currentUser == nil {
                 SignInView()
             } else {
-                MainEventsView(viewModel: eventsViewModel)
+                CustomTabView(eventsViewModel: eventsViewModel)
             }
         }
         .environmentObject(authViewModel)

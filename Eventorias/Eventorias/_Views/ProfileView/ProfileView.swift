@@ -12,14 +12,19 @@ struct ProfileView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
 
     var body: some View {
-        VStack {
-            Spacer()
-            Button("Sign out") {
-                authViewModel.signOut()
+        ZStack {
+            Color.mainBackground
+                .ignoresSafeArea()
+
+            VStack {
+                Spacer()
+                Button("Sign out") {
+                    authViewModel.signOut()
+                }
+                .buttonStyle(.borderedProminent)
             }
-            .buttonStyle(.borderedProminent)
+            .padding()
         }
-        .padding()
     }
 }
 

@@ -23,10 +23,9 @@ struct CalendarView: View {
             CalendarUIViewRepresentable(viewModel: viewModel)
                 .padding(.horizontal, 8)
                 .background(
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color(UIColor.systemBackground))
+                    Rectangle()
+                        .fill(Color.itemBackground)
                 )
-                .padding(.horizontal, 8)
                 .padding(.top)
                 .navigationDestination(isPresented: calendarDetailIsPresented) {
                     if let selected = viewModel.calendarEventsSelection {
@@ -38,6 +37,7 @@ struct CalendarView: View {
                     }
                 }
         }
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -129,10 +129,10 @@ extension CalendarUIViewRepresentable {
 
             if emojis.count > 2 {
                 emojiLabel.text = "\(text)..."
-                emojiLabel.font = UIFont.systemFont(ofSize: 12)
+                emojiLabel.font = UIFont.systemFont(ofSize: 13)
             } else {
                 emojiLabel.text = text
-                emojiLabel.font = UIFont.systemFont(ofSize: 15)
+                emojiLabel.font = UIFont.systemFont(ofSize: 16)
             }
             return .customView { emojiLabel }
         }
