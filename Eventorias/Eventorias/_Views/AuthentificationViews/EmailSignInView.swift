@@ -38,19 +38,8 @@ struct EmailSignInView: View {
                 .frame(maxWidth: 440)
                 .padding()
             }
-            .navigationBarBackButtonHidden()
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "arrow.backward")
-                            .font(.caption)
-                            .bold()
-                            .frame(minWidth: 44, minHeight: 44)
-                    }
-                    .foregroundStyle(.white)
-                }
+            .withBackButton {
+                dismiss()
             }
             .onTapGesture {
                 hideKeyboard()

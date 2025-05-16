@@ -14,6 +14,7 @@ import SwiftUI
     @Published var fetchingEvents = true
     @Published var fetchEventsError = ""
     @Published var search = ""
+    @Published var calendarEventsSelection: [Event]?
 
     // MARK: Private properties
 

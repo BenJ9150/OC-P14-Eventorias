@@ -24,6 +24,9 @@ struct LargeTitleView: View {
 // MARK: - Preview
 
 #Preview {
-    LargeTitleView(title: "Large title")
-        .preferredColorScheme(.dark)
+    ZStack {
+        Color.mainBackground
+            .ignoresSafeArea()
+        LargeTitleView(title: "Large title")
+    }
 }

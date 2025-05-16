@@ -81,5 +81,4 @@ struct AppButtonBorderless: ButtonStyle {
         .buttonStyle(AppButtonBorderless())
         .padding()
     }
-    .preferredColorScheme(.dark)
 }

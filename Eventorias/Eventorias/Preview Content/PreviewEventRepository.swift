@@ -26,6 +26,23 @@ extension PreviewEventRepository: EventRepository {
         if networkError {
             throw AppError.networkError
         }
+        return previewEvents()
+    }
+    
+    func fetchCategories() async throws -> [EventCategory] {
+        if networkError {
+            throw AppError.networkError
+        }
+        /// Try to return decoded data
+        return try JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
+    }
+}
+
+// MARK: Events
+
+extension PreviewEventRepository {
+
+    func previewEvents() -> [Event] {
         /// Set decoder date string format (like json file content)
         let decoder = JSONDecoder()
         let dateFormatter = DateFormatter()
@@ -33,7 +50,7 @@ extension PreviewEventRepository: EventRepository {
         decoder.dateDecodingStrategy = .formatted(dateFormatter)
 
         /// Try to return decoded data
-        let events = try decoder.decode([Event].self, from: getData(jsonFile: "Events"))
+        let events = try! decoder.decode([Event].self, from: getData(jsonFile: "Events"))
 
         let imagePortrait = getImagePortraitUrl()
         let imageLandscape = getImageLandscapeUrl()
@@ -51,14 +68,6 @@ extension PreviewEventRepository: EventRepository {
                 title: event.title
             )
         }
-    }
-    
-    func fetchCategories() async throws -> [EventCategory] {
-        if networkError {
-            throw AppError.networkError
-        }
-        /// Try to return decoded data
-        return try JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
     }
 }
 

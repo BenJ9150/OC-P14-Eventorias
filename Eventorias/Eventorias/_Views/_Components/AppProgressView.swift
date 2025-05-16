@@ -53,5 +53,4 @@ struct AppProgressView: View {
 
 #Preview {
     AppProgressView()
-        .preferredColorScheme(.dark)
 }
