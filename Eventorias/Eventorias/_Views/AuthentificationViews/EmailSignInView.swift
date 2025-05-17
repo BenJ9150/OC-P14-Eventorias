@@ -18,7 +18,7 @@ struct EmailSignInView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.sheetBackground
+                Color.mainBackground
                     .ignoresSafeArea()
 
                 /// Use scrollView to see all error text for high dynamic sizes

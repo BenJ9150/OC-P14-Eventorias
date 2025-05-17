@@ -8,10 +8,12 @@
 import SwiftUI
 
 struct BackButtonModifier: ViewModifier {
+
     let dismiss: () -> Void
 
     func body(content: Content) -> some View {
         content
+            .navigationBarTitleDisplayMode(.inline)
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

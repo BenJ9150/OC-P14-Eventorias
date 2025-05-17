@@ -37,7 +37,6 @@ struct CalendarView: View {
                     }
                 }
         }
-        .preferredColorScheme(.dark)
     }
 }
 
@@ -50,6 +49,7 @@ struct CalendarUIViewRepresentable: UIViewRepresentable {
     func makeUIView(context: Context) -> UIView {
         let container = UIView()
         let calendarView = UICalendarView()
+        calendarView.overrideUserInterfaceStyle = .dark
 
         /// Autorize clic on date
         let selection = UICalendarSelectionSingleDate(delegate: context.coordinator)

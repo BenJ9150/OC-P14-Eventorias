@@ -28,19 +28,26 @@ struct EventsListView: View {
     // MARK: Body
 
     var body: some View {
-        ScrollView {
-            LazyVGrid(columns: gridColumms, spacing: isPad ? 16 : 8) {
-                ForEach(events) { event in
-                    if dynamicSize.isAccessibilitySize && verticalSize != .compact {
-                        eventItemHighSize(event)
-                    } else {
-                        eventItem(event)
+        NavigationStack {
+            ScrollView {
+                LazyVGrid(columns: gridColumms, spacing: isPad ? 16 : 8) {
+                    ForEach(events) { event in
+                        NavigationLink {
+                            EventDetailView(event: event)
+                        } label: {
+                            if dynamicSize.isAccessibilitySize && verticalSize != .compact {
+                                eventItemHighSize(event)
+                            } else {
+                                eventItem(event)
+                            }
+                        }
+
                     }
                 }
+                .padding()
             }
-            .padding()
+            .scrollIndicators(.hidden)
         }
-        .scrollIndicators(.hidden)
     }
 }
 

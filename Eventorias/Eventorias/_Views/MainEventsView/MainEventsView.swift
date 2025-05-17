@@ -40,7 +40,7 @@ struct MainEventsView: View {
                         } else {
                             switch mode {
                             case .list:
-                                EventsListView(events: viewModel.events)
+                                eventsList
                             case .calendar:
                                 CalendarView(viewModel: viewModel)
                             }
@@ -48,6 +48,35 @@ struct MainEventsView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+// MARK: Events list
+
+private extension MainEventsView {
+
+    var eventsList: some View {
+        ZStack(alignment: .bottomTrailing) {
+            EventsListView(events: viewModel.events)
+
+            Button {
+                // add event
+            } label: {
+                ZStack {
+                    Image(systemName: "plus")
+                        .font(.title2)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.white)
+                        .padding(.all, 8)
+                        .frame(minWidth: 56, minHeight: 56)
+                        .background(
+                            RoundedRectangle(cornerRadius: 16)
+                                .fill(Color.accentColor)
+                        )
+                }
+            }
+            .padding(.all, 8)
         }
     }
 }

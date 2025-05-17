@@ -79,6 +79,8 @@ struct ErrorView: View {
 // MARK: - Preview
 
 #Preview {
-    ErrorView(error: AppError.networkError.userMessage)
-        .preferredColorScheme(.dark)
+    ZStack {
+        Color.mainBackground
+        ErrorView(error: AppError.networkError.userMessage)
+    }
 }
