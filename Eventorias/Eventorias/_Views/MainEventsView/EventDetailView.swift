@@ -10,6 +10,7 @@ import MapKit
 
 struct EventDetailView: View {
 
+    @Environment(\.verticalSizeClass) var verticalSize
     @Environment(\.dismiss) var dismiss
 
     @State private var coordinate: CLLocationCoordinate2D?
@@ -24,18 +25,33 @@ struct EventDetailView: View {
 
             VStack(spacing: 0) {
                 bannerTitle
-                
-                ScrollView {
-                    VStack(spacing: 22) {
+                if verticalSize == .compact {
+                    HStack(spacing: 16) {
                         ImageView(url: event.photoURL)
-                            .frame(height: 364)
-                        dateAndAuthor
-                        description
+                        ScrollView {
+                            VStack(alignment: .leading, spacing: 16) {
+                                dateAndAuthor
+                                description
+                                adressAndMap
+                            }
+                            .frame(minWidth: 400)
+                        }
+                        .scrollIndicators(.hidden)
                     }
-                    .padding(.horizontal)
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 22) {
+                            ImageView(url: event.photoURL)
+                                .frame(height: 364)
+                            dateAndAuthor
+                            description
+                        }
+                        .padding(.horizontal)
+                    }
+                    .scrollIndicators(.hidden)
+                    adressAndMap
+                        .padding()
                 }
-                .scrollIndicators(.hidden)
-                address
             }
         }
         .navigationBarHidden(true)
@@ -113,41 +129,50 @@ private extension EventDetailView {
     }
 }
 
-// MARK: Address
+// MARK: Address and map
 
 private extension EventDetailView {
 
-    var address: some View {
+    var adressAndMap: some View {
         HStack(spacing: 12) {
-            Text(event.address)
-                .font(.subheadline)
-                .fontWeight(.medium)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .foregroundStyle(.white)
-                .dynamicTypeSize(.xSmall ... .accessibility1)
-
-            if let coordinate, let region {
-                Map(initialPosition: .region(region)) {
-                    Marker(coordinate: coordinate) {
-                        Image(systemName: "mappin")
-                    }
-                }
-                .frame(width: 150, height: 72)
-                .clipped()
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            } else {
-                ProgressView()
-                    .frame(width: 150, height: 72)
-                    .onAppear {
-                        geocodeAddress()
-                    }
-            }
+            address
+            map
         }
-        .padding()
-        .background(Color.mainBackground)
     }
 
-    private func geocodeAddress() {
+    var address: some View {
+        Text(event.address)
+            .font(.subheadline)
+            .fontWeight(.medium)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .foregroundStyle(.white)
+            .dynamicTypeSize(.xSmall ... .accessibility1)
+    }
+}
+
+// MARK: Map
+
+private extension EventDetailView {
+
+    @ViewBuilder var map: some View {
+        if let coordinate, let region {
+            Map(initialPosition: .region(region)) {
+                Marker(coordinate: coordinate) {
+                    Image(systemName: "mappin")
+                }
+            }
+            .frame(width: 150, height: 72)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        } else {
+            ProgressView()
+                .frame(width: 150, height: 72)
+                .onAppear {
+                    geocodeAddress()
+                }
+        }
+    }
+
+    func geocodeAddress() {
         let geocoder = CLGeocoder()
         geocoder.geocodeAddressString(event.address) { placemarks, error in
             guard let coordinate = placemarks?.first?.location?.coordinate else { return }

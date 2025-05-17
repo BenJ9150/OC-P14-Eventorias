@@ -25,16 +25,11 @@ struct CustomTabView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            ZStack {
-                if selectedTab == .events {
-                    MainEventsView(viewModel: eventsViewModel)
-                        .transition(.opacity.combined(with: .move(edge: .leading)))
-                } else {
-                    ProfileView()
-                        .transition(.opacity.combined(with: .move(edge: .trailing)))
-                }
+            if selectedTab == .events {
+                MainEventsView(viewModel: eventsViewModel)
+            } else {
+                ProfileView()
             }
-            .animation(.easeInOut(duration: 0.2), value: selectedTab)
 
             HStack(spacing: 34) {
                 Spacer()
