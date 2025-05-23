@@ -29,6 +29,37 @@ struct BackButtonModifier: ViewModifier {
     }
 }
 
+struct BackButtonView: View {
+
+    @Environment(\.dismiss) var dismiss
+    let title: String
+
+    var body: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HStack(spacing: 12) {
+                    Image(systemName: "arrow.backward")
+                        .font(.body)
+                        .fontWeight(.semibold)
+                        .padding(.leading)
+
+                    Text(title)
+                        .multilineTextAlignment(.leading)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                }
+                .frame(minWidth: 44, minHeight: 44)
+                .dynamicTypeSize(.xSmall ... .accessibility4)
+            }
+            .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.bottom, 12)
+    }
+}
+
 extension View {
     func withBackButton(dismiss: @escaping () -> Void) -> some View {
         self.modifier(BackButtonModifier(dismiss: dismiss))

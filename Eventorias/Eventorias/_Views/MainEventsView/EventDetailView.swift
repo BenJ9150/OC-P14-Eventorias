@@ -24,7 +24,7 @@ struct EventDetailView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 0) {
-                bannerTitle
+                BackButtonView(title: event.title)
                 if verticalSize == .compact {
                     HStack(spacing: 16) {
                         ImageView(url: event.photoURL)
@@ -55,36 +55,6 @@ struct EventDetailView: View {
             }
         }
         .navigationBarHidden(true)
-    }
-}
-
-// MARK: Banner title
-
-private extension EventDetailView {
-
-    var bannerTitle: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                HStack(spacing: 12) {
-                    Image(systemName: "arrow.backward")
-                        .font(.body)
-                        .fontWeight(.semibold)
-                        .padding(.leading)
-
-                    if !event.title.isEmpty {
-                        Text(event.title)
-                            .font(.title3)
-                            .fontWeight(.semibold)
-                    }
-                }
-                .frame(minWidth: 44, minHeight: 44)
-            }
-            .foregroundStyle(.white)
-            Spacer()
-        }
-        .padding(.bottom, 12)
     }
 }
 

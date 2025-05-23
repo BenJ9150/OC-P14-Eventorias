@@ -22,4 +22,18 @@ extension Date {
         formatter.locale = Locale(identifier: "en_US")
         return formatter.string(from: self)
     }
+
+    func toMonthDayYearSlashes() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd/yyyy"
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: self)
+    }
+
+    func toHourMinute24h() -> String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "HH : mm"
+        formatter.locale = Locale(identifier: "en_US")
+        return formatter.string(from: self)
+    }
 }

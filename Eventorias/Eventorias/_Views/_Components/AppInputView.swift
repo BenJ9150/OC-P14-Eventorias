@@ -28,6 +28,7 @@ struct AppInputView<Content: View>: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 8)
                     .accessibilityHidden(true)
+                    .zIndex(1)
                 content
                     .font(.callout)
                     .foregroundStyle(.white)
