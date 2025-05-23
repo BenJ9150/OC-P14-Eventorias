@@ -15,6 +15,7 @@ enum AppError: Int, Error {
     case networkError = 17020
     case weakPassword = 17026
     case currentUserNotFound
+    case invalidAddress
     case unknown
 
     init(forCode code: Int) {
@@ -30,6 +31,7 @@ enum AppError: Int, Error {
         case .networkError: return "A network error occurred. Please check your internet connection and try again"
         case .weakPassword: return "Password must have at least 8 characters, an uppercase letter, a number, and a special character"
         case .currentUserNotFound: return "User could not be found"
+        case .invalidAddress: return "Incorrect address"
         case .unknown: return "An error has occured, please try again later"
         }
     }

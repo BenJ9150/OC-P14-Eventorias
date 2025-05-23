@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 @MainActor class EventsViewModel: ObservableObject {
 
@@ -79,7 +80,14 @@ extension EventsViewModel {
 extension EventsViewModel {
 
     func addEvent(byUser user: AuthUser?) async -> Bool {
-        guard let formValidity = checkAddEventFormValidity(byUser: user) else {
+        /// Clean old error
+        cleanAddEventErrors()
+
+        /// Check data
+        guard fieldsNotEmpty() else {
+            return false
+        }
+        guard let formValidity = await checkAddEventFormValidity(byUser: user) else {
             return false
         }
         /// Loading
@@ -111,28 +119,29 @@ extension EventsViewModel {
         return true
     }
 
-    private func checkAddEventFormValidity(byUser user: AuthUser?) -> (user: AuthUser, date: Date)? {
-        /// Clean old error
-        cleanAddEventErrors()
+    private func fieldsNotEmpty() -> Bool {
+        var notEmpty = true
 
+        if addEventTitle.isEmpty {
+            addEventTitleErr = AppError.emptyField.userMessage
+            notEmpty = false
+        }
+        if addEventDesc.isEmpty {
+            addEventDescErr = AppError.emptyField.userMessage
+            notEmpty = false
+        }
+        if addEventAddress.isEmpty {
+            addEventAddressErr = AppError.emptyField.userMessage
+            notEmpty = false
+        }
+        return notEmpty
+    }
+
+    private func checkAddEventFormValidity(byUser user: AuthUser?) async -> (user: AuthUser, date: Date)? {
         /// Check user
         guard let currentUser = user else {
             addEventError = AppError.currentUserNotFound.userMessage
             return nil
-        }
-        /// Check empty fields
-        var isValid = true
-        if addEventTitle.isEmpty {
-            addEventTitleErr = AppError.emptyField.userMessage
-            isValid = false
-        }
-        if addEventDesc.isEmpty {
-            addEventDescErr = AppError.emptyField.userMessage
-            isValid = false
-        }
-        if addEventAddress.isEmpty {
-            addEventAddressErr = AppError.emptyField.userMessage
-            isValid = false
         }
         /// Check date of event
         guard let eventDate = addEventDate else {
@@ -140,10 +149,14 @@ extension EventsViewModel {
             addEventTimeErr = AppError.emptyField.userMessage
             return nil
         }
-        /// Return user and event date if all is valid
-        guard isValid else {
+        /// Check if address is valid
+        do {
+            _ = try await CLGeocoder().coordinate(for: addEventAddress)
+        } catch {
+            addEventAddressErr = AppError.invalidAddress.userMessage
             return nil
         }
+        /// Return user and event date
         return (currentUser, eventDate)
     }
 

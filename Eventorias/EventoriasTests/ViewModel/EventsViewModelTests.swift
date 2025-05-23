@@ -61,7 +61,6 @@ import XCTest
     func test_AddEventEmptyFields() async {
         // Given empty fields
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
-        viewModel.addEventDate = Date()
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())
@@ -78,7 +77,7 @@ import XCTest
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
         viewModel.addEventTitle = "Test Event"
         viewModel.addEventDesc = "Test Desc"
-        viewModel.addEventAddress = "Test Address"
+        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())
@@ -92,14 +91,33 @@ import XCTest
     func test_AddEventFailureCauseUser() async {
         // Given no user
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
-        let user: MockUser? = nil
+        viewModel.addEventTitle = "Test Event"
+        viewModel.addEventDesc = "Test Desc"
+        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
+        viewModel.addEventDate = Date()
 
         // When add event
-        let success = await viewModel.addEvent(byUser: user)
+        let success = await viewModel.addEvent(byUser: nil)
 
         // Then there is a failure and error messages
         XCTAssertFalse(success)
         XCTAssertEqual(viewModel.addEventError, AppError.currentUserNotFound.userMessage)
+    }
+
+    func test_AddEventFailureCauseAddress() async {
+        // Given invalid address
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        viewModel.addEventTitle = "Test Event"
+        viewModel.addEventDesc = "Test Desc"
+        viewModel.addEventAddress = "address"
+        viewModel.addEventDate = Date()
+
+        // When add event
+        let success = await viewModel.addEvent(byUser: MockUser())
+
+        // Then there is a failure and error messages
+        XCTAssertFalse(success)
+        XCTAssertEqual(viewModel.addEventAddressErr, AppError.invalidAddress.userMessage)
     }
 
     func test_AddEventFailureCauseNetwork() async {
@@ -108,7 +126,7 @@ import XCTest
         let viewModel = EventsViewModel(eventRepo: eventRepo)
         viewModel.addEventTitle = "Test Event"
         viewModel.addEventDesc = "Test Desc"
-        viewModel.addEventAddress = "Test Address"
+        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
         viewModel.addEventDate = Date()
 
         // When add event

@@ -137,24 +137,17 @@ private extension EventDetailView {
             ProgressView()
                 .frame(width: 150, height: 72)
                 .onAppear {
-                    geocodeAddress()
+                    Task { await geocodeAddress() }
                 }
         }
     }
 
-    func geocodeAddress() {
-        let geocoder = CLGeocoder()
-        geocoder.geocodeAddressString(event.address) { placemarks, error in
-            guard let coordinate = placemarks?.first?.location?.coordinate else { return }
-
-            DispatchQueue.main.async {
-                self.coordinate = coordinate
-                self.region = MKCoordinateRegion(
-                    center: coordinate,
-                    span: MKCoordinateSpan(latitudeDelta: 0.003, longitudeDelta: 0.003)
-                )
-            }
-        }
+    func geocodeAddress() async {
+        do {
+            let result = try await CLGeocoder().coordinate(for: event.address)
+            coordinate = result.coordinate
+            region = result.region
+        } catch {}
     }
 }
 
