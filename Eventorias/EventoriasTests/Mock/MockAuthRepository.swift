@@ -9,10 +9,11 @@ import Foundation
 @testable import Eventorias
 
 class MockAuthRepository: AuthRepository {
+    
+    private var codeError: Int?
 
     // MARK: Init
-
-    private var codeError: Int?
+    
     init(withError codeError: Int? = nil, isConnected: Bool = false) {
         self.codeError = codeError
         if isConnected {
@@ -61,5 +62,19 @@ class MockAuthRepository: AuthRepository {
         let user = MockUser(email: email)
         currentUser = user
         return user
+    }
+
+    func updateUser(displayName: String, photoURL: URL?) async throws {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+        guard let user = currentUser as? MockUser else {
+            throw AppError.currentUserNotFound
+        }
+        var changeRequest = user.createUserProfileChangeRequest()
+        changeRequest.displayName = displayName
+        changeRequest.photoURL = photoURL
+        try await changeRequest.commitChanges()
     }
 }

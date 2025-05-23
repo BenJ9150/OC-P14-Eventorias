@@ -13,7 +13,7 @@ class MockDatabaseRepository: DatabaseRepository {
     // MARK: Init
 
     private var decodingError: Bool
-
+    
     init(withDecodingError decodingError: Bool = false) {
         self.decodingError = decodingError
     }
@@ -23,4 +23,6 @@ class MockDatabaseRepository: DatabaseRepository {
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
         return [MockDocumentRepository(withDecodingError: decodingError)]
     }
+
+    func addDocument<T>(_ data: T, into collection: Eventorias.CollectionName) async throws where T : Encodable {}
 }

@@ -8,17 +8,20 @@
 import Foundation
 @testable import Eventorias
 
-class MockEventRepository: EventRepository {
+class MockEventRepository {
 
     // MARK: Init
-
+    
     private var networkError: Bool
-
+    
     init(withNetworkError networkError: Bool = false) {
         self.networkError = networkError
     }
+}
 
-    // MARK: EventRepository protocol
+// MARK: EventRepository protocol
+
+extension MockEventRepository: EventRepository {
 
     func fetchEvents() async throws -> [Event] {
         if networkError {
@@ -41,6 +44,12 @@ class MockEventRepository: EventRepository {
         }
         let category = try JSONDecoder().decode(EventCategory.self, from: getData(jsonFile: "EventCategory"))
         return [category]
+    }
+
+    func addEvent(_ event: Eventorias.Event) async throws {
+        if networkError {
+            throw AppError.networkError
+        }
     }
 }
 

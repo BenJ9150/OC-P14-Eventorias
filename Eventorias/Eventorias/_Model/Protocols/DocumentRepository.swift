@@ -8,6 +8,7 @@
 import Foundation
 
 protocol DocumentRepository {
+
     func decodedData<T: Decodable>() throws -> T
     var documentID: String { get }
 }

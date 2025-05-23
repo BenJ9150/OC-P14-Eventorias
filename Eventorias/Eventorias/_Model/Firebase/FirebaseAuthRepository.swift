@@ -45,4 +45,14 @@ class FirebaseAuthRepository: AuthRepository {
             throw nsError
         }
     }
+
+    func updateUser(displayName: String, photoURL: URL?) async throws {
+        guard let user = Auth.auth().currentUser else {
+            throw AuthErrorCode.userNotFound
+        }
+        let changeRequest = user.createProfileChangeRequest()
+        changeRequest.displayName = displayName
+        changeRequest.photoURL = photoURL
+        try await changeRequest.commitChanges()
+    }
 }

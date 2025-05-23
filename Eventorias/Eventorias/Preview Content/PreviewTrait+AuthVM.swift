@@ -22,7 +22,7 @@ extension PreviewTrait where T == Preview.ViewTraits {
 struct AuthViewModelPreview: PreviewModifier {
 
     static func makeSharedContext() async throws -> AuthViewModel {
-        let authViewModel = AuthViewModel(authService: AuthService(authRepo: PreviewAuthRepository()))
+        let authViewModel = AuthViewModel(authRepo: PreviewAuthRepository())
         return authViewModel
     }
 
@@ -36,7 +36,7 @@ struct AuthViewModelPreviewWithError: PreviewModifier {
 
     static func makeSharedContext() async throws -> AuthViewModel {
         let authRepo = PreviewAuthRepository(withError: 17020)
-        let authViewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let authViewModel = AuthViewModel(authRepo: authRepo)
         return authViewModel
     }
 

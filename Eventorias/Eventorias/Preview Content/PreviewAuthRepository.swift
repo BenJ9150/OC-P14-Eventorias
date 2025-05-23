@@ -11,8 +11,10 @@ import Foundation
 
 class PreviewAuthRepository: AuthRepository {
 
-    var currentUser: AuthUser?
+    
     private var codeError: Int?
+
+    // MARK: Init
 
     init(withError codeError: Int? = nil, isConnected: Bool = true) {
         self.codeError = codeError
@@ -20,6 +22,10 @@ class PreviewAuthRepository: AuthRepository {
             currentUser = PreviewUser()
         }
     }
+
+    // MARK: AuthRepository protocol
+
+    var currentUser: AuthUser?
 
     func signIn(withEmail email: String, password: String) async throws -> AuthUser {
         try await Task.sleep(nanoseconds: 1_000_000_000)
@@ -57,6 +63,21 @@ class PreviewAuthRepository: AuthRepository {
         let user = PreviewUser(email: email)
         currentUser = user
         return user
+    }
+
+    func updateUser(displayName: String, photoURL: URL?) async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+        guard let user = currentUser as? PreviewUser else {
+            throw AppError.currentUserNotFound
+        }
+        var changeRequest = user.createUserProfileChangeRequest()
+        changeRequest.displayName = displayName
+        changeRequest.photoURL = photoURL
+        try await changeRequest.commitChanges()
     }
 }
 

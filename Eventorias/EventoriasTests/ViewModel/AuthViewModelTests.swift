@@ -14,7 +14,7 @@ import XCTest
 
     func test_SignUpSuccess() async {
         // Given valid data
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
         XCTAssertNil(viewModel.currentUser)
         viewModel.email = "test@test.com"
         viewModel.password = "xxxxxx"
@@ -34,7 +34,7 @@ import XCTest
 
     func test_SignUpEmptyFields() async {
         // Given empty sign up fields
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
 
         // When sign up
         await viewModel.signUp()
@@ -49,7 +49,7 @@ import XCTest
     func test_SignUpInvalidEmailFormat() async {
         // Given invalid email format
         let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test.com"
         viewModel.password = "test"
 
@@ -66,7 +66,7 @@ import XCTest
     func test_SignUpEmailAlreadyExist() async {
         // Given valid data but email already linked to an account
         let authRepo = MockAuthRepository(withError: 17007)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test@test.com"
         viewModel.password = "test"
 
@@ -83,7 +83,7 @@ import XCTest
     func test_SignUpWeakPassword() async {
         // Given password does not meet requirements
         let authRepo = MockAuthRepository(withError: 17026)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test@test.com"
         viewModel.password = "test"
 
@@ -104,7 +104,7 @@ extension EventoriasTests {
 
     func test_SignInSuccess() async {
         // Given valid data
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
         XCTAssertNil(viewModel.currentUser)
         viewModel.email = "test@test.com"
         viewModel.password = "test"
@@ -122,7 +122,7 @@ extension EventoriasTests {
 
     func test_SignInEmptyFields() async {
         // Given empty sign in fields
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
 
         // When sign in
         await viewModel.signIn()
@@ -137,7 +137,7 @@ extension EventoriasTests {
     func test_SignInInvalidEmailFormat() async {
         // Given invalid email format
         let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test.com"
         viewModel.password = "test"
 
@@ -154,7 +154,7 @@ extension EventoriasTests {
     func test_SignInInvalidCredentials() async {
         // Given invalid credentials
         let authRepo = MockAuthRepository(withError: 17004)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test@test.com"
         viewModel.password = "test"
 
@@ -175,7 +175,7 @@ extension EventoriasTests {
 
     func test_ResetPasswordSuccess() async {
         // Given email to reset is valid
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
         viewModel.email = "test@test.com"
 
         // When send password reset
@@ -189,7 +189,7 @@ extension EventoriasTests {
     func test_ResetPasswordFailure() async {
         // Given unknown error
         let authRepo = MockAuthRepository(withError: 97354846)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test@test.com"
 
         // When send password reset
@@ -202,7 +202,7 @@ extension EventoriasTests {
 
     func test_ResetPasswordEmptyEmail() async {
         // Given email to reset is empty
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: MockAuthRepository()))
+        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
 
         // When send password reset
         await viewModel.sendPasswordReset()
@@ -215,7 +215,7 @@ extension EventoriasTests {
     func test_ResetPasswordInvalidEmailFormat() async {
         // Given invalid email format
         let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.email = "test.com"
 
         // When send password reset
@@ -235,7 +235,7 @@ extension EventoriasTests {
     func test_SignOutSuccess() {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         XCTAssertNotNil(viewModel.currentUser)
 
         // When sign out
@@ -249,7 +249,7 @@ extension EventoriasTests {
     func test_SignOutFailure() {
         // Given user is connected but network issue
         let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
-        let viewModel = AuthViewModel(authService: AuthService(authRepo: authRepo))
+        let viewModel = AuthViewModel(authRepo: authRepo)
         XCTAssertNotNil(viewModel.currentUser)
 
         // When sign out

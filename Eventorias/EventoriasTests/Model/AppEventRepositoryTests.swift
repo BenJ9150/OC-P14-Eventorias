@@ -8,13 +8,13 @@
 import XCTest
 @testable import Eventorias
 
-final class EventServiceTests: XCTestCase {
+final class AppEventRepositoryTests: XCTestCase {
 
-    // MARK: Events
+    // MARK: Fetch events
 
     func test_FetchEventsSuccess() async {
         // Given
-        let eventService = EventService(dbRepo: MockDatabaseRepository())
+        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
 
         // When fetch events
         let events = try! await eventService.fetchEvents()
@@ -26,7 +26,7 @@ final class EventServiceTests: XCTestCase {
     func test_FetchEventsFailure() async {
         // Given invalid data
         let databaseRepo = MockDatabaseRepository(withDecodingError: true)
-        let eventService = EventService(dbRepo: databaseRepo)
+        let eventService = AppEventRepository(dbRepo: databaseRepo)
 
         // When fetch events
         let events = try! await eventService.fetchEvents()
@@ -35,11 +35,11 @@ final class EventServiceTests: XCTestCase {
         XCTAssertTrue(events.isEmpty)
     }
 
-    // MARK: Categories
+    // MARK: Fetch categories
 
     func test_FetchCategoriesSuccess() async {
         // Given
-        let eventService = EventService(dbRepo: MockDatabaseRepository())
+        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
 
         // When fetch event categories
         let categories = try! await eventService.fetchCategories()
@@ -51,12 +51,27 @@ final class EventServiceTests: XCTestCase {
     func test_FetchCategoriesFailure() async {
         // Given invalid data
         let databaseRepo = MockDatabaseRepository(withDecodingError: true)
-        let eventService = EventService(dbRepo: databaseRepo)
+        let eventService = AppEventRepository(dbRepo: databaseRepo)
 
         // When fetch event categories
         let categories = try! await eventService.fetchCategories()
 
         // Then there is no event category
         XCTAssertTrue(categories.isEmpty)
+    }
+
+    // MARK: Add event
+
+    func test_AddEventSuccess() async {
+        // Given
+        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
+
+        // When add event
+        do {
+            try await eventService.addEvent(MockEvent().event())
+            // Then no error is throw
+        } catch {
+            XCTFail("test_AddEventSuccess error")
+        }
     }
 }

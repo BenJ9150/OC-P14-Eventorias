@@ -1,5 +1,5 @@
 //
-//  EventService.swift
+//  AppEventRepository.swift
 //  Eventorias
 //
 //  Created by Benjamin LEFRANCOIS on 26/04/2025.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-class EventService: EventRepository {
+class AppEventRepository: EventRepository {
     
     private let dbRepo: DatabaseRepository
     
@@ -18,7 +18,7 @@ class EventService: EventRepository {
 
 // MARK: Fetch
 
-extension EventService {
+extension AppEventRepository {
 
     func fetchEvents() async throws -> [Event] {
         let documents = try await dbRepo.fetchDocuments(into: CollectionName.events)
@@ -47,7 +47,7 @@ extension EventService {
 
 // MARK: Add
 
-extension EventService {
+extension AppEventRepository {
 
     func addEvent(_ event: Event) async throws {
         try await dbRepo.addDocument(event, into: CollectionName.events)

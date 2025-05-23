@@ -49,7 +49,7 @@ import SwiftUI
 
     // MARK: Init
 
-    init(eventRepo: EventRepository = EventService()) {
+    init(eventRepo: EventRepository = AppEventRepository()) {
         self.eventRepo = eventRepo
     }
 }

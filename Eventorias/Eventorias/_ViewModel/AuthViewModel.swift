@@ -43,13 +43,13 @@ import SwiftUI
 
     // MARK: Private properties
 
-    private let authService: AuthService
+    private let authRepo: AuthRepository
 
     // MARK: Init
 
-    init(authService: AuthService = AuthService()) {
-        self.authService = authService
-        self.currentUser = authService.authRepo.currentUser
+    init(authRepo: AuthRepository = FirebaseAuthRepository()) {
+        self.authRepo = authRepo
+        self.currentUser = authRepo.currentUser
     }
 }
 
@@ -58,7 +58,7 @@ import SwiftUI
 extension AuthViewModel {
 
     func refreshCurrentUser() {
-        currentUser = authService.authRepo.currentUser
+        currentUser = authRepo.currentUser
     }
 }
 
@@ -74,9 +74,9 @@ extension AuthViewModel {
         isCreating = true
         defer { isCreating = false }
         do {
-            currentUser = try await authService.authRepo.createUser(withEmail: email, password: password)
+            currentUser = try await authRepo.createUser(withEmail: email, password: password)
             if !userName.isEmpty {
-                try? await authService.updateUser(displayName: userName, photoURL: userPhoto)
+                try? await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
             }
         } catch {
             handleAuthRepoError(error, for: .signUp)
@@ -96,7 +96,7 @@ extension AuthViewModel {
         isConnecting = true
         defer { isConnecting = false }
         do {
-            currentUser = try await authService.authRepo.signIn(withEmail: email, password: password)
+            currentUser = try await authRepo.signIn(withEmail: email, password: password)
         } catch {
             handleAuthRepoError(error, for: .signIn)
         }
@@ -116,7 +116,7 @@ extension AuthViewModel {
         isReseting = true
         defer { isReseting = false }
         do {
-            try await authService.authRepo.sendPasswordReset(withEmail: email)
+            try await authRepo.sendPasswordReset(withEmail: email)
             resetPasswordSuccess = "Password reset email sent successfully!"
         } catch {
             handleAuthRepoError(error, for: .resetPassword)
@@ -131,7 +131,7 @@ extension AuthViewModel {
     func signOut() {
         signOutError = ""
         do {
-            try authService.authRepo.signOut()
+            try authRepo.signOut()
         } catch {
             handleAuthRepoError(error, for: .signOut)
         }
