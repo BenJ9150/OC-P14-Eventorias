@@ -10,6 +10,7 @@ import Foundation
 struct Event: Identifiable, Codable {
     var id: String?
     var createdBy: String
+    var avatar: String
     var address: String
     var category: String
     var date: Date

@@ -2,6 +2,7 @@
    {
       "id":"1",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"67 Parc Solidaire, Stade Municipal, Toulouse, 31000, France",
       "category":"charity_volunteering",
       "date":"2025-05-16T09:00:00.918Z",
@@ -12,6 +13,7 @@
    {
       "id":"2",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"135 Avenue des Écrivains, Quartier Latin, Paris, 75005, France",
       "category":"literature_book_signings",
       "date":"2025-05-21T13:30:00.747Z",
@@ -22,6 +24,7 @@
    {
       "id":"3",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"789 Boulevard Tech, Centre des Congrès, Paris, 75015, France",
       "category":"technology_conferences",
       "date":"2025-05-21T15:00:00.072Z",
@@ -32,6 +35,7 @@
    {
       "id":"4",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"321 Rue Gourmande, Marché Central, Lyon, 69002, France",
       "category":"gastronomy",
       "date":"2025-05-15T17:30:00.608Z",
@@ -42,6 +46,7 @@
    {
       "id":"5",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"22 Rue du Cinéma, Cité du Film, Cannes, 06400, France",
       "category":"cinema_screenings",
       "date":"2025-05-15T10:30:00.610Z",
@@ -52,6 +57,7 @@
    {
       "id":"6",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"456 Avenue du Jazz, Quartier de la Musique, Paris, 75011, France",
       "category":"music",
       "date":"2025-05-15T09:00:00.433Z",
@@ -62,6 +68,7 @@
    {
       "id":"7",
       "createdBy":"xxxxxxxxxxxxx",
+      "avatar":"",
       "address":"123 Rue de l'Art, Quartier des Galeries, Paris, 75003, France",
       "category":"art_exhibitions",
       "date":"2025-05-30T10:32:06.302Z",

@@ -98,9 +98,9 @@ private extension EventDetailView {
                 bannerItem(image: "icon_calendar", text: event.date.toMonthDayYear())
                 bannerItem(image: "icon_clock", text: event.date.toHourMinuteAMPM())
             }
-            Image(systemName: "person.crop.circle")
-                .resizable()
+            ImageView(url: event.avatar)
                 .frame(width: 60, height: 60)
+                .mask(Circle())
         }
         .foregroundStyle(.white)
     }

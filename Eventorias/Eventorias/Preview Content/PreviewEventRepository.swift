@@ -54,12 +54,14 @@ extension PreviewEventRepository {
 
         let imagePortrait = getImagePortraitUrl()
         let imageLandscape = getImageLandscapeUrl()
+        let avatar = getImageURL(for: "avatar")
 
         return events.enumerated().map { index, event in
             let photoURL = index % 2 == 0 ? imagePortrait : imageLandscape
             return Event(
                 id: event.id,
                 createdBy: event.createdBy,
+                avatar: avatar,
                 address: event.address,
                 category: event.category,
                 date: event.date,
