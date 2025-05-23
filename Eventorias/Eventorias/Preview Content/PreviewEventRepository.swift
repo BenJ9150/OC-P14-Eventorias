@@ -36,6 +36,12 @@ extension PreviewEventRepository: EventRepository {
         /// Try to return decoded data
         return try JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
     }
+
+    func addEvent(_ event: Event) throws {
+        if networkError {
+            throw AppError.networkError
+        }
+    }
 }
 
 // MARK: Events

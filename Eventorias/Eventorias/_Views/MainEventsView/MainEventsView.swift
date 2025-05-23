@@ -19,7 +19,9 @@ struct MainEventsView: View {
 
     @ObservedObject var viewModel: EventsViewModel
     @FocusState private var searchBarIsFocused: Bool
+
     @State private var mode: DisplayMode = .list
+    @State private var showAddEventView = false
 
     // MARK: Body
 
@@ -48,6 +50,9 @@ struct MainEventsView: View {
                     }
                 }
             }
+            .navigationDestination(isPresented: $showAddEventView) {
+                AddEventView(viewModel: viewModel)
+            }
         }
     }
 }
@@ -61,7 +66,7 @@ private extension MainEventsView {
             EventsListView(events: viewModel.events)
 
             Button {
-                // add event
+                showAddEventView.toggle()
             } label: {
                 ZStack {
                     Image(systemName: "plus")

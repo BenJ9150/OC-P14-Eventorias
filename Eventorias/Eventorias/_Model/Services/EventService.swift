@@ -8,12 +8,17 @@
 import Foundation
 
 class EventService: EventRepository {
-
+    
     private let dbRepo: DatabaseRepository
-
+    
     init(dbRepo: DatabaseRepository = FirestoreRepository()) {
         self.dbRepo = dbRepo
     }
+}
+
+// MARK: Fetch
+
+extension EventService {
 
     func fetchEvents() async throws -> [Event] {
         let documents = try await dbRepo.fetchDocuments(into: CollectionName.events)
@@ -37,5 +42,14 @@ class EventService: EventRepository {
             category.id = document.documentID
             return category
         }
+    }
+}
+
+// MARK: Add
+
+extension EventService {
+
+    func addEvent(_ event: Event) async throws {
+        try await dbRepo.addDocument(event, into: CollectionName.events)
     }
 }
