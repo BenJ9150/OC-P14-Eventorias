@@ -68,19 +68,9 @@ private extension MainEventsView {
             Button {
                 showAddEventView.toggle()
             } label: {
-                ZStack {
-                    Image(systemName: "plus")
-                        .font(.title2)
-                        .fontWeight(.medium)
-                        .foregroundStyle(.white)
-                        .padding(.all, 8)
-                        .frame(minWidth: 56, minHeight: 56)
-                        .background(
-                            RoundedRectangle(cornerRadius: 16)
-                                .fill(Color.accentColor)
-                        )
-                }
+                Image(systemName: "plus")
             }
+            .buttonStyle(AppButtonSquare())
             .padding(.all, 8)
         }
     }

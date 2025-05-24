@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AddEventView: View {
 
@@ -14,6 +15,12 @@ struct AddEventView: View {
 
     @EnvironmentObject var authViewModel: AuthViewModel
     @ObservedObject var viewModel: EventsViewModel
+
+    @State private var showPhotoPicker = false
+    @State private var photoFromPicker: PhotosPickerItem?
+
+    @State private var showCamera = false
+    @State private var photoFromCamera: UIImage? = nil
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -24,6 +31,7 @@ struct AddEventView: View {
                 BackButtonView(title: "Creation of an event")
                 ScrollView {
                     textFields
+                    imageButtons
                     if !viewModel.addEventError.isEmpty {
                         ErrorView(error: viewModel.addEventError)
                             .padding(.top, 24)
@@ -34,6 +42,90 @@ struct AddEventView: View {
             }
         }
         .navigationBarHidden(true)
+        /// Picture from library
+        .photosPicker(
+            isPresented: $showPhotoPicker,
+            selection: $photoFromPicker,
+            matching: .any(of: [.images, .screenshots, .panoramas])
+        )
+        .onChange(of: photoFromPicker) {
+            Task {
+                if let loaded = try? await photoFromPicker?.loadTransferable(type: Image.self) {
+                    viewModel.addEventPhoto = loaded
+                } else {
+                    print("Failed to load photo from picker")
+                }
+            }
+        }
+        /// New picture from camera
+        .sheet(isPresented: $showCamera) {
+            TakePhotoViewRepresentable(
+                image: $photoFromCamera,
+                isPresented: $showCamera
+            )
+        }
+        .onChange(of: photoFromCamera) {
+            if let newPicture = photoFromCamera {
+                viewModel.addEventPhoto = Image(uiImage: newPicture)
+            }
+        }
+    }
+}
+
+// MARK: Image buttons
+
+private extension AddEventView {
+
+    var imageButtons: some View {
+        HStack(spacing: 16) {
+            Button {
+                showCamera.toggle()
+            } label: {
+                Image(systemName: "camera")
+            }
+            .buttonStyle(AppButtonSquare(white: true))
+            
+            Button {
+                showPhotoPicker.toggle()
+            } label: {
+                Image(systemName: "paperclip")
+                    .rotationEffect(Angle(degrees: -45))
+            }
+            .buttonStyle(AppButtonSquare(small: true))
+            
+            if let photo = viewModel.addEventPhoto {
+                selectedPhoto(photo)
+            }
+        }
+        .padding(.top)
+        .padding(.horizontal)
+    }
+
+    func selectedPhoto(_ photo: Image) -> some View {
+        ZStack(alignment: .topTrailing) {
+            photo
+                .resizable()
+                .scaledToFill()
+                .frame(height: 120)
+                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+            
+            Button {
+                withAnimation(.bouncy(duration: 0.3)) {
+                    viewModel.addEventPhoto = nil
+                    photoFromPicker = nil
+                }
+            } label: {
+                ZStack {
+                    Image(systemName: "xmark")
+                        .font(.caption.bold())
+                        .padding(.all, 8)
+                        .background(Circle().fill(Color.white))
+                }
+                .frame(minWidth: 44, minHeight: 44)
+            }
+            .foregroundStyle(Color.itemBackground)
+        }
     }
 }
 
@@ -175,4 +267,7 @@ private extension AddEventView {
     let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: true))
 
     AddEventView(viewModel: viewModel)
+        .onAppear {
+            viewModel.addEventPhoto = Image("PreviewPicture")
+        }
 }

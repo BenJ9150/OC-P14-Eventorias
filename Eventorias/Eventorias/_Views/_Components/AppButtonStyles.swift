@@ -58,10 +58,47 @@ struct AppButtonBorderless: ButtonStyle {
     }
 }
 
+struct AppButtonSquare: ButtonStyle {
+    let small: Bool
+    let white: Bool
+
+    init(small: Bool = false) {
+        self.small = small
+        self.white = false
+    }
+
+    init(white: Bool) {
+        self.small = true
+        self.white = white
+    }
+
+    func makeBody(configuration: Self.Configuration) -> some View {
+        configuration.label
+            .font(.title2)
+            .fontWeight(.medium)
+            .foregroundStyle(white ? Color.itemBackground : .white)
+            .padding(.all, 8)
+            .frame(
+                minWidth: small ? 52 : 56,
+                minHeight: small ? 52 : 56
+            )
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(white ? .white : Color.accentColor)
+            )
+            .simultaneousGesture(
+                TapGesture().onEnded {
+                    UIFeedbackGenerator.triggerTap()
+                }
+            )
+    }
+}
+
 // MARK: - Preview
 
 #Preview {
     VStack {
+        Spacer()
         Button {
             print("button tapped")
         } label: {
@@ -80,5 +117,30 @@ struct AppButtonBorderless: ButtonStyle {
         }
         .buttonStyle(AppButtonBorderless())
         .padding()
+
+        HStack {
+            Button {
+                print("button tapped")
+            } label: {
+                Image(systemName: "plus")
+            }
+            .buttonStyle(AppButtonSquare(small: false))
+            
+            Button {
+                print("button tapped")
+            } label: {
+                Image(systemName: "plus")
+            }
+            .buttonStyle(AppButtonSquare(small: true))
+
+            Button {
+                print("button tapped")
+            } label: {
+                Image(systemName: "plus")
+            }
+            .buttonStyle(AppButtonSquare(white: true))
+        }
+        Spacer()
     }
+    .background(Color.mainBackground)
 }

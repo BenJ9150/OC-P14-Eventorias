@@ -39,6 +39,7 @@ import MapKit
     @Published var addEventTimeErr = ""
 
     @Published var addEventPhotoUrl = ""
+    @Published var addEventPhoto: Image?
 
     // Calendar
 
