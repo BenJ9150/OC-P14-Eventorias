@@ -50,8 +50,8 @@ struct AddEventView: View {
         )
         .onChange(of: photoFromPicker) {
             Task {
-                if let loaded = try? await photoFromPicker?.loadTransferable(type: Image.self) {
-                    viewModel.addEventPhoto = loaded
+                if let data = try? await photoFromPicker?.loadTransferable(type: Data.self) {
+                    viewModel.addEventPhoto = UIImage(data: data)
                 } else {
                     print("Failed to load photo from picker")
                 }
@@ -66,7 +66,7 @@ struct AddEventView: View {
         }
         .onChange(of: photoFromCamera) {
             if let newPicture = photoFromCamera {
-                viewModel.addEventPhoto = Image(uiImage: newPicture)
+                viewModel.addEventPhoto = newPicture
             }
         }
     }
@@ -101,9 +101,9 @@ private extension AddEventView {
         .padding(.horizontal)
     }
 
-    func selectedPhoto(_ photo: Image) -> some View {
+    func selectedPhoto(_ photo: UIImage) -> some View {
         ZStack(alignment: .topTrailing) {
-            photo
+            Image(uiImage: photo)
                 .resizable()
                 .scaledToFill()
                 .frame(height: 120)
@@ -268,6 +268,6 @@ private extension AddEventView {
 
     AddEventView(viewModel: viewModel)
         .onAppear {
-            viewModel.addEventPhoto = Image("PreviewPicture")
+            viewModel.addEventPhoto = UIImage(named: "PreviewPicture")
         }
 }

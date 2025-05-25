@@ -16,6 +16,8 @@ enum AppError: Int, Error {
     case weakPassword = 17026
     case currentUserNotFound
     case invalidAddress
+    case emptyImage
+    case invalidImage
     case unknown
 
     init(forCode code: Int) {
@@ -32,6 +34,8 @@ enum AppError: Int, Error {
         case .weakPassword: return "Password must have at least 8 characters, an uppercase letter, a number, and a special character"
         case .currentUserNotFound: return "User could not be found"
         case .invalidAddress: return "Incorrect address"
+        case .emptyImage: return "Please choose an image"
+        case .invalidImage: return "Invalid image. Please choose another one."
         case .unknown: return "An error has occured, please try again later"
         }
     }

@@ -38,8 +38,7 @@ import MapKit
     @Published var addEventDateErr = ""
     @Published var addEventTimeErr = ""
 
-    @Published var addEventPhotoUrl = ""
-    @Published var addEventPhoto: Image?
+    @Published var addEventPhoto: UIImage?
 
     // Calendar
 
@@ -91,6 +90,10 @@ extension EventsViewModel {
         guard let formValidity = await checkAddEventFormValidity(byUser: user) else {
             return false
         }
+        guard let eventImage = addEventPhoto else {
+            addEventError = AppError.emptyImage.userMessage
+            return false
+        }
         /// Loading
         addingEvent = true
         defer { addingEvent = false }
@@ -103,11 +106,11 @@ extension EventsViewModel {
             category: addEventCategory,
             date: formValidity.date,
             description: addEventDesc,
-            photoURL: addEventPhotoUrl,
+            photoURL: "",
             title: addEventTitle
         )
         do {
-            try await eventRepo.addEvent(newEvent)
+            try await eventRepo.addEvent(newEvent, image: eventImage)
 
         } catch let nsError as NSError {
             print("💥 Add event error \(nsError.code): \(nsError.localizedDescription)")

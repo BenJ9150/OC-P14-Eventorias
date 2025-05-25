@@ -113,5 +113,10 @@
       "id":"wellness_meditation",
       "emoji":"🧘‍♀️",
       "name":"Wellness & Meditation"
+   },
+   {
+      "id":"other_events",
+      "emoji":"📦",
+      "name":"Other events"
    }
 ]

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		435B18CB2DE30A2600F3E0E6 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 435B18CA2DE30A2600F3E0E6 /* FirebaseStorage */; };
 		43BDCD282DB24F18004FD0C1 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 43BDCD272DB24F18004FD0C1 /* FirebaseAuth */; };
 		43BDCD2A2DB24F18004FD0C1 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 43BDCD292DB24F18004FD0C1 /* FirebaseCore */; };
 		43BDCD2C2DB24F18004FD0C1 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 43BDCD2B2DB24F18004FD0C1 /* FirebaseFirestore */; };
@@ -67,6 +68,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				43BDCD2A2DB24F18004FD0C1 /* FirebaseCore in Frameworks */,
+				435B18CB2DE30A2600F3E0E6 /* FirebaseStorage in Frameworks */,
 				43BDCD282DB24F18004FD0C1 /* FirebaseAuth in Frameworks */,
 				43BDCD2C2DB24F18004FD0C1 /* FirebaseFirestore in Frameworks */,
 			);
@@ -148,6 +150,7 @@
 				43BDCD272DB24F18004FD0C1 /* FirebaseAuth */,
 				43BDCD292DB24F18004FD0C1 /* FirebaseCore */,
 				43BDCD2B2DB24F18004FD0C1 /* FirebaseFirestore */,
+				435B18CA2DE30A2600F3E0E6 /* FirebaseStorage */,
 			);
 			productName = Eventorias;
 			productReference = 43BDCD112DB24755004FD0C1 /* Eventorias.app */;
@@ -495,6 +498,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		435B18CA2DE30A2600F3E0E6 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 43BDCD232DB24E29004FD0C1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
 		43BDCD272DB24F18004FD0C1 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 43BDCD232DB24E29004FD0C1 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;

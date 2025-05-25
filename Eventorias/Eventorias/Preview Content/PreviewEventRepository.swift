@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 class PreviewEventRepository {
 
@@ -37,7 +38,7 @@ extension PreviewEventRepository: EventRepository {
         return try JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
     }
 
-    func addEvent(_ event: Event) async throws {
+    func addEvent(_ event: Event, image: UIImage) async throws {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         if networkError {
             throw AppError.networkError

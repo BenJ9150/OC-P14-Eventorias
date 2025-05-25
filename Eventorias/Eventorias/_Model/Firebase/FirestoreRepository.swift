@@ -18,4 +18,8 @@ class FirestoreRepository: DatabaseRepository {
         let encodedData = try Firestore.Encoder().encode(data)
         try await Firestore.firestore().collection(collection.rawValue).document().setData(encodedData)
     }
+
+    func generateDocumentID(for collection: CollectionName) -> String {
+        return Firestore.firestore().collection(collection.rawValue).document().documentID
+    }
 }
