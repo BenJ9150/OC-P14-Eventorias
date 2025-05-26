@@ -55,32 +55,6 @@ extension AppEventRepository {
 
 extension AppEventRepository {
 
-    func addEvent(title: String, desc: String, date: Date, address: String, category: String, author: AuthUser, image: UIImage) async throws {
-        /// Create Event ID
-        let eventId = dbRepo.generateDocumentID(for: .events)
-
-        /// Upload image
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw AppError.invalidImage
-        }
-        let photoUrl = try await storageRepo.putData(imageData, into: .events, fileName: "\(eventId).jpg")
-
-        /// Create Event
-        let event = Event(
-            id: eventId,
-            createdBy: author.uid,
-            avatar: author.photoURL?.absoluteString ?? "",
-            address: address,
-            category: category,
-            date: date,
-            description: desc,
-            photoURL: photoUrl.absoluteString,
-            title: title
-        )
-        /// Add event
-        try await dbRepo.addDocument(event, into: .events)
-    }
-
     func addEvent(_ event: Event, image: UIImage) async throws {
         /// Create Event ID
         let eventId = dbRepo.generateDocumentID(for: .events)

@@ -79,6 +79,10 @@ extension PreviewEventRepository {
             )
         }
     }
+
+    func previewCategories() -> [EventCategory] {
+        return try! JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
+    }
 }
 
 // MARK: Image

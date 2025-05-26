@@ -16,11 +16,17 @@ struct AddEventView: View {
     @EnvironmentObject var authViewModel: AuthViewModel
     @ObservedObject var viewModel: EventsViewModel
 
+    // Photo picker
+
     @State private var showPhotoPicker = false
     @State private var photoFromPicker: PhotosPickerItem?
 
+    // Photo from camera
+
     @State private var showCamera = false
     @State private var photoFromCamera: UIImage? = nil
+
+    // MARK: Body
 
     var body: some View {
         ZStack(alignment: .top) {
@@ -51,9 +57,9 @@ struct AddEventView: View {
         .onChange(of: photoFromPicker) {
             Task {
                 if let data = try? await photoFromPicker?.loadTransferable(type: Data.self) {
-                    viewModel.addEventPhoto = UIImage(data: data)
-                } else {
-                    print("Failed to load photo from picker")
+                    withAnimation(.bouncy(duration: 0.3)) {
+                        viewModel.addEventPhoto = UIImage(data: data)
+                    }
                 }
             }
         }
@@ -66,7 +72,9 @@ struct AddEventView: View {
         }
         .onChange(of: photoFromCamera) {
             if let newPicture = photoFromCamera {
-                viewModel.addEventPhoto = newPicture
+                withAnimation(.bouncy(duration: 0.3)) {
+                    viewModel.addEventPhoto = newPicture
+                }
             }
         }
     }
@@ -164,6 +172,7 @@ private extension AddEventView {
                 prompt: "Enter full address",
                 error: $viewModel.addEventAddressErr
             )
+            categoryPicker
         }
         /// Set max width for iPad or iphone in landscape
         .frame(maxWidth: 440)
@@ -182,6 +191,10 @@ private extension AddEventView {
             error: $viewModel.addEventDateErr,
             component: .date
         )
+        .onAppear {
+            /// reinit date for new event
+            viewModel.addEventDate = nil
+        }
     }
 
     var pickerForTime: some View {
@@ -195,12 +208,8 @@ private extension AddEventView {
 
     func datePicker(title: String, date: String, error: Binding<String>, component: DatePicker.Components) -> some View {
         let dateBinding = Binding<Date>(
-            get: {
-                viewModel.addEventDate ?? Date()
-            },
-            set: {
-                viewModel.addEventDate = $0
-            }
+            get: { viewModel.addEventDate ?? Date() },
+            set: { viewModel.addEventDate = $0 }
         )
         return AppInputView(title: title, error: error) {
             HStack {
@@ -227,6 +236,43 @@ private extension AddEventView {
                     .clipped()
                 Spacer()
             }
+        }
+    }
+}
+
+// MARK: Category picker
+
+private extension AddEventView {
+
+    var categoryPicker: some View {
+        AppInputView(title: "Category", error: $viewModel.addEventCategoryErr) {
+            Text("\(viewModel.addEventCategory.name) \(viewModel.addEventCategory.emoji)")
+                .font(.callout)
+                .foregroundStyle(viewModel.addEventDate == nil ? Color.textLightGray : .white)
+                .allowsHitTesting(false)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    ZStack {
+                        Picker("", selection: $viewModel.addEventCategory) {
+                            ForEach(viewModel.categories) { category in
+                                Text("\(category.emoji) \(category.name)")
+                                    .tag(category)
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .labelsHidden()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        Rectangle()
+                            .fill(Color.itemBackground)
+                            .allowsHitTesting(false)
+                    }
+                )
+                .clipped()
+        }
+        .onAppear {
+            /// reinit category for new event
+            viewModel.addEventCategory = viewModel.selectCategory
         }
     }
 }
@@ -264,10 +310,12 @@ private extension AddEventView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .withAuthViewModel()) {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: true))
+    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
 
     AddEventView(viewModel: viewModel)
         .onAppear {
+            viewModel.categories = PreviewEventRepository().previewCategories()
+            viewModel.categories.insert(viewModel.selectCategory, at: 0)
             viewModel.addEventPhoto = UIImage(named: "PreviewPicture")
         }
 }

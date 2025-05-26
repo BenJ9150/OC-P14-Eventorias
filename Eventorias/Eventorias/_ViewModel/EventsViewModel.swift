@@ -27,7 +27,7 @@ import MapKit
 
     @Published var addEventAddress = ""
     @Published var addEventAddressErr = ""
-    @Published var addEventCategory = ""
+    @Published var addEventCategory: EventCategory
     @Published var addEventCategoryErr = ""
     @Published var addEventDesc = ""
     @Published var addEventDescErr = ""
@@ -40,11 +40,24 @@ import MapKit
 
     @Published var addEventPhoto: UIImage?
 
+    let selectCategory = EventCategory(
+        id: "select_category",
+        name: "Select a category",
+        emoji: ""
+    )
+
     // Calendar
 
     @Published var calendarEventsSelection: [Event]?
 
     // MARK: Private properties
+
+    private struct AddEventForm {
+        let user: AuthUser
+        let date: Date
+        let categoryId: String
+        let image: UIImage
+    }
 
     private let eventRepo: EventRepository
 
@@ -52,6 +65,7 @@ import MapKit
 
     init(eventRepo: EventRepository = AppEventRepository()) {
         self.eventRepo = eventRepo
+        self.addEventCategory = selectCategory
     }
 }
 
@@ -65,7 +79,11 @@ extension EventsViewModel {
         defer { fetchingEvents = false }
 
         do {
+            /// Categories
             categories = try await eventRepo.fetchCategories()
+            categories.insert(selectCategory, at: 0)
+
+            /// Events
             events = try await eventRepo.fetchEvents()
 
         } catch let nsError as NSError {
@@ -87,31 +105,27 @@ extension EventsViewModel {
         guard fieldsNotEmpty() else {
             return false
         }
-        guard let formValidity = await checkAddEventFormValidity(byUser: user) else {
-            return false
-        }
-        guard let eventImage = addEventPhoto else {
-            addEventError = AppError.emptyImage.userMessage
+        guard let addEventForm = await checkAddEventFormValidity(byUser: user) else {
             return false
         }
         /// Loading
         addingEvent = true
         defer { addingEvent = false }
 
-        /// Create event
-        let newEvent = Event(
-            createdBy: formValidity.user.uid,
-            avatar: formValidity.user.photoURL?.absoluteString ?? "",
-            address: addEventAddress,
-            category: addEventCategory,
-            date: formValidity.date,
-            description: addEventDesc,
-            photoURL: "",
-            title: addEventTitle
-        )
         do {
-            try await eventRepo.addEvent(newEvent, image: eventImage)
-
+            try await eventRepo.addEvent(
+                Event(
+                    createdBy: addEventForm.user.uid,
+                    avatar: addEventForm.user.photoURL?.absoluteString ?? "",
+                    address: addEventAddress,
+                    category: addEventForm.categoryId,
+                    date: addEventForm.date,
+                    description: addEventDesc,
+                    photoURL: "",
+                    title: addEventTitle
+                ),
+                image: addEventForm.image
+            )
         } catch let nsError as NSError {
             print("💥 Add event error \(nsError.code): \(nsError.localizedDescription)")
             addEventError = AppError(forCode: nsError.code).userMessage
@@ -141,7 +155,7 @@ extension EventsViewModel {
         return notEmpty
     }
 
-    private func checkAddEventFormValidity(byUser user: AuthUser?) async -> (user: AuthUser, date: Date)? {
+    private func checkAddEventFormValidity(byUser user: AuthUser?) async -> AddEventForm? {
         /// Check user
         guard let currentUser = user else {
             addEventError = AppError.currentUserNotFound.userMessage
@@ -160,8 +174,23 @@ extension EventsViewModel {
             addEventAddressErr = AppError.invalidAddress.userMessage
             return nil
         }
-        /// Return user and event date
-        return (currentUser, eventDate)
+        /// Check category
+        guard let categoryId = addEventCategory.id, categoryId != selectCategory.id else {
+            addEventCategoryErr = AppError.emptyField.userMessage
+            return nil
+        }
+        /// Check if there is a photo
+        guard let eventImage = addEventPhoto else {
+            addEventError = AppError.emptyImage.userMessage
+            return nil
+        }
+        /// Return form data
+        return AddEventForm(
+            user: currentUser,
+            date: eventDate,
+            categoryId: categoryId,
+            image: eventImage
+        )
     }
 
     private func cleanAddEventErrors() {
