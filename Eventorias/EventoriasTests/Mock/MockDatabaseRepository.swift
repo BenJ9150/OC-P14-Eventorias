@@ -25,4 +25,8 @@ class MockDatabaseRepository: DatabaseRepository {
     }
 
     func addDocument<T>(_ data: T, into collection: Eventorias.CollectionName) async throws where T : Encodable {}
+
+    func generateDocumentID(for collection: Eventorias.CollectionName) -> String {
+        return UUID().uuidString
+    }
 }

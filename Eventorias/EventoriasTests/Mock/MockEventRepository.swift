@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 @testable import Eventorias
 
 class MockEventRepository {
@@ -46,7 +47,7 @@ extension MockEventRepository: EventRepository {
         return [category]
     }
 
-    func addEvent(_ event: Eventorias.Event) async throws {
+    func addEvent(_ event: Eventorias.Event, image: UIImage) async throws {
         if networkError {
             throw AppError.networkError
         }

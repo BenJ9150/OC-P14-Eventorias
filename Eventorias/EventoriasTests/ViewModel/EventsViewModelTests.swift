@@ -9,39 +9,42 @@ import XCTest
 @testable import Eventorias
 
 @MainActor final class EventsViewModelTests: XCTestCase {
-
+    
     // MARK: Fetch data
-
+    
     func test_FetchDataSuccess() async {
         // Given
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
-
+        
         // When fetch data
         await viewModel.fetchData()
-
+        
         // Then there are events and categories with no error
         XCTAssertTrue(viewModel.events.count > 0)
         XCTAssertTrue(viewModel.categories.count > 0)
         XCTAssertTrue(viewModel.fetchEventsError.isEmpty)
         XCTAssertFalse(viewModel.fetchingEvents)
     }
-
+    
     func test_FetchDataFailure() async {
         // Given network error
         let eventRepo = MockEventRepository(withNetworkError: true)
         let viewModel = EventsViewModel(eventRepo: eventRepo)
-
+        
         // When fetch data
         await viewModel.fetchData()
-
+        
         // Then there is an error
         XCTAssertTrue(viewModel.events.isEmpty)
         XCTAssertTrue(viewModel.categories.isEmpty)
         XCTAssertEqual(viewModel.fetchEventsError, AppError.networkError.userMessage)
         XCTAssertFalse(viewModel.fetchingEvents)
     }
+}
 
-    // MARK: Add event
+// MARK: Add event Success
+
+extension EventsViewModelTests {
 
     func test_AddEventSuccess() async {
         // Given valid data
@@ -50,6 +53,8 @@ import XCTest
         viewModel.addEventDesc = "Test Desc"
         viewModel.addEventAddress = "Test Address"
         viewModel.addEventDate = Date()
+        viewModel.addEventPhoto = UIImage()
+        viewModel.addEventCategory = MockData().eventCategory()
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())
@@ -57,6 +62,11 @@ import XCTest
         // Then there is a success
         XCTAssertTrue(success)
     }
+}
+
+// MARK: Add event failures
+
+extension EventsViewModelTests {
 
     func test_AddEventEmptyFields() async {
         // Given empty fields
@@ -78,6 +88,8 @@ import XCTest
         viewModel.addEventTitle = "Test Event"
         viewModel.addEventDesc = "Test Desc"
         viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
+        viewModel.addEventPhoto = MockData().image()
+        viewModel.addEventCategory = MockData().eventCategory()
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())
@@ -95,6 +107,8 @@ import XCTest
         viewModel.addEventDesc = "Test Desc"
         viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
         viewModel.addEventDate = Date()
+        viewModel.addEventPhoto = MockData().image()
+        viewModel.addEventCategory = MockData().eventCategory()
 
         // When add event
         let success = await viewModel.addEvent(byUser: nil)
@@ -111,6 +125,8 @@ import XCTest
         viewModel.addEventDesc = "Test Desc"
         viewModel.addEventAddress = "address"
         viewModel.addEventDate = Date()
+        viewModel.addEventPhoto = MockData().image()
+        viewModel.addEventCategory = MockData().eventCategory()
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())
@@ -118,6 +134,42 @@ import XCTest
         // Then there is a failure and error messages
         XCTAssertFalse(success)
         XCTAssertEqual(viewModel.addEventAddressErr, AppError.invalidAddress.userMessage)
+    }
+
+    func test_AddEventFailureCauseCategory() async {
+        // Given no category
+        let eventRepo = MockEventRepository(withNetworkError: true)
+        let viewModel = EventsViewModel(eventRepo: eventRepo)
+        viewModel.addEventTitle = "Test Event"
+        viewModel.addEventDesc = "Test Desc"
+        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
+        viewModel.addEventDate = Date()
+        viewModel.addEventPhoto = MockData().image()
+
+        // When add event
+        let success = await viewModel.addEvent(byUser: MockUser())
+
+        // Then there is a failure with network error
+        XCTAssertFalse(success)
+        XCTAssertEqual(viewModel.addEventCategoryErr, AppError.emptyField.userMessage)
+    }
+
+    func test_AddEventFailureCausePhoto() async {
+        // Given no photo
+        let eventRepo = MockEventRepository(withNetworkError: true)
+        let viewModel = EventsViewModel(eventRepo: eventRepo)
+        viewModel.addEventTitle = "Test Event"
+        viewModel.addEventDesc = "Test Desc"
+        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
+        viewModel.addEventDate = Date()
+        viewModel.addEventCategory = MockData().eventCategory()
+
+        // When add event
+        let success = await viewModel.addEvent(byUser: MockUser())
+
+        // Then there is a failure with network error
+        XCTAssertFalse(success)
+        XCTAssertEqual(viewModel.addEventError, AppError.emptyImage.userMessage)
     }
 
     func test_AddEventFailureCauseNetwork() async {
@@ -128,6 +180,8 @@ import XCTest
         viewModel.addEventDesc = "Test Desc"
         viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
         viewModel.addEventDate = Date()
+        viewModel.addEventPhoto = MockData().image()
+        viewModel.addEventCategory = MockData().eventCategory()
 
         // When add event
         let success = await viewModel.addEvent(byUser: MockUser())

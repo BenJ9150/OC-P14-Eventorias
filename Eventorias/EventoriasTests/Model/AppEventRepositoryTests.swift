@@ -14,7 +14,9 @@ final class AppEventRepositoryTests: XCTestCase {
 
     func test_FetchEventsSuccess() async {
         // Given
-        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
+        let dbRepo = MockDatabaseRepository()
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch events
         let events = try! await eventService.fetchEvents()
@@ -25,8 +27,9 @@ final class AppEventRepositoryTests: XCTestCase {
 
     func test_FetchEventsFailure() async {
         // Given invalid data
-        let databaseRepo = MockDatabaseRepository(withDecodingError: true)
-        let eventService = AppEventRepository(dbRepo: databaseRepo)
+        let dbRepo = MockDatabaseRepository(withDecodingError: true)
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch events
         let events = try! await eventService.fetchEvents()
@@ -39,7 +42,9 @@ final class AppEventRepositoryTests: XCTestCase {
 
     func test_FetchCategoriesSuccess() async {
         // Given
-        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
+        let dbRepo = MockDatabaseRepository()
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch event categories
         let categories = try! await eventService.fetchCategories()
@@ -50,8 +55,9 @@ final class AppEventRepositoryTests: XCTestCase {
 
     func test_FetchCategoriesFailure() async {
         // Given invalid data
-        let databaseRepo = MockDatabaseRepository(withDecodingError: true)
-        let eventService = AppEventRepository(dbRepo: databaseRepo)
+        let dbRepo = MockDatabaseRepository(withDecodingError: true)
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch event categories
         let categories = try! await eventService.fetchCategories()
@@ -64,14 +70,36 @@ final class AppEventRepositoryTests: XCTestCase {
 
     func test_AddEventSuccess() async {
         // Given
-        let eventService = AppEventRepository(dbRepo: MockDatabaseRepository())
+        let dbRepo = MockDatabaseRepository()
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let event = MockData().event()
+        let image = MockData().image()
 
         // When add event
         do {
-            try await eventService.addEvent(MockEvent().event())
+            try await eventService.addEvent(event, image: image)
             // Then no error is throw
         } catch {
-            XCTFail("test_AddEventSuccess error")
+            XCTFail("test_AddEventSuccess error: \(error.localizedDescription)")
+        }
+    }
+
+    func test_AddEventFailure() async {
+        // Given invalid image
+        let dbRepo = MockDatabaseRepository()
+        let storageRepo = MockStorageRepository()
+        let eventService = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let event = MockData().event()
+        let image = UIImage()
+
+        // When add event
+        do {
+            try await eventService.addEvent(event, image: image)
+        } catch {
+            // There is an error
+            let appError = error as! AppError
+            XCTAssertEqual(appError.userMessage, AppError.invalidImage.userMessage)
         }
     }
 }
