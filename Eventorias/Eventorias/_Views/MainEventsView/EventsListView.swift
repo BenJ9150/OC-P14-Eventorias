@@ -65,6 +65,7 @@ private extension EventsListView {
 
             VStack(alignment: .leading, spacing: 8) {
                 title(ofEvent: event)
+                    .multilineTextAlignment(.leading)
                 date(ofEvent: event)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

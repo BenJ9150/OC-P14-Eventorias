@@ -41,3 +41,70 @@ import XCTest
         XCTAssertFalse(viewModel.fetchingEvents)
     }
 }
+
+// MARK: Search
+
+extension EventsViewModelTests {
+
+    func test_SearchSuccessAndClean() async {
+        // Given
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        viewModel.search = "Run"
+
+        // When search
+        await viewModel.searchEvents()
+
+        // Then there is one event found with no error
+        XCTAssertEqual(viewModel.searchResult[0].title, "Charity run")
+        XCTAssertTrue(viewModel.searchEventsError.isEmpty)
+        XCTAssertTrue(viewModel.userIsSearching)
+
+        // And when clear
+        viewModel.clearSearch()
+
+        // Then all data are cleaned
+        XCTAssertFalse(viewModel.userIsSearching)
+        XCTAssertFalse(viewModel.fetchingSearchedEvents)
+        XCTAssertTrue(viewModel.search.isEmpty)
+        XCTAssertTrue(viewModel.searchResult.isEmpty)
+        XCTAssertTrue(viewModel.searchEventsError.isEmpty)
+    }
+
+    func test_SearchEmptyPrompt() async {
+        // Given no search
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        viewModel.search = ""
+
+        // When search
+        await viewModel.searchEvents()
+
+        // Then user is not searching event
+        XCTAssertFalse(viewModel.userIsSearching)
+        XCTAssertTrue(viewModel.searchEventsError.isEmpty)
+    }
+
+    func test_SearchEmptyResult() async {
+        // Given
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        viewModel.search = "abcdef"
+
+        // When search
+        await viewModel.searchEvents()
+
+        // Then error is empty result
+        XCTAssertEqual(viewModel.searchEventsError, AppError.searchEventIsEmpty.userMessage)
+    }
+
+    func test_SearchFailure() async {
+        // Given network error
+        let eventRepo = MockEventRepository(withNetworkError: true)
+        let viewModel = EventsViewModel(eventRepo: eventRepo)
+        viewModel.search = "Run"
+
+        // When search
+        await viewModel.searchEvents()
+
+        // Then there is an error
+        XCTAssertEqual(viewModel.searchEventsError, AppError.networkError.userMessage)
+    }
+}

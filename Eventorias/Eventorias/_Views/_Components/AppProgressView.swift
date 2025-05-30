@@ -39,8 +39,8 @@ struct AppProgressView: View {
                     .rotationEffect(phase.rotation)
             } animation: { phase in
                 switch phase {
-                case .initial: .spring(bounce: 0.5)
-                case .normal, .fast, .slow: .easeInOut(duration: 1)
+                case .initial: onAppearAnimation ? .spring(bounce: 0.5) : nil
+                case .normal, .fast, .slow: onAppearAnimation ? .easeInOut(duration: 1) : nil
                 }
             }
             .onAppear {

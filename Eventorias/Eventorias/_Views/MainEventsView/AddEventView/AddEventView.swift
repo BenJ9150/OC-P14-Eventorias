@@ -21,12 +21,11 @@ struct AddEventView: View {
     // Photo picker
 
     @State private var showPhotoPicker = false
-    @State private var photoFromPicker: PhotosPickerItem?
+    @State private var photoPicker: PhotosPickerItem?
 
     // Photo from camera
 
     @State private var showCamera = false
-    @State private var photoFromCamera: UIImage? = nil
 
     // Focus
 
@@ -55,15 +54,7 @@ struct AddEventView: View {
 
             VStack(spacing: 0) {
                 BackButtonView(title: "Creation of an event")
-                ScrollView {
-                    textFields
-                    imageButtons
-                    if !viewModel.addEventError.isEmpty {
-                        ErrorView(error: viewModel.addEventError)
-                            .padding(.top, 24)
-                    }
-                }
-                .scrollIndicators(.hidden)
+                scrollContent
                 validateButton
             }
             .onTapGesture {
@@ -74,13 +65,13 @@ struct AddEventView: View {
         /// Picture from library
         .photosPicker(
             isPresented: $showPhotoPicker,
-            selection: $photoFromPicker,
+            selection: $photoPicker,
             matching: .any(of: [.images, .screenshots, .panoramas])
         )
-        .onChange(of: photoFromPicker) {
+        .onChange(of: photoPicker) {
             Task {
-                if let data = try? await photoFromPicker?.loadTransferable(type: Data.self) {
-                    withAnimation(.bouncy(duration: 0.3)) {
+                if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
+                    withAnimation {
                         viewModel.addEventPhoto = UIImage(data: data)
                     }
                 }
@@ -89,17 +80,40 @@ struct AddEventView: View {
         /// New picture from camera
         .sheet(isPresented: $showCamera) {
             TakePhotoViewRepresentable(
-                image: $photoFromCamera,
+                image: $viewModel.addEventPhoto,
                 isPresented: $showCamera
             )
         }
-        .onChange(of: photoFromCamera) {
-            if let newPicture = photoFromCamera {
-                withAnimation(.bouncy(duration: 0.3)) {
-                    viewModel.addEventPhoto = newPicture
+    }
+}
+
+// MARK: Scroll content
+
+private extension AddEventView {
+
+    var scrollContent: some View {
+        ScrollViewReader { proxy in
+            ScrollView {
+                VStack(spacing: 0) {
+                    if !viewModel.addEventError.isEmpty {
+                        ErrorView(error: viewModel.addEventError)
+                            .padding(.top, 24)
+                            .id("top")
+                    }
+                    textFields
+                    imageButtons
+                }
+            }
+            .scrollIndicators(.hidden)
+            .onChange(of: viewModel.addEventError) { _, newValue in
+                if !newValue.isEmpty {
+                    withAnimation {
+                        proxy.scrollTo("top", anchor: .top)
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -108,27 +122,28 @@ struct AddEventView: View {
 private extension AddEventView {
 
     var imageButtons: some View {
-        HStack(spacing: 16) {
-            Button {
-                showCamera.toggle()
-            } label: {
-                Image(systemName: "camera")
-            }
-            .buttonStyle(AppButtonSquare(white: true))
-            
-            Button {
-                showPhotoPicker.toggle()
-            } label: {
-                Image(systemName: "paperclip")
-                    .rotationEffect(Angle(degrees: -45))
-            }
-            .buttonStyle(AppButtonSquare(small: true))
-            
+        VStack(spacing: 16) {
             if let photo = viewModel.addEventPhoto {
                 selectedPhoto(photo)
             }
+            HStack(spacing: 16) {
+                Button {
+                    showCamera.toggle()
+                } label: {
+                    Image(systemName: "camera")
+                }
+                .buttonStyle(AppButtonSquare(white: true))
+                
+                Button {
+                    showPhotoPicker.toggle()
+                } label: {
+                    Image(systemName: "paperclip")
+                        .rotationEffect(Angle(degrees: -45))
+                }
+                .buttonStyle(AppButtonSquare(small: true))
+            }
         }
-        .padding(.top)
+        .padding(.vertical)
         .padding(.horizontal)
     }
 
@@ -137,14 +152,14 @@ private extension AddEventView {
             Image(uiImage: photo)
                 .resizable()
                 .scaledToFill()
-                .frame(height: 120)
+                .frame(height: 160)
                 .clipped()
                 .clipShape(RoundedRectangle(cornerRadius: 12))
             
             Button {
                 withAnimation(.bouncy(duration: 0.3)) {
                     viewModel.addEventPhoto = nil
-                    photoFromPicker = nil
+                    photoPicker = nil
                 }
             } label: {
                 ZStack {
@@ -265,6 +280,7 @@ private extension AddEventView {
                     .clipped()
                 Spacer()
             }
+            .dynamicTypeSize(.xSmall ... .accessibility4)
         }
     }
 }
@@ -338,6 +354,6 @@ private extension AddEventView {
 #Preview(traits: .withAuthViewModel()) {
     AddEventView(
         categories: PreviewEventRepository().previewCategories(),
-        eventRepo: PreviewEventRepository(withNetworkError: false)
+        eventRepo: PreviewEventRepository(withNetworkError: true)
     ) {}
 }

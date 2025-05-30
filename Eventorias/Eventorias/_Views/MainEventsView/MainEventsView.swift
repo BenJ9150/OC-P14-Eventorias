@@ -23,6 +23,13 @@ struct MainEventsView: View {
     @State private var mode: DisplayMode = .list
     @State private var showAddEventView = false
 
+    private var eventErrorMessage: String {
+        if viewModel.fetchEventsError != "" {
+            return viewModel.fetchEventsError
+        }
+        return viewModel.searchEventsError
+    }
+
     // MARK: Body
 
     var body: some View {
@@ -37,15 +44,20 @@ struct MainEventsView: View {
                     VStack(spacing: 0) {
                         searchBarWithCancelBtn
                         filterToolbar
-                        if viewModel.fetchEventsError != "" {
-                            errorMessage
-                        } else {
-                            switch mode {
-                            case .list:
-                                eventsList
-                            case .calendar:
-                                CalendarView(viewModel: viewModel)
+
+                        if eventErrorMessage.isEmpty {
+                            if viewModel.userIsSearching {
+                                searchList
+                            } else {
+                                switch mode {
+                                case .list:
+                                    eventsList
+                                case .calendar:
+                                    CalendarView(viewModel: viewModel)
+                                }
                             }
+                        } else {
+                            errorMessage
                         }
                     }
                 }
@@ -79,6 +91,51 @@ private extension MainEventsView {
     }
 }
 
+// MARK: Search list
+
+private extension MainEventsView {
+
+    var searchList: some View {
+        VStack(spacing: 0) {
+            if viewModel.fetchingSearchedEvents {
+                Spacer()
+                AppProgressView()
+                Spacer()
+            } else {
+                HStack(spacing: 5) {
+                    let countResult = viewModel.searchResult.count
+                    Text("\(countResult) event" + (countResult > 1 ? "s" : "") + " found")
+                        .font(.callout)
+                        .foregroundStyle(.white)
+                    
+                    Button {
+                        withAnimation { viewModel.clearSearch() }
+                    } label: {
+                        ZStack {
+                            Image(systemName: "xmark")
+                                .font(.caption.bold())
+                                .padding(.all, 8)
+                                .background(Circle().fill(Color.white))
+                        }
+                        .frame(minWidth: 44, minHeight: 44)
+                    }
+                    .foregroundStyle(Color.itemBackground)
+                }
+                .dynamicTypeSize(.xSmall ... .accessibility3)
+                .padding(.top)
+                
+                Rectangle()
+                    .fill(.white)
+                    .frame(height: 0.5)
+                    .padding(.horizontal, 24)
+                    .padding(.bottom)
+                    
+                EventsListView(events: viewModel.searchResult)
+            }
+        }
+    }
+}
+
 // MARK: Error message
 
 private extension MainEventsView {
@@ -87,14 +144,20 @@ private extension MainEventsView {
         /// Use ScrollView for high accessibility size and long error message
         ScrollView {
             VStack(spacing: 35) {
-                ErrorView(error: viewModel.fetchEventsError)
+                ErrorView(error: eventErrorMessage)
                     .frame(
                         maxWidth: dynamicSize.isAccessibilitySize ? .infinity : 240
                     )
-                Button("Try again") {
-                    Task { await viewModel.fetchData() }
+                if eventErrorMessage != AppError.searchEventIsEmpty.userMessage {
+                    Button("Try again") {
+                        if viewModel.search.isEmpty {
+                            Task { await viewModel.fetchData() }
+                        } else {
+                            Task { await viewModel.searchEvents() }
+                        }
+                    }
+                    .buttonStyle(AppButtonPlain(small: true))
                 }
-                .buttonStyle(AppButtonPlain(small: true))
             }
             .padding(.top, dynamicSize.isAccessibilitySize || verticalSize == .compact ? 16 : 180)
         }
@@ -202,6 +265,20 @@ private extension MainEventsView {
                 .foregroundStyle(.white)
                 .focused($searchBarIsFocused)
                 .submitLabel(.search)
+                .onSubmit {
+                    Task { await viewModel.searchEvents() }
+                }
+            if !viewModel.search.isEmpty {
+                Button {
+                    viewModel.clearSearch()
+                } label: {
+                    Image(systemName: "xmark")
+                        .font(.subheadline)
+                        .foregroundStyle(.white)
+                        .frame(minHeight: 35)
+                }
+
+            }
         }
         .padding(.horizontal)
         .frame(minHeight: 35)
@@ -215,7 +292,7 @@ private extension MainEventsView {
 
     var cancelButton: some View {
         Button("Cancel") {
-            viewModel.search.removeAll()
+            viewModel.clearSearch()
             searchBarIsFocused = false
         }
         .buttonStyle(AppButtonBorderless())

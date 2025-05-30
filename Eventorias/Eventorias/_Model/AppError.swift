@@ -18,6 +18,7 @@ enum AppError: Int, Error {
     case invalidAddress
     case emptyImage
     case invalidImage
+    case searchEventIsEmpty
     case unknown
 
     init(forCode code: Int) {
@@ -36,6 +37,7 @@ enum AppError: Int, Error {
         case .invalidAddress: return "Incorrect address"
         case .emptyImage: return "Please choose an image"
         case .invalidImage: return "Invalid image. Please choose another one."
+        case .searchEventIsEmpty: return "No event found, try another search"
         case .unknown: return "An error has occured, please try again later"
         }
     }

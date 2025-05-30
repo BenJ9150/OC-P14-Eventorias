@@ -46,6 +46,7 @@ extension PreviewEventRepository: EventRepository {
     }
 
     func searchEvents(with query: String) async throws -> [Event] {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         if networkError {
             throw AppError.networkError
         }
@@ -85,7 +86,8 @@ extension PreviewEventRepository {
                 date: event.date,
                 description: event.description,
                 photoURL: photoURL,
-                title: event.title
+                title: event.title,
+                keywords: event.keywords
             )
         }
     }
