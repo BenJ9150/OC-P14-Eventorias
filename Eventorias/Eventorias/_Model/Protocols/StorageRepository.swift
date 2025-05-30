@@ -9,7 +9,7 @@ import Foundation
 
 protocol StorageRepository {
 
-    func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> URL
+    func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> String
 }
 
 enum StorageFolder: String {

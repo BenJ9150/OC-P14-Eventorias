@@ -28,17 +28,11 @@ class MockData {
         EventCategory(id: "art_exhibitions", name: "Art & Exhibitions", emoji: "🎨")
     }
 
+    func eventCategories() -> [EventCategory] {
+        [EventCategory(id: "art_exhibitions", name: "Art & Exhibitions", emoji: "🎨")]
+    }
+
     func image() -> UIImage {
-        
         return UIImage(named: "ImageTest", in: Bundle(for: MockData.self), with: nil)!
-        
-        
-        
-        let size = CGSize(width: 100, height: 100)
-        UIGraphicsBeginImageContextWithOptions(size, true, 0)
-        UIRectFill(CGRect(origin: .zero, size: size))
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image!
     }
 }

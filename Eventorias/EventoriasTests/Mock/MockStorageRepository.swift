@@ -10,7 +10,7 @@ import Foundation
 
 class MockStorageRepository: StorageRepository {
 
-    func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> URL {
-        return URL(string: "www.test.com")!
+    func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> String {
+        return "www.test.com"
     }
 }

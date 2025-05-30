@@ -91,7 +91,9 @@ extension PreviewEventRepository {
     }
 
     func previewCategories() -> [EventCategory] {
-        return try! JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
+        var categories = try! JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
+        categories.insert(EventCategory.categoryPlaceholder, at: 0)
+        return categories
     }
 }
 

@@ -12,3 +12,12 @@ struct EventCategory: Identifiable, Codable, Hashable {
     var name: String
     var emoji: String
 }
+
+extension EventCategory {
+
+    static let categoryPlaceholder = EventCategory(
+        id: "select_category",
+        name: "Select a category",
+        emoji: ""
+    )
+}

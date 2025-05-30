@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 class AppEventRepository: EventRepository {
-    
+
     private let dbRepo: DatabaseRepository
     private let storageRepo: StorageRepository
     
@@ -67,7 +67,7 @@ extension AppEventRepository {
             category: event.category,
             date: event.date,
             description: event.description,
-            photoURL: photoUrl.absoluteString,
+            photoURL: photoUrl,
             title: event.title,
             keywords: event.title.keywords()
         )

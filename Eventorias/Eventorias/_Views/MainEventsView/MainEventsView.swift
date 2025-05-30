@@ -51,7 +51,10 @@ struct MainEventsView: View {
                 }
             }
             .navigationDestination(isPresented: $showAddEventView) {
-                AddEventView(viewModel: viewModel)
+                AddEventView(categories: viewModel.categories) {
+                    /// Callback when event added
+                    Task { await viewModel.fetchData() }
+                }
             }
         }
     }

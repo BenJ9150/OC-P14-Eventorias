@@ -14,7 +14,9 @@ struct AddEventView: View {
     @Environment(\.dismiss) var dismiss
 
     @EnvironmentObject var authViewModel: AuthViewModel
-    @ObservedObject var viewModel: EventsViewModel
+    @StateObject private var viewModel: AddEventViewModel
+
+    let eventAdded: () -> Void
 
     // Photo picker
 
@@ -25,6 +27,24 @@ struct AddEventView: View {
 
     @State private var showCamera = false
     @State private var photoFromCamera: UIImage? = nil
+
+    // Focus
+
+    @FocusState private var descIsFocused: Bool
+    @FocusState private var addressIsFocused: Bool
+
+    // MARK: Init
+
+    init(
+        categories: [EventCategory],
+        eventRepo: EventRepository = AppEventRepository(),
+        eventAdded: @escaping () -> Void
+    ) {
+        self._viewModel = StateObject(
+            wrappedValue: AddEventViewModel(eventRepo: eventRepo, categories: categories)
+        )
+        self.eventAdded = eventAdded
+    }
 
     // MARK: Body
 
@@ -45,6 +65,9 @@ struct AddEventView: View {
                 }
                 .scrollIndicators(.hidden)
                 validateButton
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
         }
         .navigationBarHidden(true)
@@ -149,12 +172,18 @@ private extension AddEventView {
                 prompt: "New event",
                 error: $viewModel.addEventTitleErr
             )
+            .submitLabel(.continue)
+            .onSubmit { descIsFocused = true }
+
             AppTextFieldView(
                 "Description",
                 text: $viewModel.addEventDesc,
                 prompt: "Tap here to enter your description",
                 error: $viewModel.addEventDescErr
             )
+            .focused($descIsFocused)
+            .submitLabel(.continue)
+            .onSubmit { addressIsFocused = true }
 
             if dynamicSize.isAccessibilitySize {
                 pickerForDate
@@ -172,6 +201,10 @@ private extension AddEventView {
                 prompt: "Enter full address",
                 error: $viewModel.addEventAddressErr
             )
+            .focused($addressIsFocused)
+            .textContentType(.addressCityAndState)
+            .submitLabel(.return)
+
             categoryPicker
         }
         /// Set max width for iPad or iphone in landscape
@@ -191,10 +224,6 @@ private extension AddEventView {
             error: $viewModel.addEventDateErr,
             component: .date
         )
-        .onAppear {
-            /// reinit date for new event
-            viewModel.addEventDate = nil
-        }
     }
 
     var pickerForTime: some View {
@@ -270,10 +299,6 @@ private extension AddEventView {
                 )
                 .clipped()
         }
-        .onAppear {
-            /// reinit category for new event
-            viewModel.addEventCategory = viewModel.selectCategory
-        }
     }
 }
 
@@ -290,6 +315,7 @@ private extension AddEventView {
                     Task {
                         let success = await viewModel.addEvent(byUser: authViewModel.currentUser)
                         if success {
+                            eventAdded()
                             dismiss()
                         }
                     }
@@ -310,12 +336,8 @@ private extension AddEventView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .withAuthViewModel()) {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
-
-    AddEventView(viewModel: viewModel)
-        .onAppear {
-            viewModel.categories = PreviewEventRepository().previewCategories()
-            viewModel.categories.insert(viewModel.selectCategory, at: 0)
-            viewModel.addEventPhoto = UIImage(named: "PreviewPicture")
-        }
+    AddEventView(
+        categories: PreviewEventRepository().previewCategories(),
+        eventRepo: PreviewEventRepository(withNetworkError: false)
+    ) {}
 }
