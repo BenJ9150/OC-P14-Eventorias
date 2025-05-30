@@ -12,6 +12,7 @@ protocol DatabaseRepository {
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository]
     func addDocument<T: Encodable>(_ data: T, into collection: CollectionName) async throws
     func generateDocumentID(for collection: CollectionName) -> String
+    func search(into collection: CollectionName, field: String, contains values: [String]) async throws -> [DocumentRepository]
 }
 
 enum CollectionName: String {

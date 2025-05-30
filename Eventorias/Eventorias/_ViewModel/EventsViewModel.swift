@@ -121,7 +121,6 @@ extension EventsViewModel {
                     category: addEventForm.categoryId,
                     date: addEventForm.date,
                     description: addEventDesc,
-                    photoURL: "",
                     title: addEventTitle
                 ),
                 image: addEventForm.image

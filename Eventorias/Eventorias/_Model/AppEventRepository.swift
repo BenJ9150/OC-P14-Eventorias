@@ -14,7 +14,7 @@ class AppEventRepository: EventRepository {
     private let storageRepo: StorageRepository
     
     init(
-        dbRepo: DatabaseRepository = FirestoreRepository(),
+        dbRepo: DatabaseRepository = FirebaseFirestoreRepository(),
         storageRepo: StorageRepository = FirebaseStorageRepository()
     ) {
         self.dbRepo = dbRepo
@@ -28,14 +28,7 @@ extension AppEventRepository {
 
     func fetchEvents() async throws -> [Event] {
         let documents = try await dbRepo.fetchDocuments(into: .events)
-        
-        return documents.compactMap { document in
-            guard var event: Event = try? document.decodedData() else {
-                return nil
-            }
-            event.id = document.documentID
-            return event
-        }
+        return documentsToEvent(documents)
     }
 
     func fetchCategories() async throws -> [EventCategory] {
@@ -75,9 +68,35 @@ extension AppEventRepository {
             date: event.date,
             description: event.description,
             photoURL: photoUrl.absoluteString,
-            title: event.title
+            title: event.title,
+            keywords: event.title.keywords()
         )
         /// Add event
         try await dbRepo.addDocument(finalEvent, into: .events)
+    }
+}
+
+// MARK: Search
+
+extension AppEventRepository {
+
+    func searchEvents(with query: String) async throws -> [Event] {
+        let documents = try await dbRepo.search(into: .events, field: "keywords", contains: query.keywords())
+        return documentsToEvent(documents)
+    }
+}
+
+// MARK: Private
+
+extension AppEventRepository {
+
+    private func documentsToEvent(_ documents: [DocumentRepository]) -> [Event] {
+        return documents.compactMap { document in
+            guard var event: Event = try? document.decodedData() else {
+                return nil
+            }
+            event.id = document.documentID
+            return event
+        }
     }
 }

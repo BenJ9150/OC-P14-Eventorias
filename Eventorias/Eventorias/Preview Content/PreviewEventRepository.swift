@@ -44,6 +44,16 @@ extension PreviewEventRepository: EventRepository {
             throw AppError.networkError
         }
     }
+
+    func searchEvents(with query: String) async throws -> [Event] {
+        if networkError {
+            throw AppError.networkError
+        }
+        let searchTerm = query.keywords()
+        return previewEvents().filter { event in
+            !Set(event.keywords).isDisjoint(with: searchTerm)
+        }
+    }
 }
 
 // MARK: Events

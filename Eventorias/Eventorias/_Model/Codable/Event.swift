@@ -15,6 +15,7 @@ struct Event: Identifiable, Codable {
     var category: String
     var date: Date
     var description: String
-    var photoURL: String
+    var photoURL: String = ""
     var title: String
+    var keywords: [String] = []
 }

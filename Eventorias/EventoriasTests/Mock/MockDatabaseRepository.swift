@@ -29,4 +29,8 @@ class MockDatabaseRepository: DatabaseRepository {
     func generateDocumentID(for collection: Eventorias.CollectionName) -> String {
         return UUID().uuidString
     }
+
+    func search(into collection: Eventorias.CollectionName, field: String, contains values: [String]) async throws -> [DocumentRepository] {
+        return [MockDocumentRepository(withDecodingError: decodingError)]
+    }
 }

@@ -28,15 +28,7 @@ extension MockEventRepository: EventRepository {
         if networkError {
             throw AppError.networkError
         }
-        /// Set decoder date string format (like json file content)
-        let decoder = JSONDecoder()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        decoder.dateDecodingStrategy = .formatted(dateFormatter)
-
-        /// Try to return decoded data
-        let event = try decoder.decode(Event.self, from: getData(jsonFile: "Event"))
-        return [event]
+        return try decodeMockEvents()
     }
     
     func fetchCategories() async throws -> [EventCategory] {
@@ -52,9 +44,31 @@ extension MockEventRepository: EventRepository {
             throw AppError.networkError
         }
     }
+
+    func searchEvents(with query: String) async throws -> [Eventorias.Event] {
+        if networkError {
+            throw AppError.networkError
+        }
+        let searchTerm = query.keywords()
+        return try decodeMockEvents().filter { event in
+            !Set(event.keywords).isDisjoint(with: searchTerm)
+        }
+    }
 }
 
 private extension MockEventRepository {
+
+    func decodeMockEvents() throws -> [Event] {
+        /// Set decoder date string format (like json file content)
+        let decoder = JSONDecoder()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        decoder.dateDecodingStrategy = .formatted(dateFormatter)
+
+        /// Try to return decoded data
+        let event = try decoder.decode(Event.self, from: getData(jsonFile: "Event"))
+        return [event]
+    }
 
     func getData(jsonFile: String) -> Data {
         /// Get bundle for json localization
