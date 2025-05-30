@@ -12,6 +12,13 @@ class FirebaseFirestoreRepository: DatabaseRepository {
 
     private let db = Firestore.firestore()
 
+    func fetchUpcomingDocuments(into collection: CollectionName, orderBy: DBSorting) async throws -> [DocumentRepository] {
+        try await db.collection(collection.rawValue)
+            .whereField(DBSorting.byDate.rawValue, isGreaterThan: Timestamp(date: Date().addingTimeInterval(-86400))) // greater than yesterday
+            .order(by: orderBy.rawValue)
+            .getDocuments().documents
+    }
+
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
         try await db.collection(collection.rawValue).getDocuments().documents
     }

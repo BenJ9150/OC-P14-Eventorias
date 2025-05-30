@@ -38,28 +38,28 @@ struct MainEventsView: View {
                 Color.mainBackground
                     .ignoresSafeArea()
 
-                if viewModel.fetchingEvents {
-                    AppProgressView()
-                } else {
-                    VStack(spacing: 0) {
-                        searchBarWithCancelBtn
-                        filterToolbar
+                VStack(spacing: 0) {
+                    searchBarWithCancelBtn
+                    filterToolbar
 
-                        if eventErrorMessage.isEmpty {
-                            if viewModel.userIsSearching {
-                                searchList
-                            } else {
-                                switch mode {
-                                case .list:
-                                    eventsList
-                                case .calendar:
-                                    CalendarView(viewModel: viewModel)
-                                }
-                            }
+                    if viewModel.fetchingEvents {
+                        Spacer()
+                        AppProgressView()
+                    } else if eventErrorMessage.isEmpty {
+                        if viewModel.userIsSearching {
+                            searchList
                         } else {
-                            errorMessage
+                            switch mode {
+                            case .list:
+                                eventsList
+                            case .calendar:
+                                CalendarView(viewModel: viewModel)
+                            }
                         }
+                    } else {
+                        errorMessage
                     }
+                    Spacer()
                 }
             }
             .navigationDestination(isPresented: $showAddEventView) {
@@ -170,12 +170,21 @@ private extension MainEventsView {
 private extension MainEventsView {
 
     var filterToolbar: some View {
-        HStack(spacing: 0) {
-            sortButton
-            Spacer()
-            displayModePicker
+        ZStack {
+            if dynamicSize.isAccessibilitySize {
+                VStack(spacing: 8) {
+                    sortButton
+                    displayModePicker
+                }
+            } else {
+                HStack(spacing: 0) {
+                    sortButton
+                    Spacer()
+                    displayModePicker
+                }
+            }
         }
-        .dynamicTypeSize(.xSmall ... .accessibility1)
+        .dynamicTypeSize(.xSmall ... .accessibility2)
         .padding(.bottom, 8)
         .padding(.horizontal)
     }
@@ -186,8 +195,13 @@ private extension MainEventsView {
 private extension MainEventsView {
 
     var sortButton: some View {
-        Button {
-            // sort
+        Menu {
+            Button("Sorting by title") {
+                viewModel.eventSorting = .byTitle
+            }
+            Button("Sorting by date") {
+                viewModel.eventSorting = .byDate
+            }
         } label: {
             HStack(spacing: 2) {
                 HStack(spacing: 0) {
@@ -200,15 +214,25 @@ private extension MainEventsView {
                 .font(.caption2)
                 .fontWeight(.black)
                 .scaleEffect(0.8)
-                Text("Sorting")
-                    .font(.callout)
-                    .padding(.vertical, 8)
+                
+                ZStack {
+                    switch viewModel.eventSorting {
+                    case .byDate:
+                        Text("Sorting by date")
+                    case .byTitle:
+                        Text("Sorting by title")
+                    }
+                }
+                .font(.callout)
             }
-            .foregroundStyle(.white)
-            .padding(.leading, 14)
-            .padding(.trailing, 16)
-            .frame(minHeight: 35)
-            .background(Capsule().fill(Color.itemBackground))
+            .padding(.vertical, 8)
+            
+        }
+        .foregroundStyle(.white)
+        .padding(.horizontal)
+        .background(Capsule().fill(Color.itemBackground))
+        .onChange(of: viewModel.eventSorting) {
+            Task { await viewModel.fetchData() }
         }
     }
 }
@@ -226,6 +250,9 @@ private extension MainEventsView {
         }
         .pickerStyle(.menu)
         .tint(.white)
+        .background(
+            Capsule().fill(Color.itemBackground)
+        )
     }
 }
 
@@ -318,8 +345,6 @@ private extension MainEventsView {
 
     MainEventsView(viewModel: viewModel)
         .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                Task { await viewModel.fetchData() }
-            }
+            Task { await viewModel.fetchData() }
         }
 }

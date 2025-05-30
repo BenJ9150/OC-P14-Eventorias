@@ -9,6 +9,7 @@ import Foundation
 
 protocol DatabaseRepository {
 
+    func fetchUpcomingDocuments(into collection: CollectionName, orderBy: DBSorting) async throws -> [DocumentRepository]
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository]
     func addDocument<T: Encodable>(_ data: T, into collection: CollectionName) async throws
     func generateDocumentID(for collection: CollectionName) -> String
@@ -18,4 +19,9 @@ protocol DatabaseRepository {
 enum CollectionName: String {
     case events
     case categories
+}
+
+enum DBSorting: String {
+    case byDate = "date"
+    case byTitle = "title"
 }

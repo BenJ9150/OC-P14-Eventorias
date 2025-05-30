@@ -26,8 +26,8 @@ class AppEventRepository: EventRepository {
 
 extension AppEventRepository {
 
-    func fetchEvents() async throws -> [Event] {
-        let documents = try await dbRepo.fetchDocuments(into: .events)
+    func fetchEvents(orderBy: DBSorting) async throws -> [Event] {
+        let documents = try await dbRepo.fetchUpcomingDocuments(into: .events, orderBy: orderBy)
         return documentsToEvent(documents)
     }
 

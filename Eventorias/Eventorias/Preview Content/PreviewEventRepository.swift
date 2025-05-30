@@ -23,11 +23,17 @@ class PreviewEventRepository {
 
 extension PreviewEventRepository: EventRepository {
 
-    func fetchEvents() async throws -> [Event] {
+    func fetchEvents(orderBy: DBSorting) async throws -> [Event] {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
         if networkError {
             throw AppError.networkError
         }
-        return previewEvents()
+        switch orderBy {
+        case .byDate:
+            return previewEvents().sorted { $0.date < $1.date }
+        case .byTitle:
+            return previewEvents().sorted { $0.title < $1.title }
+        }
     }
     
     func fetchCategories() async throws -> [EventCategory] {

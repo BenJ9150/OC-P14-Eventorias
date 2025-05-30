@@ -31,6 +31,10 @@ import MapKit
     @Published var fetchingSearchedEvents = false
     @Published var searchEventsError = ""
 
+    // Sorting
+
+    @Published var eventSorting: DBSorting = .byTitle
+
     // MARK: Private properties
 
     private struct AddEventForm {
@@ -64,7 +68,7 @@ extension EventsViewModel {
             categories.insert(EventCategory.categoryPlaceholder, at: 0)
 
             /// Events
-            events = try await eventRepo.fetchEvents()
+            events = try await eventRepo.fetchEvents(orderBy: eventSorting)
 
         } catch let nsError as NSError {
             print("💥 Fetch events error \(nsError.code): \(nsError.localizedDescription)")
