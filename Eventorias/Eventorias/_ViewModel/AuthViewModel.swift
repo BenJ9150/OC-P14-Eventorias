@@ -59,6 +59,9 @@ extension AuthViewModel {
 
     func refreshCurrentUser() {
         currentUser = authRepo.currentUser
+        userName = currentUser?.displayName ?? ""
+        email = currentUser?.email ?? ""
+        userPhoto = currentUser?.photoURL?.absoluteString ?? ""
     }
 }
 
@@ -78,6 +81,7 @@ extension AuthViewModel {
             if !userName.isEmpty {
                 try? await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
             }
+            refreshCurrentUser()
         } catch {
             handleAuthRepoError(error, for: .signUp)
         }
@@ -97,6 +101,7 @@ extension AuthViewModel {
         defer { isConnecting = false }
         do {
             currentUser = try await authRepo.signIn(withEmail: email, password: password)
+            refreshCurrentUser()
         } catch {
             handleAuthRepoError(error, for: .signIn)
         }

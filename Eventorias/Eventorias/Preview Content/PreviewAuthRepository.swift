@@ -84,17 +84,37 @@ class PreviewAuthRepository: AuthRepository {
 // MARK: Preview AuthUser
 
 struct PreviewUser: AuthUser {
+
     var uid = UUID().uuidString
     var email: String? = "preview@eventorias.com"
     var displayName: String? = "Jean-Baptiste"
     var photoURL: URL? = nil
 
+    init(email: String? = nil) {
+        if let email = email {
+            self.email = email
+        }
+        self.photoURL = getAvatarURL()
+    }
+
     func createUserProfileChangeRequest() -> AuthUserProfile {
         PreviewUserProfile()
+    }
+
+    private func getAvatarURL() -> URL {
+        /// Get bundle for json localization
+        let bundle = Bundle(for: PreviewAuthRepository.self)
+
+        /// Create url
+        guard let url = bundle.url(forResource: "avatar", withExtension: "png") else {
+            fatalError("Failed to get url of avatar.png")
+        }
+        return url
     }
 }
 
 struct PreviewUserProfile: AuthUserProfile {
+
     var displayName: String?
     var photoURL: URL?
     

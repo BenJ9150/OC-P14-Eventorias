@@ -19,7 +19,7 @@ class MockAuthRepository: AuthRepository {
         if isConnected {
             currentUser = MockUser(
                 email: "test@test.com",
-                displayName: "test",
+                displayName: "TestName",
                 photoURL: URL(string: "https://www.test.com")
             )
         }
@@ -34,7 +34,7 @@ class MockAuthRepository: AuthRepository {
             let appError = AppError(forCode: error)
             throw NSError(domain: appError.userMessage, code: appError.rawValue)
         }
-        let user = MockUser(email: email)
+        let user = MockUser(email: email, displayName: "TestName", photoURL: URL(string: "https://www.test.com"))
         currentUser = user
         return user
     }

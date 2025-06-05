@@ -57,11 +57,10 @@ private extension EventsListView {
 
     func eventItem(_ event: Event) -> some View {
         HStack(spacing: 16) {
-            Image(systemName: "person.circle.fill")
-                .resizable()
+            ImageView(url: event.avatar, isAvatar: true)
                 .frame(width: 40, height: 40)
+                .mask(Circle())
                 .padding(.leading, 16)
-                .foregroundStyle(.white)
 
             VStack(alignment: .leading, spacing: 8) {
                 title(ofEvent: event)

@@ -23,6 +23,7 @@ struct AuthViewModelPreview: PreviewModifier {
 
     static func makeSharedContext() async throws -> AuthViewModel {
         let authViewModel = AuthViewModel(authRepo: PreviewAuthRepository())
+        authViewModel.refreshCurrentUser()
         return authViewModel
     }
 

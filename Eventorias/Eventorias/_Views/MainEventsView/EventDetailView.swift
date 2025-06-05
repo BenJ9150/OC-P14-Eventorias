@@ -68,7 +68,7 @@ private extension EventDetailView {
                 bannerItem(image: "icon_calendar", text: event.date.toMonthDayYear())
                 bannerItem(image: "icon_clock", text: event.date.toHourMinuteAMPM())
             }
-            ImageView(url: event.avatar)
+            ImageView(url: event.avatar, isAvatar: true)
                 .frame(width: 60, height: 60)
                 .mask(Circle())
         }

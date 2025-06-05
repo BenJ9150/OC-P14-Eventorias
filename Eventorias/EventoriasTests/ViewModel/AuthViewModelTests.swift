@@ -25,10 +25,12 @@ import XCTest
         await viewModel.signUp()
 
         // Then user is not nil and no error is displayed
-        XCTAssertNotNil(viewModel.currentUser)
         XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
+        XCTAssertEqual(viewModel.email, "test@test.com")
         XCTAssertEqual(viewModel.currentUser!.displayName, "test")
+        XCTAssertEqual(viewModel.userName, "test")
         XCTAssertEqual(viewModel.currentUser!.photoURL!.absoluteString, "https://www.test.com")
+        XCTAssertEqual(viewModel.userPhoto, "https://www.test.com")
         XCTAssertEqual(viewModel.signUpError, "")
     }
 
@@ -113,8 +115,10 @@ extension EventoriasTests {
         await viewModel.signIn()
         
         // Then user is not nil and no error is displayed
-        XCTAssertNotNil(viewModel.currentUser)
         XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
+        XCTAssertEqual(viewModel.email, "test@test.com")
+        XCTAssertEqual(viewModel.userName, "TestName")
+        XCTAssertEqual(viewModel.userPhoto, "https://www.test.com")
         XCTAssertEqual(viewModel.emailError, "")
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signInError, "")
@@ -236,6 +240,7 @@ extension EventoriasTests {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)
         let viewModel = AuthViewModel(authRepo: authRepo)
+        viewModel.refreshCurrentUser()
         XCTAssertNotNil(viewModel.currentUser)
 
         // When sign out
@@ -243,7 +248,10 @@ extension EventoriasTests {
 
         // Then user is nil and no error is displayed
         XCTAssertNil(viewModel.currentUser)
-        XCTAssertEqual(viewModel.signOutError, "")
+        XCTAssertTrue(viewModel.email.isEmpty)
+        XCTAssertTrue(viewModel.userName.isEmpty)
+        XCTAssertTrue(viewModel.userPhoto.isEmpty)
+        XCTAssertTrue(viewModel.signOutError.isEmpty)
     }
 
     func test_SignOutFailure() {
