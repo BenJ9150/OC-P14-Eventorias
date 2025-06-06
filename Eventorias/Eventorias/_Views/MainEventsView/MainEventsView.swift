@@ -22,6 +22,7 @@ struct MainEventsView: View {
 
     @State private var mode: DisplayMode = .list
     @State private var showAddEventView = false
+    @State private var showCategoryPicker = false
 
     private var eventErrorMessage: String {
         if viewModel.fetchEventsError != "" {
@@ -163,7 +164,7 @@ private extension MainEventsView {
 private extension MainEventsView {
 
     var filterToolbar: some View {
-        ZStack {
+        VStack {
             if dynamicSize.isAccessibilitySize {
                 VStack(spacing: 8) {
                     sortButton
@@ -176,10 +177,76 @@ private extension MainEventsView {
                     displayModePicker
                 }
             }
+            chooseCategoriesButton
         }
         .dynamicTypeSize(.xSmall ... .accessibility2)
         .padding(.bottom, 8)
         .padding(.horizontal)
+    }
+}
+
+// MARK: Choose categories
+
+private extension MainEventsView {
+
+    var chooseCategoriesButton: some View {
+        VStack {
+            HStack {
+                if !dynamicSize.isAccessibilitySize {
+                    Spacer()
+                }
+                Button {
+                    showCategoryPicker.toggle()
+                } label: {
+                    Text("Choose category")
+                        .foregroundStyle(.white)
+                        .font(.callout)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal)
+                        .background(Capsule().fill(Color.itemBackground))
+                }
+                .padding(.top, 4)
+            }
+            if !viewModel.categoriesSelection.isEmpty {
+                categoriesSelection
+            }
+        }
+        .sheet(isPresented: $showCategoryPicker) {
+            ChooseCategoryView(viewModel: viewModel)
+        }
+        .onChange(of: viewModel.categoriesSelection) {
+            Task { await viewModel.fetchData() }
+        }
+    }
+
+    var categoriesSelection: some View {
+        VStack {
+            ScrollView(.horizontal) {
+                HStack(spacing: 10) {
+                    ForEach(viewModel.categoriesSelection) { category in
+                        HStack(spacing: 4) {
+                            Text(category.name)
+                                .font(.caption)
+                            Image(systemName: "xmark")
+                                .font(.caption2)
+                        }
+                        .bold()
+                        .foregroundStyle(.white)
+                        .padding(.vertical, 10)
+                        .frame(minHeight: 40)
+                        .onTapGesture {
+                            withAnimation {
+                                viewModel.categoriesSelection.removeAll { $0 == category }
+                            }
+                        }
+                    }
+                }
+            }
+            Rectangle()
+                .fill(.white)
+                .frame(height: 0.5)
+                .padding(.horizontal, 24)
+        }
     }
 }
 
@@ -343,7 +410,11 @@ private extension MainEventsView {
 
             MainEventsView(viewModel: viewModel)
                 .onAppear {
-                    Task { await viewModel.fetchData() }
+                    Task {
+                        await viewModel.fetchData()
+                        viewModel.categoriesSelection.append(viewModel.categories[1])
+                        viewModel.categoriesSelection.append(viewModel.categories[2])
+                    }
                 }
         }
     }

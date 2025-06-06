@@ -34,6 +34,7 @@ import MapKit
     // Sorting
 
     @Published var eventSorting: DBSorting = .byTitle
+    @Published var categoriesSelection: [EventCategory] = []
 
     // MARK: Private properties
 
@@ -64,11 +65,13 @@ extension EventsViewModel {
 
         do {
             /// Categories
-            categories = try await eventRepo.fetchCategories()
-            categories.insert(EventCategory.categoryPlaceholder, at: 0)
+            if categories.isEmpty {
+                categories = try await eventRepo.fetchCategories()
+                categories.insert(EventCategory.categoryPlaceholder, at: 0)
+            }
 
             /// Events
-            events = try await eventRepo.fetchEvents(orderBy: eventSorting)
+            events = try await eventRepo.fetchEvents(orderBy: eventSorting, from: categoriesSelection)
 
         } catch let nsError as NSError {
             print("💥 Fetch events error \(nsError.code): \(nsError.localizedDescription)")

@@ -24,7 +24,7 @@ class MockEventRepository {
 
 extension MockEventRepository: EventRepository {
 
-    func fetchEvents(orderBy: DBSorting) async throws -> [Event] {
+    func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {
         if networkError {
             throw AppError.networkError
         }

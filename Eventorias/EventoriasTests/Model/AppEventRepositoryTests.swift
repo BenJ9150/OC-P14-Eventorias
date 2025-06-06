@@ -19,7 +19,7 @@ final class AppEventRepositoryTests: XCTestCase {
         let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch events
-        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle)
+        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle, from: [])
 
         // Then an event exist
         XCTAssertEqual(events[0].title, "Charity run")
@@ -32,7 +32,7 @@ final class AppEventRepositoryTests: XCTestCase {
         let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
 
         // When fetch events
-        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle)
+        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle, from: [])
 
         // Then there is no event
         XCTAssertTrue(events.isEmpty)

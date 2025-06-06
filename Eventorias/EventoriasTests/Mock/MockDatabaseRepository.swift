@@ -20,11 +20,11 @@ class MockDatabaseRepository: DatabaseRepository {
 
     // MARK: DatabaseRepository protocol
 
-    func fetchUpcomingDocuments(into collection: CollectionName, orderBy: DBSorting) async throws -> [DocumentRepository] {
+    func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
         return [MockDocumentRepository(withDecodingError: decodingError)]
     }
 
-    func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
+    func fetchUpcomingDoc(into collection: CollectionName, orderBy: DBSorting, where field: String, isIn filters: [String]) async throws -> [DocumentRepository] {
         return [MockDocumentRepository(withDecodingError: decodingError)]
     }
 
