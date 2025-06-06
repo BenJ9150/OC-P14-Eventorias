@@ -33,40 +33,33 @@ struct MainEventsView: View {
     // MARK: Body
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.mainBackground
-                    .ignoresSafeArea()
+        VStack(spacing: 0) {
+            searchBarWithCancelBtn
+            filterToolbar
 
-                VStack(spacing: 0) {
-                    searchBarWithCancelBtn
-                    filterToolbar
-
-                    if viewModel.fetchingEvents {
-                        Spacer()
-                        AppProgressView()
-                    } else if eventErrorMessage.isEmpty {
-                        if viewModel.userIsSearching {
-                            searchList
-                        } else {
-                            switch mode {
-                            case .list:
-                                eventsList
-                            case .calendar:
-                                CalendarView(viewModel: viewModel)
-                            }
-                        }
-                    } else {
-                        errorMessage
+            if viewModel.fetchingEvents {
+                Spacer()
+                AppProgressView()
+            } else if eventErrorMessage.isEmpty {
+                if viewModel.userIsSearching {
+                    searchList
+                } else {
+                    switch mode {
+                    case .list:
+                        eventsList
+                    case .calendar:
+                        CalendarView(viewModel: viewModel)
                     }
-                    Spacer()
                 }
+            } else {
+                errorMessage
             }
-            .navigationDestination(isPresented: $showAddEventView) {
-                AddEventView(categories: viewModel.categories) {
-                    /// Callback when event added
-                    Task { await viewModel.fetchData() }
-                }
+            Spacer()
+        }
+        .navigationDestination(isPresented: $showAddEventView) {
+            AddEventView(categories: viewModel.categories) {
+                /// Callback when event added
+                Task { await viewModel.fetchData() }
             }
         }
     }
@@ -343,8 +336,15 @@ private extension MainEventsView {
 #Preview {
     let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
 
-    MainEventsView(viewModel: viewModel)
-        .onAppear {
-            Task { await viewModel.fetchData() }
+    NavigationStack {
+        ZStack {
+            Color.mainBackground
+                .ignoresSafeArea()
+
+            MainEventsView(viewModel: viewModel)
+                .onAppear {
+                    Task { await viewModel.fetchData() }
+                }
         }
+    }
 }

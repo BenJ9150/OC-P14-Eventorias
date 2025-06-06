@@ -27,6 +27,7 @@ import XCTest
         // Then user is not nil and no error is displayed
         XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
         XCTAssertEqual(viewModel.email, "test@test.com")
+        XCTAssertEqual(viewModel.password, "")
         XCTAssertEqual(viewModel.currentUser!.displayName, "test")
         XCTAssertEqual(viewModel.userName, "test")
         XCTAssertEqual(viewModel.currentUser!.photoURL!.absoluteString, "https://www.test.com")
@@ -117,6 +118,7 @@ extension EventoriasTests {
         // Then user is not nil and no error is displayed
         XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
         XCTAssertEqual(viewModel.email, "test@test.com")
+        XCTAssertEqual(viewModel.password, "")
         XCTAssertEqual(viewModel.userName, "TestName")
         XCTAssertEqual(viewModel.userPhoto, "https://www.test.com")
         XCTAssertEqual(viewModel.emailError, "")
@@ -249,6 +251,7 @@ extension EventoriasTests {
         // Then user is nil and no error is displayed
         XCTAssertNil(viewModel.currentUser)
         XCTAssertTrue(viewModel.email.isEmpty)
+        XCTAssertTrue(viewModel.password.isEmpty)
         XCTAssertTrue(viewModel.userName.isEmpty)
         XCTAssertTrue(viewModel.userPhoto.isEmpty)
         XCTAssertTrue(viewModel.signOutError.isEmpty)

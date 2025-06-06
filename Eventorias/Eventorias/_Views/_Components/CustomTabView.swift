@@ -24,32 +24,44 @@ struct CustomTabView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            if selectedTab == .events {
-                MainEventsView(viewModel: eventsViewModel)
-            } else {
-                ProfileView()
-            }
-
-            HStack(spacing: 34) {
-                Spacer()
-                Button(action: { selectedTab = .events }) {
-                    tabItem(image: "icon_tab_event", text: "Events")
+        NavigationStack {
+            ZStack {
+                Color.mainBackground
+                    .ignoresSafeArea()
+                
+                VStack(spacing: 0) {
+                    if selectedTab == .events {
+                        MainEventsView(viewModel: eventsViewModel)
+                    } else {
+                        ProfileView()
+                    }
+                    customTabView
                 }
-                .foregroundStyle(selectedTab == .events ? .accent : .white)
-
-                Button(action: { selectedTab = .profile }) {
-                    tabItem(image: "icon_tab_profile", text: "Profile")
-                }
-                .foregroundStyle(selectedTab == .profile ? .accent : .white)
-                Spacer()
             }
-            .padding(.top, 8)
-            .background(Color.mainBackground)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
+        }
+    }
+}
+
+// MARK: Tabview
+
+private extension CustomTabView {
+
+    var customTabView: some View {
+        HStack(spacing: 34) {
+            Button(action: { selectedTab = .events }) {
+                tabItem(image: "icon_tab_event", text: "Events")
+            }
+            .foregroundStyle(selectedTab == .events ? .accent : .white)
+            
+            Button(action: { selectedTab = .profile }) {
+                tabItem(image: "icon_tab_profile", text: "Profile")
+            }
+            .foregroundStyle(selectedTab == .profile ? .accent : .white)
         }
     }
 
-    private func tabItem(image: String, text: String) -> some View {
+    func tabItem(image: String, text: String) -> some View {
         ZStack {
             if dynamicSize.isAccessibilitySize && verticalSize == .compact {
                 Text(text)
@@ -68,6 +80,7 @@ struct CustomTabView: View {
         }
         .dynamicTypeSize(.xSmall ... .accessibility4)
         .frame(minHeight: 44)
+        .padding(.top, 8)
     }
 }
 
@@ -75,6 +88,7 @@ struct CustomTabView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .withAuthViewModel()) {
+    @Previewable @State var isHidden: Bool = false
     let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
 
     CustomTabView(eventsViewModel: viewModel)

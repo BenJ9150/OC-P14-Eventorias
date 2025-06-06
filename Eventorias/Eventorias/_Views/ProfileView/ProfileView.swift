@@ -9,20 +9,15 @@ import SwiftUI
 
 struct ProfileView: View {
 
-    @EnvironmentObject var authViewModel: AuthViewModel
+    @EnvironmentObject var viewModel: AuthViewModel
 
     var body: some View {
-        ZStack {
-            Color.mainBackground
-                .ignoresSafeArea()
-
-            VStack {
-                Spacer()
-                Button("Sign out") {
-                    authViewModel.signOut()
-                }
-                .buttonStyle(.borderedProminent)
+        VStack(spacing: 0) {
+            Spacer()
+            Button("Sign out") {
+                viewModel.signOut()
             }
+            .buttonStyle(AppButtonPlain(small: true))
             .padding()
         }
     }
@@ -32,5 +27,9 @@ struct ProfileView: View {
 
 @available(iOS 18.0, *)
 #Preview(traits: .withAuthViewModel()) {
-    ProfileView()
+    ZStack {
+        Color.mainBackground
+            .ignoresSafeArea()
+        ProfileView()
+    }
 }
