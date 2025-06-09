@@ -348,6 +348,7 @@ private extension MainEventsView {
                 .font(.subheadline)
                 .foregroundStyle(.white)
                 .padding(.vertical, 8)
+                .accessibilityHidden(true)
             TextField("Search", text: $viewModel.search, prompt: searchPrompt)
                 .foregroundStyle(.white)
                 .focused($searchBarIsFocused)
@@ -364,7 +365,6 @@ private extension MainEventsView {
                         .foregroundStyle(.white)
                         .frame(minHeight: 35)
                 }
-
             }
         }
         .padding(.horizontal)
@@ -389,6 +389,7 @@ private extension MainEventsView {
         )
         .padding(.leading, searchBarIsFocused ? 16 : 0)
         .scaleEffect(searchBarIsFocused ? 1 : 0)
+        .accessibilityHidden(!searchBarIsFocused)
     }
 
     var searchPrompt: Text {

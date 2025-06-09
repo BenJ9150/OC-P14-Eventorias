@@ -13,6 +13,7 @@ import SwiftUI
         case signUp
         case signIn
         case resetPassword
+        case update
         case signOut
     }
 
@@ -40,6 +41,11 @@ import SwiftUI
     @Published var isReseting = false
     @Published var resetPasswordSuccess = ""
     @Published var resetPasswordError = ""
+
+    // MARK: Update properties
+
+    @Published var isUpdating = false
+    @Published var updateError = ""
 
     // MARK: Private properties
 
@@ -134,6 +140,23 @@ extension AuthViewModel {
     }
 }
 
+// MARK: Update
+
+extension AuthViewModel {
+
+    func udpate() async {
+        updateError = ""
+        isUpdating = true
+        defer { isUpdating = false }
+        do {
+            try await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
+            refreshProfile()
+        } catch {
+            handleAuthRepoError(error, for: .update)
+        }
+    }
+}
+
 // MARK: Sign out
 
 extension AuthViewModel {
@@ -175,6 +198,8 @@ extension AuthViewModel {
             }
         case .resetPassword:
             resetPasswordError = message
+        case .update:
+            updateError = message
         case .signOut:
             signOutError = message
         }
