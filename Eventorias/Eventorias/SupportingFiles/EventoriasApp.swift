@@ -32,14 +32,21 @@ struct EventoriasApp: App {
         .environmentObject(authViewModel)
         .onChange(of: scenePhase) { _, newValue in
             if newValue == .active {
-                Task {
-                    await authViewModel.reloadCurrentUser()
-                    if authViewModel.currentUser == nil {
-                        return
-                    }
-                    await eventsViewModel.fetchData()
-                }
+                becomeActiveSetup()
             }
+        }
+    }
+}
+
+extension EventoriasApp {
+
+    private func becomeActiveSetup() {
+        Task {
+            await authViewModel.reloadCurrentUser()
+            if authViewModel.currentUser == nil {
+                return
+            }
+            await eventsViewModel.fetchData()
         }
     }
 }

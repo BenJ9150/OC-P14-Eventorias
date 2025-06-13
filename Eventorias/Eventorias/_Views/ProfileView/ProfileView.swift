@@ -9,7 +9,10 @@ import SwiftUI
 
 struct ProfileView: View {
 
+    @Environment(\.scenePhase) var scenePhase
     @EnvironmentObject var viewModel: AuthViewModel
+    @StateObject private var notifViewModel = NotificationsViewModel()
+
     @State private var showUpdateButtons = false
 
     var body: some View {
@@ -19,6 +22,7 @@ struct ProfileView: View {
                 VStack {
                     textFields
                     updateButtons
+                    toggleNotifications
                 }
             }
             .scrollIndicators(.hidden)
@@ -47,6 +51,17 @@ struct ProfileView: View {
         } message: {
             Text("A confirmation email has been sent to your new email address.\n\n")
             + Text("Once confirmed, you will need to log in again using this new email.")
+        }
+        /// Need notifications authorization
+        .alert("We need your permission to send notifications", isPresented: $notifViewModel.showPermissionAlert) {
+            Button("Open Settings") {
+                if let url = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                }
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            Text("Please enable notifications for this app in Settings.")
         }
     }
 }
@@ -139,6 +154,37 @@ private extension ProfileView {
                 }
                 .buttonStyle(AppButtonBorderless())
                 .padding(.bottom, 48)
+            }
+        }
+    }
+}
+
+// MARK: Notifications
+
+private extension ProfileView {
+
+    var toggleNotifications: some View {
+        HStack(spacing: 12) {
+            Toggle("Notifications", isOn:
+                    Binding(
+                        get: { notifViewModel.toggleNotifications },
+                        set: { newValue in
+                            Task { await notifViewModel.toggle(to: newValue) }
+                        }
+                    )
+            )
+            .labelsHidden()
+            .tint(.accent)
+            Text("Notifications")
+                .font(.callout)
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.top, 8)
+        .task { await notifViewModel.updateStatus() }
+        .onChange(of: scenePhase) { _, newValue in
+            if newValue == .active {
+                Task { await notifViewModel.updateStatus() }
             }
         }
     }
