@@ -34,7 +34,11 @@ class MockAuthRepository: AuthRepository {
             let appError = AppError(forCode: error)
             throw NSError(domain: appError.userMessage, code: appError.rawValue)
         }
-        let user = MockUser(email: email, displayName: "TestName", photoURL: URL(string: "https://www.test.com"))
+        let user = MockUser(
+            email: email,
+            displayName: "TestName",
+            photoURL: URL(string: "https://www.test.com")
+        )
         currentUser = user
         return user
     }
@@ -76,5 +80,27 @@ class MockAuthRepository: AuthRepository {
         changeRequest.displayName = displayName
         changeRequest.photoURL = photoURL
         try await changeRequest.commitChanges()
+    }
+
+    func sendEmailVerification(beforeUpdatingEmail email: String) async throws {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+    }
+
+    func reloadUser() async throws {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+        guard let user = currentUser as? MockUser else {
+            throw AppError.currentUserNotFound
+        }
+        currentUser = MockUser(
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+        )
     }
 }

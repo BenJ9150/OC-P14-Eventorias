@@ -17,9 +17,10 @@ final class AppEventRepositoryTests: XCTestCase {
         let dbRepo = MockDatabaseRepository()
         let storageRepo = MockStorageRepository()
         let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let categories = MockData().eventCategories()
 
         // When fetch events
-        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle, from: [])
+        let events = try! await eventRepo.fetchEvents(orderBy: .byTitle, from: categories)
 
         // Then an event exist
         XCTAssertEqual(events[0].title, "Charity run")

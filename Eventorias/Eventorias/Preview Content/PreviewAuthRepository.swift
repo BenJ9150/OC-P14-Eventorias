@@ -79,7 +79,7 @@ class PreviewAuthRepository: AuthRepository {
         try await changeRequest.commitChanges()
     }
 
-    func updateUserEmail(with email: String) async throws {
+    func sendEmailVerification(beforeUpdatingEmail email: String) async throws {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         if let error = codeError {
             let appError = AppError(forCode: error)

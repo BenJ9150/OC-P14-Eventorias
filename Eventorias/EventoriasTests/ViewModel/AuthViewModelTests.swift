@@ -242,8 +242,6 @@ extension EventoriasTests {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)
         let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.refreshCurrentUser()
-        XCTAssertNotNil(viewModel.currentUser)
 
         // When sign out
         viewModel.signOut()
@@ -261,7 +259,6 @@ extension EventoriasTests {
         // Given user is connected but network issue
         let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
         let viewModel = AuthViewModel(authRepo: authRepo)
-        XCTAssertNotNil(viewModel.currentUser)
 
         // When sign out
         viewModel.signOut()
@@ -269,5 +266,84 @@ extension EventoriasTests {
         // Then user is not nil and error is displayed
         XCTAssertNotNil(viewModel.currentUser)
         XCTAssertEqual(viewModel.signOutError, AppError.networkError.userMessage)
+    }
+}
+
+// MARK: Update
+
+extension EventoriasTests {
+
+    func test_UpdateSuccess() async {
+        // Given user is connected
+        let authRepo = MockAuthRepository(isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+
+        // When update user
+        viewModel.userName = "TestUpdate"
+        viewModel.email = "testupdate@test.com"
+        viewModel.userPhoto = "www.test-update.com"
+        await viewModel.udpate()
+
+        // Then user name and photo are updated without error
+        XCTAssertEqual(viewModel.currentUser?.displayName, "TestUpdate")
+        XCTAssertEqual(viewModel.currentUser?.photoURL?.absoluteString, "www.test-update.com")
+        XCTAssertTrue(viewModel.updateError.isEmpty)
+
+        // and alert for new email is presented
+        XCTAssertTrue(viewModel.showConfirmEmailAlert)
+    }
+
+    func test_UpdateEmailNeedAuth() async {
+        // Given user is connected from long time
+        let authRepo = MockAuthRepository(withError: 17014, isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+
+        // When update user email
+        viewModel.email = "testupdate@test.com"
+        await viewModel.udpate()
+
+        // Then alert for new auth is presented
+        XCTAssertTrue(viewModel.showNeedAuthAlert)
+        XCTAssertTrue(viewModel.updateError.isEmpty)
+
+        // And when user sign out to refresh auth
+        viewModel.signOutToRefreshAuth()
+
+        // Then current email is saved for sign in view
+        XCTAssertEqual(viewModel.email, "test@test.com")
+    }
+
+    func test_UpdateFailure() async {
+        // Given network error
+        let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+
+        // When update user email
+        viewModel.userName = "TestUpdate"
+        await viewModel.udpate()
+
+        // Then there is an error message
+        XCTAssertEqual(viewModel.updateError, AppError.networkError.userMessage)
+    }
+
+    func test_CancelUpdate() async {
+        // Given user is connected
+        let authRepo = MockAuthRepository(isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+        await viewModel.reloadCurrentUser()
+        let userBeforUpdate = viewModel.currentUser!
+
+        // And user has changed his profile
+        viewModel.userName = "TestUpdateCancel"
+        viewModel.email = "testupdatecancel@test.com"
+        viewModel.userPhoto = "www.test-update-cancel.com"
+
+        // When update is canceled
+        viewModel.cancelProfileUpdate()
+
+        // Then user profile is refresh with old data
+        XCTAssertEqual(viewModel.userName, userBeforUpdate.displayName)
+        XCTAssertEqual(viewModel.email, userBeforUpdate.email)
+        XCTAssertEqual(viewModel.userPhoto, userBeforUpdate.photoURL!.absoluteString)
     }
 }

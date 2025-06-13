@@ -29,7 +29,10 @@ class MockData {
     }
 
     func eventCategories() -> [EventCategory] {
-        [EventCategory(id: "art_exhibitions", name: "Art & Exhibitions", emoji: "🎨")]
+        [
+            EventCategory(id: "art_exhibitions", name: "Art & Exhibitions", emoji: "🎨"),
+            EventCategory(id: nil, name: "test", emoji: "")
+        ]
     }
 
     func image() -> UIImage {

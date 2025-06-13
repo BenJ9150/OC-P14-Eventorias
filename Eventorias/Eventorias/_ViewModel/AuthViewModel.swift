@@ -158,13 +158,10 @@ extension AuthViewModel {
         do {
             /// Update name and avatar
             try await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
-            /// refresh name and avatar
-            userName = currentUser?.displayName ?? ""
-            userPhoto = currentUser?.photoURL?.absoluteString ?? ""
 
             /// Update email
             if email != currentUser?.email {
-                try await authRepo.updateUserEmail(with: email)
+                try await authRepo.sendEmailVerification(beforeUpdatingEmail: email)
                 showConfirmEmailAlert.toggle()
             }
         } catch {
@@ -194,11 +191,13 @@ extension AuthViewModel {
 
     func signOutToRefreshAuth() {
         /// Save current email to display it in sign in view
-        let currentEmail = currentUser?.email ?? ""
+        let currentEmail = currentUser?.email
         signOut()
 
         /// Set current email for sign in view
-        email = currentEmail
+        if let savedEmail = currentEmail {
+            email = savedEmail
+        }
     }
 }
 

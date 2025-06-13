@@ -15,6 +15,6 @@ protocol AuthRepository {
     func signOut() throws
     func createUser(withEmail email: String, password: String) async throws -> AuthUser
     func updateUser(displayName: String, photoURL: URL?) async throws
-    func updateUserEmail(with email: String) async throws
+    func sendEmailVerification(beforeUpdatingEmail email: String) async throws
     func reloadUser() async throws
 }
