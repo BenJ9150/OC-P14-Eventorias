@@ -10,8 +10,6 @@ import SwiftUI
 struct ProfileView: View {
 
     @EnvironmentObject var viewModel: AuthViewModel
-
-    @FocusState private var emailIsFocused: Bool
     @State private var showUpdateButtons = false
 
     var body: some View {
@@ -33,6 +31,22 @@ struct ProfileView: View {
         .padding(.horizontal)
         .onTapGesture {
             hideKeyboard()
+        }
+        /// Need new authentification to update email alert
+        .alert(
+            AppError.emailUpdateNeedAuth.userMessage,
+            isPresented: $viewModel.showNeedAuthAlert
+        ) {
+            Button("Sign out", role: .destructive, action: { viewModel.signOutToRefreshAuth() })
+            Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
+        }
+        /// Need to comfirm new email alert
+        .alert("Success!", isPresented: $viewModel.showConfirmEmailAlert) {
+            Button("Sign out", role: .destructive, action: { viewModel.signOut() })
+            Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
+        } message: {
+            Text("A confirmation email has been sent to your new email address.\n\n")
+            + Text("Once confirmed, you will need to log in again using this new email.")
         }
     }
 }
@@ -68,8 +82,14 @@ private extension ProfileView {
                 prompt: "Enter your name"
             )
             .textContentType(.name)
-            .submitLabel(.continue)
-            .onSubmit { emailIsFocused = true }
+            .submitLabel(.done)
+            .onChange(of: viewModel.userName) { _, newValue in
+                if newValue != viewModel.currentUser?.displayName {
+                    showUpdateButtons = true
+                } else {
+                    showUpdateButtons = false
+                }
+            }
 
             AppTextFieldView(
                 "Email",
@@ -79,18 +99,17 @@ private extension ProfileView {
             )
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
-            .focused($emailIsFocused)
             .submitLabel(.done)
+            .onChange(of: viewModel.email) { _, newValue in
+                if newValue != viewModel.currentUser?.email {
+                    showUpdateButtons = true
+                } else {
+                    showUpdateButtons = false
+                }
+            }
         }
         /// Set max width for iPad or iphone in landscape
         .frame(maxWidth: 440)
-        .onChange(of: viewModel.userName) { _, newValue in
-            if newValue != viewModel.currentUser?.displayName {
-                showUpdateButtons = true
-            } else {
-                showUpdateButtons = false
-            }
-        }
     }
 }
 
@@ -103,7 +122,7 @@ private extension ProfileView {
             if viewModel.isUpdating {
                 AppProgressView()
                     .padding()
-            } else if showUpdateButtons {
+            } else if showUpdateButtons || !viewModel.updateError.isEmpty {
                 if !viewModel.updateError.isEmpty {
                     ErrorView(error: viewModel.updateError)
                 }
@@ -116,7 +135,7 @@ private extension ProfileView {
                 
                 Button("Cancel") {
                     hideKeyboard()
-                    viewModel.refreshCurrentUser()
+                    viewModel.cancelProfileUpdate()
                 }
                 .buttonStyle(AppButtonBorderless())
                 .padding(.bottom, 48)

@@ -10,7 +10,6 @@ import Foundation
 // MARK: Preview AuthRepository
 
 class PreviewAuthRepository: AuthRepository {
-
     
     private var codeError: Int?
 
@@ -79,6 +78,16 @@ class PreviewAuthRepository: AuthRepository {
         changeRequest.photoURL = photoURL
         try await changeRequest.commitChanges()
     }
+
+    func updateUserEmail(with email: String) async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
+    }
+
+    func reloadUser() async throws {}
 }
 
 // MARK: Preview AuthUser

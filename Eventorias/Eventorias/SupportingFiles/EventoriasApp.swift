@@ -21,6 +21,10 @@ struct EventoriasApp: App {
         WindowGroup {
             if authViewModel.currentUser == nil {
                 SignInView()
+                    .onDisappear {
+                        /// User just sign in, fetch data
+                        Task { await eventsViewModel.fetchData() }
+                    }
             } else {
                 CustomTabView(eventsViewModel: eventsViewModel)
             }
@@ -28,8 +32,13 @@ struct EventoriasApp: App {
         .environmentObject(authViewModel)
         .onChange(of: scenePhase) { _, newValue in
             if newValue == .active {
-                authViewModel.refreshCurrentUser()
-                Task { await eventsViewModel.fetchData() }
+                Task {
+                    await authViewModel.reloadCurrentUser()
+                    if authViewModel.currentUser == nil {
+                        return
+                    }
+                    await eventsViewModel.fetchData()
+                }
             }
         }
     }

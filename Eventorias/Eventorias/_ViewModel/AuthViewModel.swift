@@ -46,6 +46,8 @@ import SwiftUI
 
     @Published var isUpdating = false
     @Published var updateError = ""
+    @Published var showNeedAuthAlert = false
+    @Published var showConfirmEmailAlert = false
 
     // MARK: Private properties
 
@@ -62,6 +64,11 @@ import SwiftUI
 // MARK: Current user
 
 extension AuthViewModel {
+
+    func reloadCurrentUser() async {
+        try? await authRepo.reloadUser()
+        refreshCurrentUser()
+    }
 
     func refreshCurrentUser() {
         currentUser = authRepo.currentUser
@@ -149,11 +156,25 @@ extension AuthViewModel {
         isUpdating = true
         defer { isUpdating = false }
         do {
+            /// Update name and avatar
             try await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
-            refreshProfile()
+            /// refresh name and avatar
+            userName = currentUser?.displayName ?? ""
+            userPhoto = currentUser?.photoURL?.absoluteString ?? ""
+
+            /// Update email
+            if email != currentUser?.email {
+                try await authRepo.updateUserEmail(with: email)
+                showConfirmEmailAlert.toggle()
+            }
         } catch {
             handleAuthRepoError(error, for: .update)
         }
+    }
+
+    func cancelProfileUpdate() {
+        updateError.removeAll()
+        refreshProfile()
     }
 }
 
@@ -169,6 +190,15 @@ extension AuthViewModel {
             handleAuthRepoError(error, for: .signOut)
         }
         refreshCurrentUser()
+    }
+
+    func signOutToRefreshAuth() {
+        /// Save current email to display it in sign in view
+        let currentEmail = currentUser?.email ?? ""
+        signOut()
+
+        /// Set current email for sign in view
+        email = currentEmail
     }
 }
 
@@ -199,7 +229,11 @@ extension AuthViewModel {
         case .resetPassword:
             resetPasswordError = message
         case .update:
-            updateError = message
+            if appError == .emailUpdateNeedAuth {
+                showNeedAuthAlert.toggle()
+            } else {
+                updateError = message
+            }
         case .signOut:
             signOutError = message
         }

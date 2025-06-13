@@ -55,4 +55,12 @@ class FirebaseAuthRepository: AuthRepository {
         changeRequest.photoURL = photoURL
         try await changeRequest.commitChanges()
     }
+
+    func updateUserEmail(with email: String) async throws {
+        try await Auth.auth().currentUser?.sendEmailVerification(beforeUpdatingEmail: email)
+    }
+
+    func reloadUser() async throws {
+        try await Auth.auth().currentUser?.reload()
+    }
 }

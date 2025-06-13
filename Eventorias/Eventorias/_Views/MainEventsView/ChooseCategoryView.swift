@@ -13,26 +13,31 @@ struct ChooseCategoryView: View {
     @State private var currentSelection: [EventCategory] = []
 
     var body: some View {
-        VStack {
-            List(viewModel.categories) { category in
-                categoyItem(for: category)
-                    .listRowBackground(Color.itemBackground)
-                    .onTapGesture {
-                        toggleSelection(for: category)
-                    }
+        NavigationStack {
+            VStack {
+                List(viewModel.categories) { category in
+                    categoyItem(for: category)
+                        .listRowBackground(Color.itemBackground)
+                        .onTapGesture {
+                            toggleSelection(for: category)
+                        }
+                }
+                .listStyle(.plain)
+                .scrollContentBackground(.hidden)
+                .foregroundStyle(.white)
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            .foregroundStyle(.white)
-        }
-        .padding(.vertical)
-        .background(Color.itemBackground)
-        .onAppear {
-            currentSelection = viewModel.categoriesSelection
-        }
-        .onDisappear {
-            withAnimation {
-                viewModel.categoriesSelection = currentSelection
+            .padding(.vertical)
+            .background(Color.itemBackground)
+            .toolbar {
+                CloseButtonItem()
+            }
+            .onAppear {
+                currentSelection = viewModel.categoriesSelection
+            }
+            .onDisappear {
+                withAnimation {
+                    viewModel.categoriesSelection = currentSelection
+                }
             }
         }
     }

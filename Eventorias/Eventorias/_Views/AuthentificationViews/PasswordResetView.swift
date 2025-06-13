@@ -9,15 +9,11 @@ import SwiftUI
 
 struct PasswordResetView: View {
 
-    @Environment(\.dismiss) var dismiss
     @EnvironmentObject var viewModel: AuthViewModel
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                Color.sheetBackground
-                    .ignoresSafeArea()
-
+            VStack {
                 /// Use scrollView to see all error text for high dynamic sizes
                 ScrollView {
                     LargeTitleView(title: "Reset password")
@@ -52,18 +48,9 @@ struct PasswordResetView: View {
                 .frame(maxWidth: 440)
                 .padding()
             }
+            .background(Color.sheetBackground)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark")
-                            .font(.caption)
-                            .bold()
-                            .frame(minWidth: 44, minHeight: 44)
-                    }
-                    .foregroundStyle(.white)
-                }
+                CloseButtonItem()
             }
             .onTapGesture {
                 hideKeyboard()

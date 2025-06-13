@@ -1,5 +1,5 @@
 //
-//  BackButtonModifier.swift
+//  BackButtons.swift
 //  Eventorias
 //
 //  Created by Benjamin LEFRANCOIS on 16/05/2025.
@@ -57,6 +57,25 @@ struct BackButtonView: View {
             Spacer()
         }
         .padding(.bottom, 12)
+    }
+}
+
+struct CloseButtonItem: ToolbarContent {
+
+    @Environment(\.dismiss) var dismiss
+
+    var body: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption)
+                    .bold()
+                    .frame(minWidth: 44, minHeight: 44)
+            }
+            .foregroundStyle(.white)
+        }
     }
 }
 
