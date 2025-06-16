@@ -273,20 +273,35 @@ extension EventoriasTests {
 
 extension EventoriasTests {
 
+    func test_showUpdateButton() {
+        // Given user is updating
+        let authRepo = MockAuthRepository(isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+        viewModel.refreshCurrentUser()
+        XCTAssertFalse(viewModel.showUpdateButtons)
+        viewModel.newAvatar = MockData().image()
+
+        // When checking if need to show update buttons
+        viewModel.showUpdateButtonsIfNeeded()
+
+        // Then is true
+        XCTAssertTrue(viewModel.showUpdateButtons)
+    }
     func test_UpdateSuccess() async {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let storageRepo = MockStorageRepository()
+        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
 
         // When update user
         viewModel.userName = "TestUpdate"
         viewModel.email = "testupdate@test.com"
-        viewModel.userPhoto = "www.test-update.com"
+        viewModel.newAvatar = MockData().image()
         await viewModel.udpate()
 
         // Then user name and photo are updated without error
         XCTAssertEqual(viewModel.currentUser?.displayName, "TestUpdate")
-        XCTAssertEqual(viewModel.currentUser?.photoURL?.absoluteString, "www.test-update.com")
+        XCTAssertEqual(viewModel.currentUser?.photoURL?.absoluteString, "www.test.com")
         XCTAssertTrue(viewModel.updateError.isEmpty)
 
         // and alert for new email is presented
@@ -296,7 +311,8 @@ extension EventoriasTests {
     func test_UpdateEmailNeedAuth() async {
         // Given user is connected from long time
         let authRepo = MockAuthRepository(withError: 17014, isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let storageRepo = MockStorageRepository()
+        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
 
         // When update user email
         viewModel.email = "testupdate@test.com"
@@ -313,10 +329,25 @@ extension EventoriasTests {
         XCTAssertEqual(viewModel.email, "test@test.com")
     }
 
-    func test_UpdateFailure() async {
+    func test_UpdateFailureCauseAvatar() async {
+        // Given user is connected
+        let authRepo = MockAuthRepository(isConnected: true)
+        let storageRepo = MockStorageRepository()
+        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+
+        // When update avatar with invalid image
+        viewModel.newAvatar = UIImage()
+        await viewModel.udpate()
+
+        // Then there is an error message
+        XCTAssertEqual(viewModel.updateError, AppError.invalidImage.userMessage)
+    }
+
+    func test_UpdateFailureCauseNetwork() async {
         // Given network error
         let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let storageRepo = MockStorageRepository()
+        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
 
         // When update user email
         viewModel.userName = "TestUpdate"
@@ -329,14 +360,15 @@ extension EventoriasTests {
     func test_CancelUpdate() async {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let storageRepo = MockStorageRepository()
+        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
         await viewModel.reloadCurrentUser()
         let userBeforUpdate = viewModel.currentUser!
 
         // And user has changed his profile
         viewModel.userName = "TestUpdateCancel"
         viewModel.email = "testupdatecancel@test.com"
-        viewModel.userPhoto = "www.test-update-cancel.com"
+        viewModel.newAvatar = MockData().image()
 
         // When update is canceled
         viewModel.cancelProfileUpdate()
@@ -345,5 +377,6 @@ extension EventoriasTests {
         XCTAssertEqual(viewModel.userName, userBeforUpdate.displayName)
         XCTAssertEqual(viewModel.email, userBeforUpdate.email)
         XCTAssertEqual(viewModel.userPhoto, userBeforUpdate.photoURL!.absoluteString)
+        XCTAssertNil(viewModel.newAvatar)
     }
 }

@@ -18,13 +18,10 @@ struct AddEventView: View {
 
     let eventAdded: () -> Void
 
-    // Photo picker
+    // Picture
 
     @State private var showPhotoPicker = false
     @State private var photoPicker: PhotosPickerItem?
-
-    // Photo from camera
-
     @State private var showCamera = false
 
     // Focus

@@ -44,19 +44,26 @@ import SwiftUI
 
     // MARK: Update properties
 
+    @Published var showUpdateButtons = false
     @Published var isUpdating = false
     @Published var updateError = ""
     @Published var showNeedAuthAlert = false
     @Published var showConfirmEmailAlert = false
+    @Published var newAvatar: UIImage?
 
     // MARK: Private properties
 
     private let authRepo: AuthRepository
+    private let storageRepo: StorageRepository
 
     // MARK: Init
 
-    init(authRepo: AuthRepository = FirebaseAuthRepository()) {
+    init(
+        authRepo: AuthRepository = FirebaseAuthRepository(),
+        storageRepo: StorageRepository = FirebaseStorageRepository()
+    ) {
         self.authRepo = authRepo
+        self.storageRepo = storageRepo
         self.currentUser = authRepo.currentUser
     }
 }
@@ -80,6 +87,7 @@ extension AuthViewModel {
         email = currentUser?.email ?? ""
         userPhoto = currentUser?.photoURL?.absoluteString ?? ""
         password.removeAll()
+        newAvatar = nil
     }
 }
 
@@ -156,6 +164,14 @@ extension AuthViewModel {
         isUpdating = true
         defer { isUpdating = false }
         do {
+            /// Upload image
+            if let image = newAvatar, let userId = currentUser?.uid {
+                guard let imageData = image.jpegData(compressionQuality: 0.8) else {
+                    throw AppError.invalidImage
+                }
+                userPhoto = try await storageRepo.putData(imageData, into: .avatars, fileName: "\(userId).jpg")
+                newAvatar = nil
+            }
             /// Update name and avatar
             try await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
 
@@ -172,6 +188,15 @@ extension AuthViewModel {
     func cancelProfileUpdate() {
         updateError.removeAll()
         refreshProfile()
+        showUpdateButtons = false
+    }
+
+    func showUpdateButtonsIfNeeded() {
+        let show = currentUser?.displayName != userName
+            || currentUser?.email != email
+            || newAvatar != nil
+
+        showUpdateButtons = show
     }
 }
 

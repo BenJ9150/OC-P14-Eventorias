@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct ProfileView: View {
 
@@ -13,7 +14,13 @@ struct ProfileView: View {
     @EnvironmentObject var viewModel: AuthViewModel
     @StateObject private var notifViewModel = NotificationsViewModel()
 
-    @State private var showUpdateButtons = false
+    // Avatar
+
+    @State private var showPhotoPicker = false
+    @State private var photoPicker: PhotosPickerItem?
+    @State private var showCamera = false
+
+    // MARK: Body
 
     var body: some View {
         VStack(spacing: 0) {
@@ -21,8 +28,8 @@ struct ProfileView: View {
             ScrollView {
                 VStack {
                     textFields
-                    updateButtons
                     toggleNotifications
+                    updateButtons
                 }
             }
             .scrollIndicators(.hidden)
@@ -35,6 +42,9 @@ struct ProfileView: View {
         .padding(.horizontal)
         .onTapGesture {
             hideKeyboard()
+        }
+        .onAppear {
+            viewModel.showUpdateButtonsIfNeeded()
         }
         /// Need new authentification to update email alert
         .alert(
@@ -77,11 +87,68 @@ private extension ProfileView {
                 .font(.title3)
                 .fontWeight(.semibold)
             Spacer()
-            ImageView(url: viewModel.userPhoto, isAvatar: true)
+
+            Menu {
+                Button {
+                    showCamera.toggle()
+                } label: {
+                    Label("Take a photo", systemImage: "camera")
+                }
+                Button {
+                    showPhotoPicker.toggle()
+                } label: {
+                    Label("Choose from library", systemImage: "paperclip")
+                }
+                if !viewModel.userPhoto.isEmpty {
+                    Button {
+                        viewModel.userPhoto.removeAll()
+                    } label: {
+                        Label("Delete avatar", systemImage: "xmark.circle")
+                    }
+                }
+            } label: {
+                Group {
+                    if let newAvatar = viewModel.newAvatar {
+                        Image(uiImage: newAvatar)
+                            .resizable()
+                            .scaledToFill()
+                    } else {
+                        ImageView(url: viewModel.userPhoto, isAvatar: true)
+                    }
+                }
                 .frame(width: 48, height: 48)
                 .mask(Circle())
+            }
         }
         .padding(.bottom, 24)
+        .onChange(of: viewModel.newAvatar) {
+            viewModel.showUpdateButtonsIfNeeded()
+        }
+        .onChange(of: viewModel.userPhoto) {
+            viewModel.showUpdateButtonsIfNeeded()
+        }
+        /// Picture from library
+        .photosPicker(
+            isPresented: $showPhotoPicker,
+            selection: $photoPicker,
+            matching: .any(of: [.images, .screenshots, .panoramas])
+        )
+        .onChange(of: photoPicker) {
+            Task {
+                if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
+                    withAnimation {
+                        viewModel.newAvatar = UIImage(data: data)
+                    }
+                }
+            }
+        }
+        /// New picture from camera
+        .sheet(isPresented: $showCamera) {
+            TakePhotoViewRepresentable(
+                image: $viewModel.newAvatar,
+                isPresented: $showCamera
+            )
+        }
     }
 }
 
@@ -98,13 +165,6 @@ private extension ProfileView {
             )
             .textContentType(.name)
             .submitLabel(.done)
-            .onChange(of: viewModel.userName) { _, newValue in
-                if newValue != viewModel.currentUser?.displayName {
-                    showUpdateButtons = true
-                } else {
-                    showUpdateButtons = false
-                }
-            }
 
             AppTextFieldView(
                 "Email",
@@ -115,16 +175,15 @@ private extension ProfileView {
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
             .submitLabel(.done)
-            .onChange(of: viewModel.email) { _, newValue in
-                if newValue != viewModel.currentUser?.email {
-                    showUpdateButtons = true
-                } else {
-                    showUpdateButtons = false
-                }
-            }
         }
         /// Set max width for iPad or iphone in landscape
         .frame(maxWidth: 440)
+        .onChange(of: viewModel.userName) {
+            viewModel.showUpdateButtonsIfNeeded()
+        }
+        .onChange(of: viewModel.email) {
+            viewModel.showUpdateButtonsIfNeeded()
+        }
     }
 }
 
@@ -137,13 +196,13 @@ private extension ProfileView {
             if viewModel.isUpdating {
                 AppProgressView()
                     .padding()
-            } else if showUpdateButtons || !viewModel.updateError.isEmpty {
+            } else if viewModel.showUpdateButtons || !viewModel.updateError.isEmpty {
                 if !viewModel.updateError.isEmpty {
                     ErrorView(error: viewModel.updateError)
                 }
                 Button("Update") {
                     hideKeyboard()
-                    showUpdateButtons = false
+                    viewModel.showUpdateButtons = false
                     Task { await viewModel.udpate() }
                 }
                 .buttonStyle(AppButtonPlain(small: true))
@@ -156,6 +215,7 @@ private extension ProfileView {
                 .padding(.bottom, 48)
             }
         }
+        .padding(.top, 24)
     }
 }
 
