@@ -195,6 +195,7 @@ extension AuthViewModel {
         let show = currentUser?.displayName != userName
             || currentUser?.email != email
             || newAvatar != nil
+            || (currentUser?.photoURL?.absoluteString ?? "") != userPhoto
 
         showUpdateButtons = show
     }

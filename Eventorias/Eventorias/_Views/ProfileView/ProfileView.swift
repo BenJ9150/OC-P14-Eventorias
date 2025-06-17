@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct ProfileView: View {
 
@@ -17,7 +16,6 @@ struct ProfileView: View {
     // Avatar
 
     @State private var showPhotoPicker = false
-    @State private var photoPicker: PhotosPickerItem?
     @State private var showCamera = false
 
     // MARK: Body
@@ -127,28 +125,11 @@ private extension ProfileView {
         .onChange(of: viewModel.userPhoto) {
             viewModel.showUpdateButtonsIfNeeded()
         }
-        /// Picture from library
-        .photosPicker(
-            isPresented: $showPhotoPicker,
-            selection: $photoPicker,
-            matching: .any(of: [.images, .screenshots, .panoramas])
+        .takePhoto(
+            image: $viewModel.newAvatar,
+            showCamera: $showCamera,
+            showPhotoPicker: $showPhotoPicker
         )
-        .onChange(of: photoPicker) {
-            Task {
-                if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
-                    withAnimation {
-                        viewModel.newAvatar = UIImage(data: data)
-                    }
-                }
-            }
-        }
-        /// New picture from camera
-        .sheet(isPresented: $showCamera) {
-            TakePhotoViewRepresentable(
-                image: $viewModel.newAvatar,
-                isPresented: $showCamera
-            )
-        }
     }
 }
 

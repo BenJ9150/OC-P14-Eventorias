@@ -273,20 +273,35 @@ extension EventoriasTests {
 
 extension EventoriasTests {
 
-    func test_showUpdateButton() {
-        // Given user is updating
-        let authRepo = MockAuthRepository(isConnected: true)
+    func test_updateButtonsAreHidden() {
+        // Given user is connected
+        let authRepo = MockAuthRepository(isConnected: true, withAvatar: false)
         let viewModel = AuthViewModel(authRepo: authRepo)
         viewModel.refreshCurrentUser()
-        XCTAssertFalse(viewModel.showUpdateButtons)
-        viewModel.newAvatar = MockData().image()
 
         // When checking if need to show update buttons
         viewModel.showUpdateButtonsIfNeeded()
 
-        // Then is true
+        // Then is update buttons are hidden
+        XCTAssertFalse(viewModel.showUpdateButtons)
+    }
+
+    func test_updateButtonsArePresented() {
+        // Given user is connected
+        let authRepo = MockAuthRepository(isConnected: true)
+        let viewModel = AuthViewModel(authRepo: authRepo)
+        viewModel.refreshCurrentUser()
+
+        // And is removing avatar
+        viewModel.userPhoto = ""
+
+        // When checking if need to show update buttons
+        viewModel.showUpdateButtonsIfNeeded()
+
+        // Then buttons are presented
         XCTAssertTrue(viewModel.showUpdateButtons)
     }
+
     func test_UpdateSuccess() async {
         // Given user is connected
         let authRepo = MockAuthRepository(isConnected: true)

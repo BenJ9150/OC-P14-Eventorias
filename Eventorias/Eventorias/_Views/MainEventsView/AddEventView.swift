@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import PhotosUI
 
 struct AddEventView: View {
 
@@ -21,7 +20,6 @@ struct AddEventView: View {
     // Picture
 
     @State private var showPhotoPicker = false
-    @State private var photoPicker: PhotosPickerItem?
     @State private var showCamera = false
 
     // Focus
@@ -59,28 +57,11 @@ struct AddEventView: View {
             }
         }
         .navigationBarHidden(true)
-        /// Picture from library
-        .photosPicker(
-            isPresented: $showPhotoPicker,
-            selection: $photoPicker,
-            matching: .any(of: [.images, .screenshots, .panoramas])
+        .takePhoto(
+            image: $viewModel.addEventPhoto,
+            showCamera: $showCamera,
+            showPhotoPicker: $showPhotoPicker
         )
-        .onChange(of: photoPicker) {
-            Task {
-                if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
-                    withAnimation {
-                        viewModel.addEventPhoto = UIImage(data: data)
-                    }
-                }
-            }
-        }
-        /// New picture from camera
-        .sheet(isPresented: $showCamera) {
-            TakePhotoViewRepresentable(
-                image: $viewModel.addEventPhoto,
-                isPresented: $showCamera
-            )
-        }
     }
 }
 
@@ -156,7 +137,6 @@ private extension AddEventView {
             Button {
                 withAnimation(.bouncy(duration: 0.3)) {
                     viewModel.addEventPhoto = nil
-                    photoPicker = nil
                 }
             } label: {
                 ZStack {

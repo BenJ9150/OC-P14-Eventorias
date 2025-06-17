@@ -14,13 +14,13 @@ class MockAuthRepository: AuthRepository {
 
     // MARK: Init
     
-    init(withError codeError: Int? = nil, isConnected: Bool = false) {
+    init(withError codeError: Int? = nil, isConnected: Bool = false, withAvatar: Bool = true) {
         self.codeError = codeError
         if isConnected {
             currentUser = MockUser(
                 email: "test@test.com",
                 displayName: "TestName",
-                photoURL: URL(string: "https://www.test.com")
+                photoURL: withAvatar ? URL(string: "https://www.test.com") : nil
             )
         }
     }
