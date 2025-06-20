@@ -26,46 +26,14 @@ class MockDocumentRepository: DocumentRepository {
         if decodingError {
             throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: ""))
         }
-
-        /// Get json file name
-        let file: String
-
+        /// Return decoded data
         switch T.self {
         case is EventCategory.Type, is Optional<EventCategory>.Type:
-            file = "EventCategory"
+            return MockData().eventCategory() as! T
         case is Event.Type, is Optional<Event>.Type:
-            file = "Event"
+            return MockData().event() as! T
         default:
             fatalError("MockDocumentRepository: Unsupported type \(T.self)")
-        }
-
-        /// Set decoder date string format (like json file content)
-        let decoder = JSONDecoder()
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-        decoder.dateDecodingStrategy = .formatted(dateFormatter)
-
-        /// Try to return decoded data
-        return try decoder.decode(T.self, from: getData(jsonFile: file))
-    }
-}
-
-private extension MockDocumentRepository {
-
-    func getData(jsonFile: String) -> Data {
-        /// Get bundle for json localization
-        let bundle = Bundle(for: MockDocumentRepository.self)
-
-        /// Create url
-        guard let url = bundle.url(forResource: jsonFile, withExtension: "json") else {
-            return Data()
-        }
-        /// Return data
-        do {
-            let data = try Data(contentsOf: url)
-            return data
-        } catch {
-            return Data()
         }
     }
 }

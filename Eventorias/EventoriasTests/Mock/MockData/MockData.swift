@@ -13,6 +13,7 @@ class MockData {
 
     func event() -> Event {
         Event(
+            id: "1",
             createdBy: "xxxxxxxxxxxxx",
             avatar: "",
             address: "67 Parc Solidaire, Stade Municipal, Toulouse, 31000, France",
@@ -20,8 +21,13 @@ class MockData {
             date: .now,
             description: "Participate in our Charity Run to support local NGOs. All participants get a T-shirt and a finisher medal!",
             photoURL: "",
-            title: "Charity run"
+            title: "Charity run",
+            keywords: ["charity", "run"]
         )
+    }
+
+    func events() -> [Event] {
+        [event()]
     }
 
     func eventCategory() -> EventCategory {
@@ -29,10 +35,7 @@ class MockData {
     }
 
     func eventCategories() -> [EventCategory] {
-        [
-            EventCategory(id: "art_exhibitions", name: "Art & Exhibitions", emoji: "🎨"),
-            EventCategory(id: nil, name: "test", emoji: "")
-        ]
+        [eventCategory(), EventCategory(id: nil, name: "test", emoji: "")]
     }
 
     func image() -> UIImage {
