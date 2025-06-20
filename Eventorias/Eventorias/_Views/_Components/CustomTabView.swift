@@ -39,6 +39,12 @@ struct CustomTabView: View {
                 }
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
+            .onOpenURL { url in
+                Task(priority: .high) { await eventsViewModel.showEvent(from: url) }
+            }
+            .navigationDestination(item: $eventsViewModel.eventFromShare) { event in
+                EventDetailView(event: event)
+            }
         }
     }
 }

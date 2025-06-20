@@ -26,6 +26,11 @@ class AppEventRepository: EventRepository {
 
 extension AppEventRepository {
 
+    func fetchEvent(withId eventId: String) async throws -> Event? {
+        let document = try await dbRepo.fetchDocument(into: .events, docID: eventId)
+        return documentToEvent(document)
+    }
+
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {
         let categoryIds = categories.map({ $0.id ?? "" })
         let documents = try await dbRepo.fetchUpcomingDoc(into: .events, orderBy: orderBy, where: "category", isIn: categoryIds)
@@ -91,11 +96,15 @@ extension AppEventRepository {
 
     private func documentsToEvent(_ documents: [DocumentRepository]) -> [Event] {
         return documents.compactMap { document in
-            guard var event: Event = try? document.decodedData() else {
-                return nil
-            }
-            event.id = document.documentID
-            return event
+            return documentToEvent(document)
         }
+    }
+
+    private func documentToEvent(_ document: DocumentRepository) -> Event? {
+        guard var event: Event = try? document.decodedData() else {
+            return nil
+        }
+        event.id = document.documentID
+        return event
     }
 }

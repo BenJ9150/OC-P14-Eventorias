@@ -36,6 +36,10 @@ import MapKit
     @Published var eventSorting: DBSorting = .byTitle
     @Published var categoriesSelection: [EventCategory] = []
 
+    // Share event
+
+    @Published var eventFromShare: Event?
+
     // MARK: Private properties
 
     private struct AddEventForm {
@@ -110,5 +114,20 @@ extension EventsViewModel {
         searchEventsError.removeAll()
         searchResult.removeAll()
         userIsSearching = false
+    }
+}
+
+// MARK: Show event from URL
+
+extension EventsViewModel {
+    
+    func showEvent(from url: URL) async {
+        /// Get event id from url
+        guard url.scheme == Event.shareUrlScheme,
+              url.host == Event.shareUrlHost else {
+            return
+        }
+        /// Fetch event with its id
+        eventFromShare = try? await eventRepo.fetchEvent(withId: url.lastPathComponent)
     }
 }

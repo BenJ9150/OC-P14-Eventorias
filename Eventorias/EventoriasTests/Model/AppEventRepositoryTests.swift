@@ -9,8 +9,26 @@ import XCTest
 @testable import Eventorias
 
 final class AppEventRepositoryTests: XCTestCase {
+    
+    // MARK: Fetch event
+    
+    func test_FetchEventSuccess() async {
+        // Given
+        let dbRepo = MockDatabaseRepository()
+        let storageRepo = MockStorageRepository()
+        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        
+        // When fetch event
+        let event = try! await eventRepo.fetchEvent(withId: "testId")
+        
+        // Then event exist
+        XCTAssertEqual(event!.title, "Charity run")
+    }
+}
 
-    // MARK: Fetch events
+// MARK: Fetch events
+
+extension AppEventRepositoryTests {
 
     func test_FetchEventsSuccess() async {
         // Given
@@ -38,8 +56,11 @@ final class AppEventRepositoryTests: XCTestCase {
         // Then there is no event
         XCTAssertTrue(events.isEmpty)
     }
+}
 
-    // MARK: Fetch categories
+// MARK: Fetch categories
+
+extension AppEventRepositoryTests {
 
     func test_FetchCategoriesSuccess() async {
         // Given
@@ -66,8 +87,11 @@ final class AppEventRepositoryTests: XCTestCase {
         // Then there is no event category
         XCTAssertTrue(categories.isEmpty)
     }
+}
 
-    // MARK: Add event
+// MARK: Add event
+
+extension AppEventRepositoryTests {
 
     func test_AddEventSuccess() async {
         // Given
@@ -103,8 +127,11 @@ final class AppEventRepositoryTests: XCTestCase {
             XCTAssertEqual(appError.userMessage, AppError.invalidImage.userMessage)
         }
     }
+}
 
-    // MARK: Search
+// MARK: Search
+
+extension AppEventRepositoryTests {
 
     func test_FetchSearchSuccess() async {
         // Given

@@ -20,6 +20,10 @@ class MockDatabaseRepository: DatabaseRepository {
 
     // MARK: DatabaseRepository protocol
 
+    func fetchDocument(into collection: CollectionName, docID: String) async throws -> DocumentRepository {
+        return MockDocumentRepository(withDecodingError: decodingError)
+    }
+
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
         return [MockDocumentRepository(withDecodingError: decodingError)]
     }

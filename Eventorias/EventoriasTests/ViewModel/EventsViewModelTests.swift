@@ -42,6 +42,36 @@ import XCTest
     }
 }
 
+// MARK: Show event from URL
+
+extension EventsViewModelTests {
+
+    func test_ShowEventFromUrlSuccess() async {
+        // Given
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let eventToShow = MockData().event()
+        let url = eventToShow.shareURL!
+
+        // When show event
+        await viewModel.showEvent(from: url)
+        
+        // Then event is presented
+        XCTAssertEqual(eventToShow.title, viewModel.eventFromShare!.title)
+    }
+
+    func test_ShowEventFromUrlfailure() async {
+        // Given wrong url
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let url = URL(string: "www.test.com")!
+
+        // When show event
+        await viewModel.showEvent(from: url)
+        
+        // Then event is not presented
+        XCTAssertNil(viewModel.eventFromShare)
+    }
+}
+
 // MARK: Search
 
 extension EventsViewModelTests {

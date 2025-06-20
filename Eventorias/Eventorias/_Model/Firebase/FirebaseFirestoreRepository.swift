@@ -12,6 +12,10 @@ class FirebaseFirestoreRepository: DatabaseRepository {
 
     private let db = Firestore.firestore()
 
+    func fetchDocument(into collection: CollectionName, docID: String) async throws -> DocumentRepository {
+        return try await db.collection(collection.rawValue).document(docID).getDocument()
+    }
+
     func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
         try await db.collection(collection.rawValue).getDocuments().documents
     }

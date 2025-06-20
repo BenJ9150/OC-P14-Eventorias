@@ -10,6 +10,7 @@ import SwiftUI
 
 protocol EventRepository {
 
+    func fetchEvent(withId eventId: String) async throws -> Event?
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event]
     func fetchCategories() async throws -> [EventCategory]
     func addEvent(_ event: Event, image: UIImage) async throws

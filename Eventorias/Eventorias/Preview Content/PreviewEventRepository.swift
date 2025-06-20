@@ -23,6 +23,10 @@ class PreviewEventRepository {
 
 extension PreviewEventRepository: EventRepository {
 
+    func fetchEvent(withId eventId: String) async throws -> Event? {
+        return nil
+    }
+
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {
         try await Task.sleep(nanoseconds: 1_000_000_000)
         if networkError {
