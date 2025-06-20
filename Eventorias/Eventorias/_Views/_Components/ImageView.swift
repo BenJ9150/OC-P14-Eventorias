@@ -35,7 +35,7 @@ struct ImageView: View {
                         switch phase {
                         case .empty:
                             AppProgressView()
-                                .scaleEffect(0.6)
+                                .scaleEffect(isAvatar ? 0.4 : 0.6)
                         case .success(let image):
                             image
                                 .resizable()

@@ -18,4 +18,13 @@ struct Event: Identifiable, Codable {
     var photoURL: String = ""
     var title: String
     var keywords: [String] = []
+
+    // MARK: Share properties
+
+    static let shareUrlScheme: String = "eventorias"
+    static let shareUrlHost: String = "event"
+
+    var shareURL: URL? {
+        return URL(string: "\(Event.shareUrlScheme)://\(Event.shareUrlHost)/\(id ?? "")")
+    }
 }

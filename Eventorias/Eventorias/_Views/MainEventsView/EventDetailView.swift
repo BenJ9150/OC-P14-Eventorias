@@ -27,7 +27,7 @@ struct EventDetailView: View {
                 BackButtonView(title: event.title)
                 if verticalSize == .compact {
                     HStack(spacing: 16) {
-                        ImageView(url: event.photoURL)
+                        imageAndShareButton
                         ScrollView {
                             VStack(alignment: .leading, spacing: 16) {
                                 dateAndAuthor
@@ -41,7 +41,7 @@ struct EventDetailView: View {
                 } else {
                     ScrollView {
                         VStack(alignment: .leading, spacing: 22) {
-                            ImageView(url: event.photoURL)
+                            imageAndShareButton
                                 .frame(height: 364)
                             dateAndAuthor
                             description
@@ -151,6 +151,35 @@ private extension EventDetailView {
     }
 }
 
+// MARK: Image and share button
+
+private extension EventDetailView {
+
+    var imageAndShareButton: some View {
+        ZStack(alignment: .topTrailing) {
+            ImageView(url: event.photoURL)
+            shareButton
+        }
+    }
+    @ViewBuilder var shareButton: some View {
+        if let shareURL = event.shareURL {
+            ShareLink(
+                item: shareURL.absoluteString,
+                message: Text("\n---\nRegarde ça !"),
+                preview: SharePreview(event.title)
+            ) {
+                Image(systemName: "square.and.arrow.up")
+                    .foregroundStyle(Color.itemBackground)
+                    .font(.caption.bold())
+                    .padding(.all, 8)
+                    .padding(.bottom, 3)
+                    .background(Circle().fill(Color.white))
+                    .frame(minWidth: 44, minHeight: 44)
+            }
+            .padding(.all, 5)
+        }
+    }
+}
 
 // MARK: - Preview
 
