@@ -97,13 +97,13 @@ struct PreviewUser: AuthUser {
     var uid = UUID().uuidString
     var email: String? = "preview@eventorias.com"
     var displayName: String? = "Jean-Baptiste"
-    var photoURL: URL? = nil
+    var avatarURL: URL? = nil
 
     init(email: String? = nil) {
         if let email = email {
             self.email = email
         }
-        self.photoURL = getAvatarURL()
+        self.avatarURL = getAvatarURL()
     }
 
     func createUserProfileChangeRequest() -> AuthUserProfile {

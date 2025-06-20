@@ -15,4 +15,16 @@ class FirebaseStorageRepository: StorageRepository {
         _ = try await dataRef.putDataAsync(data, metadata: nil)
         return try await dataRef.downloadURL().absoluteString
     }
+
+    func deleteFile(_ fileName: String, from folder: StorageFolder) async throws {
+        let fileRef = Storage.storage().reference().child(folder.rawValue + "/" + fileName)
+        do {
+            try await fileRef.delete()
+        } catch let error as NSError {
+            /// Error code -13010: file not found, so already deleted
+            if error.code != -13010 {
+                throw error
+            }
+        }
+    }
 }

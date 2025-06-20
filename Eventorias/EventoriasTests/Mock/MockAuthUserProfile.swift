@@ -24,6 +24,6 @@ class MockAuthUserProfile: AuthUserProfile {
 
     func commitChanges() async throws {
         user.displayName = displayName
-        user.photoURL = photoURL
+        user.avatarURL = photoURL
     }
 }

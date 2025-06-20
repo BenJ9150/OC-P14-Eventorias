@@ -78,7 +78,7 @@ struct ImageView: View {
             .padding()
         
         HStack {
-            ImageView(url: PreviewUser().photoURL?.absoluteString ?? "", isAvatar: true)
+            ImageView(url: PreviewUser().avatarURL?.absoluteString ?? "", isAvatar: true)
                 .frame(width: 48, height: 48)
                 .mask(Circle())
             

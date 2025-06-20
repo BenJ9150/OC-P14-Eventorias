@@ -55,6 +55,7 @@ import SwiftUI
 
     private let authRepo: AuthRepository
     private let storageRepo: StorageRepository
+    private let blanckUrl = URL(string: "about:blank")
 
     // MARK: Init
 
@@ -85,9 +86,13 @@ extension AuthViewModel {
     private func refreshProfile() {
         userName = currentUser?.displayName ?? ""
         email = currentUser?.email ?? ""
-        userPhoto = currentUser?.photoURL?.absoluteString ?? ""
         password.removeAll()
+        refreshAvatar()
+    }
+
+    private func refreshAvatar() {
         newAvatar = nil
+        userPhoto = currentUser?.avatarURL?.absoluteString ?? ""
     }
 }
 
@@ -160,21 +165,23 @@ extension AuthViewModel {
 extension AuthViewModel {
 
     func udpate() async {
+        guard let user = currentUser else {
+            updateError = AppError.currentUserNotFound.userMessage
+            return
+        }
         updateError = ""
         isUpdating = true
         defer { isUpdating = false }
         do {
-            /// Upload image
-            if let image = newAvatar, let userId = currentUser?.uid {
-                guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-                    throw AppError.invalidImage
-                }
-                userPhoto = try await storageRepo.putData(imageData, into: .avatars, fileName: "\(userId).jpg")
-                newAvatar = nil
-            }
-            /// Update name and avatar
-            try await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
+            /// Update avatar on storage
+            let newPhotoUrl = try await updateAvatarOnStorage(user: user)
 
+            /// Update name and photo URL
+            try await authRepo.updateUser(displayName: userName, photoURL: newPhotoUrl)
+
+            /// Update local avatar data
+            refreshAvatar()
+            
             /// Update email
             if email != currentUser?.email {
                 try await authRepo.sendEmailVerification(beforeUpdatingEmail: email)
@@ -195,9 +202,29 @@ extension AuthViewModel {
         let show = currentUser?.displayName != userName
             || currentUser?.email != email
             || newAvatar != nil
-            || (currentUser?.photoURL?.absoluteString ?? "") != userPhoto
+            || (currentUser?.avatarURL?.absoluteString ?? "") != userPhoto
 
         showUpdateButtons = show
+    }
+
+    private func updateAvatarOnStorage(user: any AuthUser) async throws -> URL? {
+        let file = "\(user.uid).jpg"
+        
+        /// Upload new avatar (or replace current image if already set)
+        if let image = newAvatar {
+            let imageData = try image.jpegData(maxSize: 300)
+            let newURL = try await storageRepo.putData(imageData, into: .avatars, fileName: file)
+            return URL(string: newURL)
+        }
+
+        /// Delete avatar from storage
+        if userPhoto.isEmpty && user.avatarURL != nil {
+            try await storageRepo.deleteFile(file, from: .avatars)
+            return nil
+        }
+
+        /// return current URL, no update
+        return user.avatarURL
     }
 }
 

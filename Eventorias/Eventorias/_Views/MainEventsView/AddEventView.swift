@@ -75,7 +75,7 @@ private extension AddEventView {
                 VStack(spacing: 0) {
                     if !viewModel.addEventError.isEmpty {
                         ErrorView(error: viewModel.addEventError)
-                            .padding(.top, 24)
+                            .padding(.vertical, 24)
                             .id("top")
                     }
                     textFields

@@ -10,6 +10,7 @@ import Foundation
 protocol StorageRepository {
 
     func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> String
+    func deleteFile(_ fileName: String, from folder: StorageFolder) async throws
 }
 
 enum StorageFolder: String {

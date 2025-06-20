@@ -11,6 +11,8 @@ import Foundation
 class MockStorageRepository: StorageRepository {
 
     func putData(_ data: Data, into folder: StorageFolder, fileName: String) async throws -> String {
-        return "www.test.com"
+        return "www.test-update.com"
     }
+
+    func deleteFile(_ fileName: String, from folder: Eventorias.StorageFolder) async throws {}
 }

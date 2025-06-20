@@ -409,7 +409,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Eventorias/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "This app use camera to take picture of event";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app use camera to take picture of events or avatar";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app use library to take picture of events or avatar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -438,7 +439,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Eventorias/Info.plist;
-				INFOPLIST_KEY_NSCameraUsageDescription = "This app use camera to take picture of event";
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app use camera to take picture of events or avatar";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "This app use library to take picture of events or avatar";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";

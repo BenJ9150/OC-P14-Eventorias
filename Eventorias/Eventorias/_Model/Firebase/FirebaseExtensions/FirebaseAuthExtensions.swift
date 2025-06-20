@@ -9,6 +9,11 @@ import Foundation
 import FirebaseAuth
 
 extension FirebaseAuth.User: AuthUser {
+
+    var avatarURL: URL? {
+        self.photoURL == URL.empty ? nil : self.photoURL
+    }
+
     func createUserProfileChangeRequest() -> AuthUserProfile {
         self.createProfileChangeRequest()
     }

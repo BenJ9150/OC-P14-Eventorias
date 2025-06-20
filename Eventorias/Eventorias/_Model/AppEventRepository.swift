@@ -54,9 +54,7 @@ extension AppEventRepository {
         let eventId = dbRepo.generateDocumentID(for: .events)
 
         /// Upload image
-        guard let imageData = image.jpegData(compressionQuality: 0.8) else {
-            throw AppError.invalidImage
-        }
+        let imageData = try image.jpegData(maxSize: 600)
         let photoUrl = try await storageRepo.putData(imageData, into: .events, fileName: "\(eventId).jpg")
 
         /// Update Event

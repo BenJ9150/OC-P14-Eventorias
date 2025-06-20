@@ -100,7 +100,7 @@ class MockAuthRepository: AuthRepository {
         currentUser = MockUser(
             email: user.email,
             displayName: user.displayName,
-            photoURL: user.photoURL
+            photoURL: user.avatarURL
         )
     }
 }

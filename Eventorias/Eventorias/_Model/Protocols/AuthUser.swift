@@ -12,6 +12,6 @@ protocol AuthUser {
     var uid: String { get }
     var email: String? { get }
     var displayName: String? { get }
-    var photoURL: URL? { get }
+    var avatarURL: URL? { get }
     func createUserProfileChangeRequest() -> AuthUserProfile
 }

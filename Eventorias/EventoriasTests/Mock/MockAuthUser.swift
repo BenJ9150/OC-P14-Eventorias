@@ -15,7 +15,7 @@ class MockUser: AuthUser {
     init(email: String? = nil, displayName: String? = nil, photoURL: URL? = nil) {
         self.email = email
         self.displayName = displayName
-        self.photoURL = photoURL
+        self.avatarURL = photoURL
     }
 
     // MARK: AuthUser protocol
@@ -23,7 +23,7 @@ class MockUser: AuthUser {
     let uid = UUID().uuidString
     var email: String?
     var displayName: String?
-    var photoURL: URL?
+    var avatarURL: URL?
 
     func createUserProfileChangeRequest() -> AuthUserProfile {
         MockAuthUserProfile(user: self)

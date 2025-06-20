@@ -43,7 +43,12 @@ class FirebaseAuthRepository: AuthRepository {
         }
         let changeRequest = user.createProfileChangeRequest()
         changeRequest.displayName = displayName
-        changeRequest.photoURL = photoURL
+
+        /// Set "blanck URL" to clean old photo URL
+        /// (unfortunatly, just set value to nil doesn't erase old value...)
+        changeRequest.photoURL = photoURL == nil ? URL.empty : photoURL
+
+        /// Commit change to repo
         try await changeRequest.commitChanges()
     }
 

@@ -74,7 +74,7 @@ extension AddEventViewModel {
             try await eventRepo.addEvent(
                 Event(
                     createdBy: addEventForm.user.uid,
-                    avatar: addEventForm.user.photoURL?.absoluteString ?? "",
+                    avatar: addEventForm.user.avatarURL?.absoluteString ?? "",
                     address: addEventAddress,
                     category: addEventForm.categoryId,
                     date: addEventForm.date,
