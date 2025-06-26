@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-extension DocumentSnapshot: DocumentRepository {
+extension DocumentSnapshot: DatabaseDoc {
 
     func decodedData<T: Decodable>() throws -> T {
         try data(as: T.self)

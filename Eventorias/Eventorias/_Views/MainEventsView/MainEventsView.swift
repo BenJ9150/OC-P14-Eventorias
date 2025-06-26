@@ -18,10 +18,10 @@ struct MainEventsView: View {
     @Environment(\.verticalSizeClass) var verticalSize
 
     @ObservedObject var viewModel: EventsViewModel
-    @FocusState private var searchBarIsFocused: Bool
+    @Binding var showAddEventView: Bool
 
+    @FocusState private var searchBarIsFocused: Bool
     @State private var mode: DisplayMode = .list
-    @State private var showAddEventView = false
     @State private var showCategoryPicker = false
 
     private var eventErrorMessage: String {
@@ -56,12 +56,6 @@ struct MainEventsView: View {
                 errorMessage
             }
             Spacer()
-        }
-        .navigationDestination(isPresented: $showAddEventView) {
-            AddEventView(categories: viewModel.categories) {
-                /// Callback when event added
-                Task { await viewModel.fetchData() }
-            }
         }
     }
 }
@@ -409,7 +403,7 @@ private extension MainEventsView {
             Color.mainBackground
                 .ignoresSafeArea()
 
-            MainEventsView(viewModel: viewModel)
+            MainEventsView(viewModel: viewModel, showAddEventView: .constant(false))
                 .onAppear {
                     Task {
                         await viewModel.fetchData()

@@ -94,13 +94,13 @@ extension AppEventRepository {
 
 extension AppEventRepository {
 
-    private func documentsToEvent(_ documents: [DocumentRepository]) -> [Event] {
+    private func documentsToEvent(_ documents: [DatabaseDoc]) -> [Event] {
         return documents.compactMap { document in
             return documentToEvent(document)
         }
     }
 
-    private func documentToEvent(_ document: DocumentRepository) -> Event? {
+    private func documentToEvent(_ document: DatabaseDoc) -> Event? {
         guard var event: Event = try? document.decodedData() else {
             return nil
         }

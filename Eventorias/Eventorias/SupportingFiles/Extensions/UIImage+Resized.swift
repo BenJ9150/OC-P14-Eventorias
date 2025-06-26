@@ -38,7 +38,6 @@ extension UIImage {
             )
 
             let format = UIGraphicsImageRendererFormat.default()
-//            format.scale = 1
             let renderer = UIGraphicsImageRenderer(size: targetSize, format: format)
 
             finalImage = renderer.image { _ in

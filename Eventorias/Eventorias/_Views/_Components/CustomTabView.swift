@@ -13,7 +13,9 @@ struct CustomTabView: View {
     @Environment(\.verticalSizeClass) var verticalSize
 
     @ObservedObject var eventsViewModel: EventsViewModel
+
     @State private var selectedTab: Tab = .events
+    @State private var showAddEventView = false
 
     enum Tab {
         case events, profile
@@ -30,11 +32,14 @@ struct CustomTabView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    if selectedTab == .events {
-                        MainEventsView(viewModel: eventsViewModel)
-                    } else {
+                    TabView(selection: $selectedTab) {
+                        MainEventsView(viewModel: eventsViewModel, showAddEventView: $showAddEventView)
+                            .tag(Tab.events)
+                        
                         ProfileView()
+                            .tag(Tab.profile)
                     }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
                     customTabView
                 }
             }
@@ -44,6 +49,12 @@ struct CustomTabView: View {
             }
             .navigationDestination(item: $eventsViewModel.eventFromShare) { event in
                 EventDetailView(event: event)
+            }
+            .navigationDestination(isPresented: $showAddEventView) {
+                AddEventView(categories: eventsViewModel.categories) {
+                    /// Callback when event added
+                    Task { await eventsViewModel.fetchData() }
+                }
             }
         }
     }
@@ -94,7 +105,6 @@ private extension CustomTabView {
 
 @available(iOS 18.0, *)
 #Preview(traits: .withAuthViewModel()) {
-    @Previewable @State var isHidden: Bool = false
     let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
 
     CustomTabView(eventsViewModel: viewModel)

@@ -20,16 +20,16 @@ class MockDatabaseRepository: DatabaseRepository {
 
     // MARK: DatabaseRepository protocol
 
-    func fetchDocument(into collection: CollectionName, docID: String) async throws -> DocumentRepository {
-        return MockDocumentRepository(withDecodingError: decodingError)
+    func fetchDocument(into collection: CollectionName, docID: String) async throws -> DatabaseDoc {
+        return MockDatabaseDoc(withDecodingError: decodingError)
     }
 
-    func fetchDocuments(into collection: CollectionName) async throws -> [DocumentRepository] {
-        return [MockDocumentRepository(withDecodingError: decodingError)]
+    func fetchDocuments(into collection: CollectionName) async throws -> [DatabaseDoc] {
+        return [MockDatabaseDoc(withDecodingError: decodingError)]
     }
 
-    func fetchUpcomingDoc(into collection: CollectionName, orderBy: DBSorting, where field: String, isIn filters: [String]) async throws -> [DocumentRepository] {
-        return [MockDocumentRepository(withDecodingError: decodingError)]
+    func fetchUpcomingDoc(into collection: CollectionName, orderBy: DBSorting, where field: String, isIn filters: [String]) async throws -> [DatabaseDoc] {
+        return [MockDatabaseDoc(withDecodingError: decodingError)]
     }
 
     func addDocument<T>(_ data: T, into collection: Eventorias.CollectionName) async throws where T : Encodable {}
@@ -38,7 +38,7 @@ class MockDatabaseRepository: DatabaseRepository {
         return UUID().uuidString
     }
 
-    func search(into collection: Eventorias.CollectionName, field: String, contains values: [String]) async throws -> [DocumentRepository] {
-        return [MockDocumentRepository(withDecodingError: decodingError)]
+    func search(into collection: Eventorias.CollectionName, field: String, contains values: [String]) async throws -> [DatabaseDoc] {
+        return [MockDatabaseDoc(withDecodingError: decodingError)]
     }
 }

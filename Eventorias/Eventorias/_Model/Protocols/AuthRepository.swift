@@ -18,3 +18,19 @@ protocol AuthRepository {
     func sendEmailVerification(beforeUpdatingEmail email: String) async throws
     func reloadUser() async throws
 }
+
+protocol AuthUser {
+
+    var uid: String { get }
+    var email: String? { get }
+    var displayName: String? { get }
+    var avatarURL: URL? { get }
+    func createUserProfileChangeRequest() -> AuthUserProfile
+}
+
+protocol AuthUserProfile {
+
+    var displayName: String? { get set }
+    var photoURL: URL? { get set }
+    func commitChanges() async throws
+}

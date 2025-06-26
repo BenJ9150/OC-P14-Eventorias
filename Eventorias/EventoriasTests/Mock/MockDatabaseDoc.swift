@@ -1,5 +1,5 @@
 //
-//  MockDocumentRepository.swift
+//  MockDatabaseDoc.swift
 //  EventoriasTests
 //
 //  Created by Benjamin LEFRANCOIS on 02/05/2025.
@@ -8,7 +8,7 @@
 import Foundation
 @testable import Eventorias
 
-class MockDocumentRepository: DocumentRepository {
+class MockDatabaseDoc: DatabaseDoc {
 
     // MARK: Init
 
@@ -33,7 +33,7 @@ class MockDocumentRepository: DocumentRepository {
         case is Event.Type, is Optional<Event>.Type:
             return MockData().event() as! T
         default:
-            fatalError("MockDocumentRepository: Unsupported type \(T.self)")
+            fatalError("MockDatabaseDoc: Unsupported type \(T.self)")
         }
     }
 }

@@ -100,39 +100,38 @@ private extension AddEventView {
 private extension AddEventView {
 
     var imageButtons: some View {
-        VStack(spacing: 16) {
+        HStack(spacing: 16) {
+            Button {
+                showCamera.toggle()
+            } label: {
+                Image(systemName: "camera")
+            }
+            .buttonStyle(AppButtonSquare(white: true))
+            
+            Button {
+                showPhotoPicker.toggle()
+            } label: {
+                Image(systemName: "paperclip")
+                    .rotationEffect(Angle(degrees: -45))
+            }
+            .buttonStyle(AppButtonSquare(small: true))
+            
             if let photo = viewModel.addEventPhoto {
                 selectedPhoto(photo)
-            }
-            HStack(spacing: 16) {
-                Button {
-                    showCamera.toggle()
-                } label: {
-                    Image(systemName: "camera")
-                }
-                .buttonStyle(AppButtonSquare(white: true))
-                
-                Button {
-                    showPhotoPicker.toggle()
-                } label: {
-                    Image(systemName: "paperclip")
-                        .rotationEffect(Angle(degrees: -45))
-                }
-                .buttonStyle(AppButtonSquare(small: true))
+                    .frame(maxWidth: .infinity)
             }
         }
-        .padding(.vertical)
-        .padding(.horizontal)
+        .padding()
     }
 
     func selectedPhoto(_ photo: UIImage) -> some View {
         ZStack(alignment: .topTrailing) {
             Image(uiImage: photo)
                 .resizable()
-                .scaledToFill()
-                .frame(height: 160)
-                .clipped()
+                .scaledToFit()
+                .frame(maxHeight: 220)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
+                .clipped()
             
             Button {
                 withAnimation(.bouncy(duration: 0.3)) {

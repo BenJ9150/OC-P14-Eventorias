@@ -53,19 +53,13 @@ import SwiftUI
 
     // MARK: Private properties
 
-    private let authRepo: AuthRepository
-    private let storageRepo: StorageRepository
-    private let blanckUrl = URL(string: "about:blank")
+    private let userRepo: UserRepository
 
     // MARK: Init
 
-    init(
-        authRepo: AuthRepository = FirebaseAuthRepository(),
-        storageRepo: StorageRepository = FirebaseStorageRepository()
-    ) {
-        self.authRepo = authRepo
-        self.storageRepo = storageRepo
-        self.currentUser = authRepo.currentUser
+    init(userRepo: UserRepository = AppUserRepository()) {
+        self.userRepo = userRepo
+        refreshCurrentUser()
     }
 }
 
@@ -74,12 +68,12 @@ import SwiftUI
 extension AuthViewModel {
 
     func reloadCurrentUser() async {
-        try? await authRepo.reloadUser()
+        await userRepo.reloadUser()
         refreshCurrentUser()
     }
 
     func refreshCurrentUser() {
-        currentUser = authRepo.currentUser
+        currentUser = userRepo.getUser()
         refreshProfile()
     }
 
@@ -108,10 +102,7 @@ extension AuthViewModel {
         isCreating = true
         defer { isCreating = false }
         do {
-            currentUser = try await authRepo.createUser(withEmail: email, password: password)
-            if !userName.isEmpty {
-                try? await authRepo.updateUser(displayName: userName, photoURL: URL(string: userPhoto))
-            }
+            currentUser = try await userRepo.signUp(email: email, password: password, name: userName)
             refreshProfile()
         } catch {
             handleAuthRepoError(error, for: .signUp)
@@ -131,7 +122,7 @@ extension AuthViewModel {
         isConnecting = true
         defer { isConnecting = false }
         do {
-            currentUser = try await authRepo.signIn(withEmail: email, password: password)
+            currentUser = try await userRepo.signIn(withEmail: email, password: password)
             refreshProfile()
         } catch {
             handleAuthRepoError(error, for: .signIn)
@@ -152,7 +143,7 @@ extension AuthViewModel {
         isReseting = true
         defer { isReseting = false }
         do {
-            try await authRepo.sendPasswordReset(withEmail: email)
+            try await userRepo.sendPasswordReset(withEmail: email)
             resetPasswordSuccess = "Password reset email sent successfully!"
         } catch {
             handleAuthRepoError(error, for: .resetPassword)
@@ -165,28 +156,23 @@ extension AuthViewModel {
 extension AuthViewModel {
 
     func udpate() async {
-        guard let user = currentUser else {
-            updateError = AppError.currentUserNotFound.userMessage
-            return
-        }
         updateError = ""
         isUpdating = true
         defer { isUpdating = false }
         do {
-            /// Update avatar on storage
-            let newPhotoUrl = try await updateAvatarOnStorage(user: user)
-
+            /// Delete avatar if needed
+            if userPhoto.isEmpty {
+                try await userRepo.deleteUserPhoto()
+            }
             /// Update name and photo URL
-            try await authRepo.updateUser(displayName: userName, photoURL: newPhotoUrl)
+            try await userRepo.udpateUser(name: userName, avatar: newAvatar)
 
             /// Update local avatar data
             refreshAvatar()
             
             /// Update email
-            if email != currentUser?.email {
-                try await authRepo.sendEmailVerification(beforeUpdatingEmail: email)
-                showConfirmEmailAlert.toggle()
-            }
+            showConfirmEmailAlert = try await userRepo.udpateUser(email: email)
+
         } catch {
             handleAuthRepoError(error, for: .update)
         }
@@ -206,26 +192,6 @@ extension AuthViewModel {
 
         showUpdateButtons = show
     }
-
-    private func updateAvatarOnStorage(user: any AuthUser) async throws -> URL? {
-        let file = "\(user.uid).jpg"
-        
-        /// Upload new avatar (or replace current image if already set)
-        if let image = newAvatar {
-            let imageData = try image.jpegData(maxSize: 300)
-            let newURL = try await storageRepo.putData(imageData, into: .avatars, fileName: file)
-            return URL(string: newURL)
-        }
-
-        /// Delete avatar from storage
-        if userPhoto.isEmpty && user.avatarURL != nil {
-            try await storageRepo.deleteFile(file, from: .avatars)
-            return nil
-        }
-
-        /// return current URL, no update
-        return user.avatarURL
-    }
 }
 
 // MARK: Sign out
@@ -235,7 +201,7 @@ extension AuthViewModel {
     func signOut() {
         signOutError = ""
         do {
-            try authRepo.signOut()
+            try userRepo.signOut()
         } catch {
             handleAuthRepoError(error, for: .signOut)
         }
