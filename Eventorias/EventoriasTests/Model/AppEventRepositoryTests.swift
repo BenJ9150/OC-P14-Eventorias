@@ -14,10 +14,10 @@ final class AppEventRepositoryTests: XCTestCase {
     
     func test_FetchEventSuccess() async {
         // Given
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
-        
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         // When fetch event
         let event = try! await eventRepo.fetchEvent(withId: "testId")
         
@@ -32,9 +32,10 @@ extension AppEventRepositoryTests {
 
     func test_FetchEventsSuccess() async {
         // Given
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         let categories = MockData().eventCategories()
 
         // When fetch events
@@ -64,10 +65,10 @@ extension AppEventRepositoryTests {
 
     func test_FetchCategoriesSuccess() async {
         // Given
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
-
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         // When fetch event categories
         let categories = try! await eventRepo.fetchCategories()
 
@@ -77,10 +78,10 @@ extension AppEventRepositoryTests {
 
     func test_FetchCategoriesFailure() async {
         // Given invalid data
-        let dbRepo = MockDatabaseRepository(withDecodingError: true)
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
-
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(withDecodingError: true),
+            storageRepo: MockStorageRepository()
+        )
         // When fetch event categories
         let categories = try! await eventRepo.fetchCategories()
 
@@ -95,9 +96,10 @@ extension AppEventRepositoryTests {
 
     func test_AddEventSuccess() async {
         // Given
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         let event = MockData().event()
         let image = MockData().image()
 
@@ -112,9 +114,10 @@ extension AppEventRepositoryTests {
 
     func test_AddEventFailure() async {
         // Given invalid image
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         let event = MockData().event()
         let image = UIImage()
 
@@ -135,10 +138,10 @@ extension AppEventRepositoryTests {
 
     func test_FetchSearchSuccess() async {
         // Given
-        let dbRepo = MockDatabaseRepository()
-        let storageRepo = MockStorageRepository()
-        let eventRepo = AppEventRepository(dbRepo: dbRepo, storageRepo: storageRepo)
-
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
         // When search event
         let events = try! await eventRepo.searchEvents(with: "Run")
 

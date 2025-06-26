@@ -29,7 +29,12 @@ struct PreviewUser: AuthUser {
     }
 
     func createUserProfileChangeRequest() -> AuthUserProfile {
-        PreviewUserProfile()
+        class TempProfile: AuthUserProfile {
+            var displayName: String?
+            var photoURL: URL?
+            func commitChanges() async throws {}
+        }
+        return TempProfile()
     }
 
     private func getAvatarURL() -> URL {
@@ -41,15 +46,5 @@ struct PreviewUser: AuthUser {
             fatalError("Failed to get url of avatar.png")
         }
         return url
-    }
-}
-
-struct PreviewUserProfile: AuthUserProfile {
-
-    var displayName: String?
-    var photoURL: URL?
-    
-    func commitChanges() async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
     }
 }

@@ -112,7 +112,7 @@ extension AppUserRepository {
             return user
         }
         /// Delete user photo URL and image in storage
-        let userUpdated = try await authRepo.updateUser(displayName: user.displayName ?? "", photoURL: nil)
+        let userUpdated = try await authRepo.updateUser(displayName: user.displayName, photoURL: nil)
         try await storageRepo.deleteFile(avatarName(for: user), from: .avatars)
 
         /// Update avatar of events created by the user

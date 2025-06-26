@@ -37,7 +37,7 @@ class FirebaseAuthRepository: AuthRepository {
         }
     }
 
-    func updateUser(displayName: String, photoURL: URL?) async throws -> AuthUser {
+    func updateUser(displayName: String?, photoURL: URL?) async throws -> AuthUser {
         guard let user = Auth.auth().currentUser else {
             throw AuthErrorCode.userNotFound
         }
