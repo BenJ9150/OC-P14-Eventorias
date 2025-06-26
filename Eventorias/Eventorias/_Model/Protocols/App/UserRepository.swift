@@ -17,7 +17,7 @@ protocol UserRepository {
 
     func getUser() -> AuthUser?
     func reloadUser() async
-    func udpateUser(name: String, avatar: UIImage?) async throws
+    func udpateUser(name: String, avatar: UIImage?) async throws -> AuthUser
     func udpateUser(email: String) async throws -> Bool
-    func deleteUserPhoto() async throws
+    func deleteUserPhoto() async throws -> AuthUser
 }

@@ -37,7 +37,7 @@ class FirebaseAuthRepository: AuthRepository {
         }
     }
 
-    func updateUser(displayName: String, photoURL: URL?) async throws {
+    func updateUser(displayName: String, photoURL: URL?) async throws -> AuthUser {
         guard let user = Auth.auth().currentUser else {
             throw AuthErrorCode.userNotFound
         }
@@ -50,6 +50,12 @@ class FirebaseAuthRepository: AuthRepository {
 
         /// Commit change to repo
         try await changeRequest.commitChanges()
+
+        /// Return new data
+        guard let userUpdated = Auth.auth().currentUser else {
+            throw AuthErrorCode.userNotFound
+        }
+        return userUpdated
     }
 
     func sendEmailVerification(beforeUpdatingEmail email: String) async throws {

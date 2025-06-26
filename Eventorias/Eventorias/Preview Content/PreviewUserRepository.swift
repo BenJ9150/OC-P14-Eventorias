@@ -58,14 +58,10 @@ extension PreviewUserRepository: UserRepository {
         try? await canPerform()
     }
     
-    func udpateUser(name: String, avatar: UIImage?) async throws {
+    func udpateUser(name: String, avatar: UIImage?) async throws -> AuthUser {
         try await canPerform()
-        guard let user = currentUser as? PreviewUser else {
-            throw AppError.currentUserNotFound
-        }
-        var changeRequest = user.createUserProfileChangeRequest()
-        changeRequest.displayName = name
-        try await changeRequest.commitChanges()
+        currentUser = PreviewUser(name: name)
+        return currentUser!
     }
     
     func udpateUser(email: String) async throws -> Bool {
@@ -73,14 +69,10 @@ extension PreviewUserRepository: UserRepository {
         return email != currentUser?.email
     }
     
-    func deleteUserPhoto() async throws {
+    func deleteUserPhoto() async throws  -> AuthUser {
         try await canPerform()
-        guard let user = currentUser as? PreviewUser else {
-            throw AppError.currentUserNotFound
-        }
-        var changeRequest = user.createUserProfileChangeRequest()
-        changeRequest.photoURL = nil
-        try await changeRequest.commitChanges()
+        currentUser = PreviewUser(name: currentUser?.displayName, avatarURL: nil)
+        return currentUser!
     }
 }
 

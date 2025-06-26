@@ -9,19 +9,23 @@ import Foundation
 
 struct PreviewUser: AuthUser {
 
-    var uid = UUID().uuidString
+    let uid = UUID().uuidString
     var email: String? = "preview@eventorias.com"
     var displayName: String? = "Jean-Baptiste"
     var avatarURL: URL? = nil
 
-    init(email: String? = nil, name: String? = nil) {
+    init(email: String? = nil, name: String? = nil, avatarURL: URL? = nil) {
         if let currentEmail = email {
             self.email = currentEmail
         }
         if let currentName = name {
             self.displayName = currentName
         }
-        self.avatarURL = getAvatarURL()
+        if let currentAvatarURL = avatarURL {
+            self.avatarURL = currentAvatarURL
+        } else {
+            self.avatarURL = getAvatarURL()
+        }
     }
 
     func createUserProfileChangeRequest() -> AuthUserProfile {

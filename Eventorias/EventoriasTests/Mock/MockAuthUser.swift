@@ -10,8 +10,6 @@ import Foundation
 
 class MockUser: AuthUser {
 
-    // MARK: init
-
     init(email: String? = nil, displayName: String? = nil, photoURL: URL? = nil) {
         self.email = email
         self.displayName = displayName
@@ -27,5 +25,23 @@ class MockUser: AuthUser {
 
     func createUserProfileChangeRequest() -> AuthUserProfile {
         MockAuthUserProfile(user: self)
+    }
+}
+
+class MockAuthUserProfile: AuthUserProfile {
+
+    private let user: MockUser
+    init(user: MockUser) {
+        self.user = user
+    }
+
+    // MARK: AuthUserProfile Protocol
+
+    var displayName: String?
+    var photoURL: URL?
+
+    func commitChanges() async throws {
+        user.displayName = displayName
+        user.avatarURL = photoURL
     }
 }

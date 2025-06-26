@@ -8,36 +8,33 @@
 import XCTest
 @testable import Eventorias
 
-@MainActor final class EventoriasTests: XCTestCase {
+@MainActor final class AuthViewModelTests: XCTestCase {
 
     // MARK: Sign Up
 
     func test_SignUpSuccess() async {
         // Given valid data
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        let viewModel = AuthViewModel(userRepo: MockUserRepository())
         XCTAssertNil(viewModel.currentUser)
-        viewModel.email = "test@test.com"
+        viewModel.email = "testNewUser@test.com"
         viewModel.password = "xxxxxx"
-        viewModel.userName = "test"
-        viewModel.userPhoto = "https://www.test.com"
+        viewModel.userName = "NameNewUser"
 
         // When sign up
         await viewModel.signUp()
 
         // Then user is not nil and no error is displayed
-        XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
-        XCTAssertEqual(viewModel.email, "test@test.com")
+        XCTAssertEqual(viewModel.currentUser!.email, "testNewUser@test.com")
+        XCTAssertEqual(viewModel.email, "testNewUser@test.com")
         XCTAssertEqual(viewModel.password, "")
-        XCTAssertEqual(viewModel.currentUser!.displayName, "test")
-        XCTAssertEqual(viewModel.userName, "test")
-        XCTAssertEqual(viewModel.currentUser!.avatarURL!.absoluteString, "https://www.test.com")
-        XCTAssertEqual(viewModel.userPhoto, "https://www.test.com")
+        XCTAssertEqual(viewModel.currentUser!.displayName, "NameNewUser")
+        XCTAssertEqual(viewModel.userName, "NameNewUser")
         XCTAssertEqual(viewModel.signUpError, "")
     }
 
     func test_SignUpEmptyFields() async {
         // Given empty sign up fields
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        let viewModel = AuthViewModel(userRepo: MockUserRepository())
 
         // When sign up
         await viewModel.signUp()
@@ -51,8 +48,8 @@ import XCTest
 
     func test_SignUpInvalidEmailFormat() async {
         // Given invalid email format
-        let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let userRepo = MockUserRepository(withError: 17008)
+        let viewModel = AuthViewModel(userRepo: userRepo)
         viewModel.email = "test.com"
         viewModel.password = "test"
 
@@ -68,10 +65,10 @@ import XCTest
 
     func test_SignUpEmailAlreadyExist() async {
         // Given valid data but email already linked to an account
-        let authRepo = MockAuthRepository(withError: 17007)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.email = "test@test.com"
-        viewModel.password = "test"
+        let userRepo = MockUserRepository(withError: 17007)
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.email = userRepo.user.email!
+        viewModel.password = "xxxxxx"
 
         // When sign up
         await viewModel.signUp()
@@ -85,10 +82,10 @@ import XCTest
 
     func test_SignUpWeakPassword() async {
         // Given password does not meet requirements
-        let authRepo = MockAuthRepository(withError: 17026)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.email = "test@test.com"
-        viewModel.password = "test"
+        let userRepo = MockUserRepository(withError: 17026)
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.email = "testNewUser@test.com"
+        viewModel.password = "xxxxxx"
 
         // When sign up
         await viewModel.signUp()
@@ -103,24 +100,25 @@ import XCTest
 
 // MARK: Sign in
 
-extension EventoriasTests {
+extension AuthViewModelTests {
 
     func test_SignInSuccess() async {
         // Given valid data
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        let userRepo = MockUserRepository()
+        let viewModel = AuthViewModel(userRepo: userRepo)
         XCTAssertNil(viewModel.currentUser)
-        viewModel.email = "test@test.com"
-        viewModel.password = "test"
+        viewModel.email = userRepo.user.email!
+        viewModel.password = "xxxxxx"
         
         // When sign in
         await viewModel.signIn()
-        
+
         // Then user is not nil and no error is displayed
-        XCTAssertEqual(viewModel.currentUser!.email, "test@test.com")
-        XCTAssertEqual(viewModel.email, "test@test.com")
+        XCTAssertEqual(viewModel.currentUser!.email, userRepo.user.email!)
+        XCTAssertEqual(viewModel.email, userRepo.user.email!)
         XCTAssertEqual(viewModel.password, "")
-        XCTAssertEqual(viewModel.userName, "TestName")
-        XCTAssertEqual(viewModel.userPhoto, "https://www.test.com")
+        XCTAssertEqual(viewModel.userName, userRepo.user.displayName!)
+        XCTAssertEqual(viewModel.userPhoto, userRepo.user.avatarURL!.absoluteString)
         XCTAssertEqual(viewModel.emailError, "")
         XCTAssertEqual(viewModel.pwdError, "")
         XCTAssertEqual(viewModel.signInError, "")
@@ -128,7 +126,7 @@ extension EventoriasTests {
 
     func test_SignInEmptyFields() async {
         // Given empty sign in fields
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        let viewModel = AuthViewModel(userRepo: MockUserRepository())
 
         // When sign in
         await viewModel.signIn()
@@ -142,10 +140,10 @@ extension EventoriasTests {
 
     func test_SignInInvalidEmailFormat() async {
         // Given invalid email format
-        let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let userRepo = MockUserRepository(withError: 17008)
+        let viewModel = AuthViewModel(userRepo: userRepo)
         viewModel.email = "test.com"
-        viewModel.password = "test"
+        viewModel.password = "xxxxxx"
 
         // When sign in
         await viewModel.signIn()
@@ -159,10 +157,10 @@ extension EventoriasTests {
 
     func test_SignInInvalidCredentials() async {
         // Given invalid credentials
-        let authRepo = MockAuthRepository(withError: 17004)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.email = "test@test.com"
-        viewModel.password = "test"
+        let userRepo = MockUserRepository(withError: 17004)
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.email = "testUnkown@test.com"
+        viewModel.password = "xxxxxx"
 
         // When sign in
         await viewModel.signIn()
@@ -177,12 +175,13 @@ extension EventoriasTests {
 
 // MARK: Reset password
 
-extension EventoriasTests {
+extension AuthViewModelTests {
 
     func test_ResetPasswordSuccess() async {
         // Given email to reset is valid
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
-        viewModel.email = "test@test.com"
+        let userRepo = MockUserRepository()
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.email = userRepo.user.email!
 
         // When send password reset
         await viewModel.sendPasswordReset()
@@ -194,9 +193,9 @@ extension EventoriasTests {
 
     func test_ResetPasswordFailure() async {
         // Given unknown error
-        let authRepo = MockAuthRepository(withError: 97354846)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.email = "test@test.com"
+        let userRepo = MockUserRepository(withError: 97354846)
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.email = userRepo.user.email!
 
         // When send password reset
         await viewModel.sendPasswordReset()
@@ -208,7 +207,7 @@ extension EventoriasTests {
 
     func test_ResetPasswordEmptyEmail() async {
         // Given email to reset is empty
-        let viewModel = AuthViewModel(authRepo: MockAuthRepository())
+        let viewModel = AuthViewModel(userRepo: MockUserRepository())
 
         // When send password reset
         await viewModel.sendPasswordReset()
@@ -220,8 +219,8 @@ extension EventoriasTests {
 
     func test_ResetPasswordInvalidEmailFormat() async {
         // Given invalid email format
-        let authRepo = MockAuthRepository(withError: 17008)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let userRepo = MockUserRepository(withError: 17008)
+        let viewModel = AuthViewModel(userRepo: userRepo)
         viewModel.email = "test.com"
 
         // When send password reset
@@ -236,12 +235,12 @@ extension EventoriasTests {
 
 // MARK: Sign out
 
-extension EventoriasTests {
+extension AuthViewModelTests {
 
     func test_SignOutSuccess() {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let userRepo = MockUserRepository(isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When sign out
         viewModel.signOut()
@@ -257,8 +256,8 @@ extension EventoriasTests {
 
     func test_SignOutFailure() {
         // Given user is connected but network issue
-        let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
+        let userRepo = MockUserRepository(withError: 17020, isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When sign out
         viewModel.signOut()
@@ -271,13 +270,12 @@ extension EventoriasTests {
 
 // MARK: Update
 
-extension EventoriasTests {
+extension AuthViewModelTests {
 
     func test_updateButtonsAreHidden() {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true, withAvatar: false)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.refreshCurrentUser()
+        let userRepo = MockUserRepository(isConnected: true, withAvatar: false)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When checking if need to show update buttons
         viewModel.showUpdateButtonsIfNeeded()
@@ -288,9 +286,8 @@ extension EventoriasTests {
 
     func test_updateButtonsArePresented() {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let viewModel = AuthViewModel(authRepo: authRepo)
-        viewModel.refreshCurrentUser()
+        let userRepo = MockUserRepository(isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // And is removing avatar
         viewModel.userPhoto = ""
@@ -304,10 +301,8 @@ extension EventoriasTests {
 
     func test_UpdateNameAndMailSuccess() async {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
-        viewModel.refreshCurrentUser()
+        let userRepo = MockUserRepository(isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When update name and email
         viewModel.userName = "TestUpdate"
@@ -315,8 +310,13 @@ extension EventoriasTests {
         await viewModel.udpate()
 
         // Then user name is updated without error
-        XCTAssertEqual(viewModel.currentUser?.displayName, "TestUpdate")
+        XCTAssertEqual(viewModel.currentUser!.displayName, "TestUpdate")
+        XCTAssertEqual(viewModel.userName, "TestUpdate")
         XCTAssertTrue(viewModel.updateError.isEmpty)
+
+        // New email is presented just locally
+        XCTAssertEqual(viewModel.currentUser!.email, userRepo.user.email!)
+        XCTAssertEqual(viewModel.email, "testupdate@test.com")
 
         // and alert for new email is presented
         XCTAssertTrue(viewModel.showConfirmEmailAlert)
@@ -324,24 +324,24 @@ extension EventoriasTests {
 
     func test_UpdateAvatarSuccess() async {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let userRepo = MockUserRepository(isConnected: true, withAvatar: false)
+        let viewModel = AuthViewModel(userRepo: userRepo)
+        XCTAssertTrue(viewModel.userPhoto.isEmpty)
 
         // When update avatar
         viewModel.newAvatar = MockData().image()
         await viewModel.udpate()
 
         // Then photo URL is updated without error
-        XCTAssertEqual(viewModel.currentUser?.avatarURL?.absoluteString, "www.test-update.com")
+        XCTAssertFalse(viewModel.currentUser!.avatarURL!.absoluteString.isEmpty)
+        XCTAssertFalse(viewModel.userPhoto.isEmpty)
         XCTAssertTrue(viewModel.updateError.isEmpty)
     }
 
     func test_UpdateEmailNeedAuth() async {
         // Given user is connected from long time
-        let authRepo = MockAuthRepository(withError: 17014, isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let userRepo = MockUserRepository(withError: 17014, isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When update user email
         viewModel.email = "testupdate@test.com"
@@ -354,15 +354,14 @@ extension EventoriasTests {
         // And when user sign out to refresh auth
         viewModel.signOutToRefreshAuth()
 
-        // Then current email is saved for sign in view
-        XCTAssertEqual(viewModel.email, "test@test.com")
+        // Then old email is saved for sign in view
+        XCTAssertEqual(viewModel.email, userRepo.user.email!)
     }
 
     func test_UpdateFailureCauseAvatar() async {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let userRepo = MockUserRepository(isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When update avatar with invalid image
         viewModel.newAvatar = UIImage()
@@ -374,9 +373,8 @@ extension EventoriasTests {
 
     func test_UpdateFailureCauseNetwork() async {
         // Given network error
-        let authRepo = MockAuthRepository(withError: 17020, isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let userRepo = MockUserRepository(withError: 17020, isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
 
         // When update user
         viewModel.userName = "TestUpdate"
@@ -388,9 +386,7 @@ extension EventoriasTests {
 
     func test_UpdateFailureCauseNoUser() async {
         // Given no user
-        let authRepo = MockAuthRepository()
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let viewModel = AuthViewModel(userRepo: MockUserRepository())
 
         // When update user
         viewModel.userName = "TestUpdate"
@@ -402,11 +398,9 @@ extension EventoriasTests {
 
     func test_CancelUpdate() async {
         // Given user is connected
-        let authRepo = MockAuthRepository(isConnected: true)
-        let storageRepo = MockStorageRepository()
-        let viewModel = AuthViewModel(authRepo: authRepo, storageRepo: storageRepo)
+        let userRepo = MockUserRepository(isConnected: true)
+        let viewModel = AuthViewModel(userRepo: userRepo)
         await viewModel.reloadCurrentUser()
-        let userBeforUpdate = viewModel.currentUser!
 
         // And user has changed his profile
         viewModel.userName = "TestUpdateCancel"
@@ -417,9 +411,9 @@ extension EventoriasTests {
         viewModel.cancelProfileUpdate()
 
         // Then user profile is refresh with old data
-        XCTAssertEqual(viewModel.userName, userBeforUpdate.displayName)
-        XCTAssertEqual(viewModel.email, userBeforUpdate.email)
-        XCTAssertEqual(viewModel.userPhoto, userBeforUpdate.avatarURL!.absoluteString)
+        XCTAssertEqual(viewModel.userName, userRepo.user.displayName)
+        XCTAssertEqual(viewModel.email, userRepo.user.email)
+        XCTAssertEqual(viewModel.userPhoto, userRepo.user.avatarURL!.absoluteString)
         XCTAssertNil(viewModel.newAvatar)
     }
 }

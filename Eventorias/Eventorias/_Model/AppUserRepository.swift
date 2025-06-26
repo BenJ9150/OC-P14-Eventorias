@@ -32,7 +32,7 @@ extension AppUserRepository {
     func signUp(email: String, password: String, name: String) async throws -> AuthUser {
         let currentUser = try await authRepo.createUser(withEmail: email, password: password)
         if !name.isEmpty {
-            try? await authRepo.updateUser(displayName: name, photoURL: nil)
+            return try await authRepo.updateUser(displayName: name, photoURL: nil)
         }
         return currentUser
     }
@@ -82,7 +82,7 @@ extension AppUserRepository {
 
 extension AppUserRepository {
 
-    func udpateUser(name: String, avatar: UIImage?) async throws {
+    func udpateUser(name: String, avatar: UIImage?) async throws -> AuthUser {
         guard let user = authRepo.currentUser else {
             throw AppError.currentUserNotFound
         }
@@ -90,7 +90,7 @@ extension AppUserRepository {
         let photoURL = try await uploadNewAvatar(avatar: avatar, for: user)
 
         /// Update name and photo URL
-        try await authRepo.updateUser(displayName: name, photoURL: photoURL)
+        return try await authRepo.updateUser(displayName: name, photoURL: photoURL)
     }
 
     /// Returns true if email verification was sent
@@ -103,16 +103,16 @@ extension AppUserRepository {
         return true
     }
 
-    func deleteUserPhoto() async throws {
+    func deleteUserPhoto() async throws -> AuthUser {
         guard let user = authRepo.currentUser else {
             throw AppError.currentUserNotFound
         }
         guard user.avatarURL != nil else {
             /// No avatar to delete
-            return
+            return user
         }
         /// Delete user photo URL and image in storage
-        try await authRepo.updateUser(displayName: user.displayName ?? "", photoURL: nil)
+        let userUpdated = try await authRepo.updateUser(displayName: user.displayName ?? "", photoURL: nil)
         try await storageRepo.deleteFile(avatarName(for: user), from: .avatars)
 
         /// Update avatar of events created by the user
@@ -123,6 +123,7 @@ extension AppUserRepository {
             fieldToUpdate: "avatar",
             newValue: ""
         )
+        return userUpdated
     }
 }
 

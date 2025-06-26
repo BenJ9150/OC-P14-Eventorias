@@ -162,10 +162,10 @@ extension AuthViewModel {
         do {
             /// Delete avatar if needed
             if userPhoto.isEmpty {
-                try await userRepo.deleteUserPhoto()
+                currentUser = try await userRepo.deleteUserPhoto()
             }
             /// Update name and photo URL
-            try await userRepo.udpateUser(name: userName, avatar: newAvatar)
+            currentUser = try await userRepo.udpateUser(name: userName, avatar: newAvatar)
 
             /// Update local avatar data
             refreshAvatar()

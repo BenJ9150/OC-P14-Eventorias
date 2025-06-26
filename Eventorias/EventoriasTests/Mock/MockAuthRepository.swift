@@ -30,10 +30,7 @@ class MockAuthRepository: AuthRepository {
     var currentUser: AuthUser?
 
     func signIn(withEmail email: String, password: String) async throws -> AuthUser {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+        try canPerform()
         let user = MockUser(
             email: email,
             displayName: "TestName",
@@ -44,56 +41,33 @@ class MockAuthRepository: AuthRepository {
     }
 
     func sendPasswordReset(withEmail email: String) async throws {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+        try canPerform()
     }
 
     func signOut() throws {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+        try canPerform()
         currentUser = nil
     }
 
-    func createUser(withEmail email: String, password: String) async throws -> any Eventorias.AuthUser {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+    func createUser(withEmail email: String, password: String) async throws -> AuthUser {
+        try canPerform()
         let user = MockUser(email: email)
         currentUser = user
         return user
     }
 
-    func updateUser(displayName: String, photoURL: URL?) async throws {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
-        guard let user = currentUser as? MockUser else {
-            throw AppError.currentUserNotFound
-        }
-        var changeRequest = user.createUserProfileChangeRequest()
-        changeRequest.displayName = displayName
-        changeRequest.photoURL = photoURL
-        try await changeRequest.commitChanges()
+    func updateUser(displayName: String, photoURL: URL?) async throws -> AuthUser {
+        try canPerform()
+        currentUser = MockUser(email: currentUser?.email, displayName: displayName, photoURL: photoURL)
+        return currentUser!
     }
 
     func sendEmailVerification(beforeUpdatingEmail email: String) async throws {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+        try canPerform()
     }
 
     func reloadUser() async throws {
-        if let error = codeError {
-            let appError = AppError(forCode: error)
-            throw NSError(domain: appError.userMessage, code: appError.rawValue)
-        }
+        try canPerform()
         guard let user = currentUser as? MockUser else {
             throw AppError.currentUserNotFound
         }
@@ -102,5 +76,17 @@ class MockAuthRepository: AuthRepository {
             displayName: user.displayName,
             photoURL: user.avatarURL
         )
+    }
+}
+
+// MARK: Private
+
+extension MockAuthRepository {
+
+    private func canPerform() throws {
+        if let error = codeError {
+            let appError = AppError(forCode: error)
+            throw NSError(domain: appError.userMessage, code: appError.rawValue)
+        }
     }
 }
