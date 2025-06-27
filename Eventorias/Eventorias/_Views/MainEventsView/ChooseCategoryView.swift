@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ChooseCategoryView: View {
 
-    @ObservedObject var viewModel: EventsViewModel
+    @EnvironmentObject var viewModel: EventsViewModel
     @State private var currentSelection: [EventCategory] = []
 
     var body: some View {
@@ -79,11 +79,7 @@ private extension ChooseCategoryView {
 
 // MARK: - Preview
 
-#Preview {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
-
-    ChooseCategoryView(viewModel: viewModel)
-        .onAppear {
-            Task { await viewModel.fetchData() }
-        }
+@available(iOS 18.0, *)
+#Preview(traits: .withViewModels()) {
+    ChooseCategoryView()
 }

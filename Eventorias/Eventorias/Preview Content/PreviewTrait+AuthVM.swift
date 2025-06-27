@@ -17,6 +17,10 @@ extension PreviewTrait where T == Preview.ViewTraits {
     static func withAuthViewModelError() -> Self {
         .modifier(AuthViewModelPreviewWithError())
     }
+
+    static func withViewModels() -> Self {
+        .modifier(ViewModelsPreview())
+    }
 }
 
 struct AuthViewModelPreview: PreviewModifier {
@@ -45,5 +49,28 @@ struct AuthViewModelPreviewWithError: PreviewModifier {
     func body(content: Content, context: AuthViewModel) -> some View {
         content
             .environmentObject(context)
+    }
+}
+
+struct ViewModelsPreview: PreviewModifier {
+
+    @StateObject var eventsViewModel = EventsViewModel(eventRepo: PreviewEventRepository())
+
+    static func makeSharedContext() async throws -> AuthViewModel {
+        let userRepo = PreviewUserRepository()
+        let authViewModel = AuthViewModel(userRepo: userRepo)
+        
+        return authViewModel
+    }
+
+    func body(content: Content, context: AuthViewModel) -> some View {
+        content
+            .environmentObject(context)
+            .environmentObject(eventsViewModel)
+            .onAppear {
+                Task {
+                    await eventsViewModel.fetchData()
+                }
+            }
     }
 }

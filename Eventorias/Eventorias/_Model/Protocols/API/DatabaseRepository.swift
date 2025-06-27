@@ -12,9 +12,14 @@ protocol DatabaseRepository {
     func fetchDocument(into collection: CollectionName, docID: String) async throws -> DatabaseDoc
     func fetchDocuments(into collection: CollectionName) async throws -> [DatabaseDoc]
     func fetchUpcomingDoc(into collection: CollectionName, orderBy: DBSorting, where field: String, isIn filters: [String]) async throws -> [DatabaseDoc]
-    func addDocument<T: Encodable>(_ data: T, withID documentID: String, into collection: CollectionName) async throws
-    func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws
+
     func generateDocumentID(for collection: CollectionName) -> String
+    func addDocument<T: Encodable>(_ data: T, withID documentID: String, into collection: CollectionName) async throws
+
+    func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws
+    func updateDocuments(into collection: CollectionName, withID documentID: String?, arrayToUpdate: String, addValue: Any?) async throws
+    func updateDocuments(into collection: CollectionName, withID documentID: String?, arrayToUpdate: String, removeValue: Any?) async throws
+    
     func search(into collection: CollectionName, field: String, contains values: [String]) async throws -> [DatabaseDoc]
 }
 

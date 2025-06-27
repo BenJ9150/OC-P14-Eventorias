@@ -12,6 +12,8 @@ class FirebaseFirestoreRepository: DatabaseRepository {
 
     private let db = Firestore.firestore()
 
+    // MARK: Fetch
+
     func fetchDocument(into collection: CollectionName, docID: String) async throws -> DatabaseDoc {
         return try await db.collection(collection.rawValue).document(docID).getDocument()
     }
@@ -33,10 +35,18 @@ class FirebaseFirestoreRepository: DatabaseRepository {
         return try await query.getDocuments().documents
     }
 
+    // MARK: Add
+
+    func generateDocumentID(for collection: CollectionName) -> String {
+        return db.collection(collection.rawValue).document().documentID
+    }
+
     func addDocument<T: Encodable>(_ data: T, withID documentID: String, into collection: CollectionName) async throws {
         let encodedData = try Firestore.Encoder().encode(data)
         try await db.collection(collection.rawValue).document(documentID).setData(encodedData)
     }
+
+    // MARK: Update
 
     func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws {
         let documents = try await db
@@ -50,9 +60,21 @@ class FirebaseFirestoreRepository: DatabaseRepository {
         }
     }
 
-    func generateDocumentID(for collection: CollectionName) -> String {
-        return db.collection(collection.rawValue).document().documentID
+    func updateDocuments(into collection: CollectionName, withID documentID: String?, arrayToUpdate: String, addValue: Any?) async throws {
+        guard let docID = documentID, let value = addValue else {
+            throw AppError.unknown
+        }
+        try await db.collection(collection.rawValue).document(docID).updateData([arrayToUpdate: FieldValue.arrayUnion([value])])
     }
+
+    func updateDocuments(into collection: CollectionName, withID documentID: String?, arrayToUpdate: String, removeValue: Any?) async throws {
+        guard let docID = documentID, let value = removeValue else {
+            throw AppError.unknown
+        }
+        try await db.collection(collection.rawValue).document(docID).updateData([arrayToUpdate: FieldValue.arrayRemove([value])])
+    }
+
+    // MARK: Search
 
     func search(into collection: CollectionName, field: String, contains values: [String]) async throws -> [DatabaseDoc] {
         try await db

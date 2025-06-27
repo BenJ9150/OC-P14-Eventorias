@@ -18,6 +18,7 @@ struct Event: Identifiable, Codable, Hashable {
     var photoURL: String = ""
     var title: String
     var keywords: [String] = []
+    var participants: [String] = []
 
     // MARK: Share properties
 

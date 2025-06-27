@@ -13,6 +13,9 @@ struct EventDetailView: View {
     @Environment(\.verticalSizeClass) var verticalSize
     @Environment(\.dismiss) var dismiss
 
+    @EnvironmentObject var eventsViewModel: EventsViewModel
+    @EnvironmentObject var authViewModel: AuthViewModel
+
     @State private var coordinate: CLLocationCoordinate2D?
     @State private var region: MKCoordinateRegion?
 
@@ -104,9 +107,12 @@ private extension EventDetailView {
 private extension EventDetailView {
 
     var adressAndMap: some View {
-        HStack(spacing: 12) {
-            address
-            map
+        VStack {
+            HStack(spacing: 12) {
+                address
+                map
+            }
+            toggleParticipate
         }
     }
 
@@ -181,8 +187,44 @@ private extension EventDetailView {
     }
 }
 
+// MARK: Participate button
+
+private extension EventDetailView {
+
+    var toggleParticipate: some View {
+        HStack(spacing: 12) {
+            Toggle("Participate", isOn:
+                    Binding(
+                        get: { eventsViewModel.toggleParticipate },
+                        set: { newValue in
+                            Task {
+                                await eventsViewModel.toggleParticipation(
+                                    to: newValue,
+                                    event: event,
+                                    user: authViewModel.currentUser
+                                )
+                            }
+                        }
+                    )
+            )
+            .labelsHidden()
+            .tint(.accent)
+            Text("I participate")
+                .font(.callout)
+                .foregroundStyle(.white)
+            Spacer()
+        }
+        .padding(.top, 8)
+        .onAppear {
+            eventsViewModel.setParticipation(to: event, user: authViewModel.currentUser)
+        }
+    }
+}
+
 // MARK: - Preview
 
-#Preview {
-    EventDetailView(event: PreviewEventRepository().previewEvents().first!)
+@available(iOS 18.0, *)
+#Preview(traits: .withViewModels()) {
+    let event = PreviewEventRepository().previewEvents().first!
+    EventDetailView(event: event)
 }

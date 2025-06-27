@@ -9,7 +9,8 @@
       "description":"Participate in our Charity Run to support local NGOs. All participants get a T-shirt and a finisher medal!",
       "photoURL":"",
       "title":"Charity run",
-      "keywords":["charity", "run"]
+      "keywords":["charity", "run"],
+      "participants":[]
    },
    {
       "id":"2",
@@ -21,7 +22,8 @@
       "description":"Meet your favorite authors and get your books signed during this special Book Signing event. Workshops and readings included!",
       "photoURL":"",
       "title":"Book signing",
-      "keywords":["book", "signing"]
+      "keywords":["book", "signing"],
+      "participants":[]
    },
    {
       "id":"3",
@@ -33,7 +35,8 @@
       "description":"The biggest tech conference of the year! Keynotes, workshops, and networking with leaders in the tech industry. Don't miss it!",
       "photoURL":"",
       "title":"Biggest Technologic conference",
-      "keywords":["biggest", "technologic", "conference"]
+      "keywords":["biggest", "technologic", "conference"],
+      "participants":[]
    },
    {
       "id":"4",
@@ -45,7 +48,8 @@
       "description":"Taste local delicacies and international cuisines at our vibrant Food Fair. Perfect for foodies and families!",
       "photoURL":"",
       "title":"Food fair",
-      "keywords":["food", "fair"]
+      "keywords":["food", "fair"],
+      "participants":[]
    },
    {
       "id":"5",
@@ -57,7 +61,8 @@
       "description":"Premiere screening of award-winning films followed by a discussion with directors. Open to all cinephiles!",
       "photoURL":"",
       "title":"Film screening",
-      "keywords":["film", "screening"]
+      "keywords":["film", "screening"],
+      "participants":[]
    },
    {
       "id":"6",
@@ -69,7 +74,8 @@
       "description":"Join us for an unforgettable night of live performances by renowned bands and emerging artists. Music Festival for all ages!",
       "photoURL":"",
       "title":"Music festival",
-      "keywords":["music", "festival"]
+      "keywords":["music", "festival"],
+      "participants":[]
    },
    {
       "id":"7",
@@ -81,6 +87,7 @@
       "description":"Join us for an exclusive Art Exhibition showcasing the works of the talented artist Emily Johnson. This exhibition will feature a captivating collection of her contemporary and classical pieces, offering a unique insight into her creative journey. Whether you're an art enthusiast or a casual visitor, you'll have the chance to explore a diverse range of artworks.",
       "photoURL":"",
       "title":"Art exhibition",
-      "keywords":["art", "exhibition"]
+      "keywords":["art", "exhibition"],
+      "participants":[]
    }
 ]

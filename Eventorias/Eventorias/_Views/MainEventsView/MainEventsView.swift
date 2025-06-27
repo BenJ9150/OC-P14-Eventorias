@@ -17,7 +17,7 @@ struct MainEventsView: View {
     @Environment(\.dynamicTypeSize) var dynamicSize
     @Environment(\.verticalSizeClass) var verticalSize
 
-    @ObservedObject var viewModel: EventsViewModel
+    @EnvironmentObject var viewModel: EventsViewModel
     @Binding var showAddEventView: Bool
 
     @FocusState private var searchBarIsFocused: Bool
@@ -49,7 +49,7 @@ struct MainEventsView: View {
                     case .list:
                         eventsList
                     case .calendar:
-                        CalendarView(viewModel: viewModel)
+                        CalendarView()
                     }
                 }
             } else {
@@ -206,7 +206,7 @@ private extension MainEventsView {
             }
         }
         .sheet(isPresented: $showCategoryPicker) {
-            ChooseCategoryView(viewModel: viewModel)
+            ChooseCategoryView()
         }
         .onChange(of: viewModel.categoriesSelection) {
             Task { await viewModel.fetchData() }
@@ -395,22 +395,14 @@ private extension MainEventsView {
 
 // MARK: - Preview
 
-#Preview {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
-
+@available(iOS 18.0, *)
+#Preview(traits: .withViewModels()) {
     NavigationStack {
         ZStack {
             Color.mainBackground
                 .ignoresSafeArea()
 
-            MainEventsView(viewModel: viewModel, showAddEventView: .constant(false))
-                .onAppear {
-                    Task {
-                        await viewModel.fetchData()
-                        viewModel.categoriesSelection.append(viewModel.categories[1])
-                        viewModel.categoriesSelection.append(viewModel.categories[2])
-                    }
-                }
+            MainEventsView(showAddEventView: .constant(false))
         }
     }
 }

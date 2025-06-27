@@ -26,10 +26,11 @@ struct EventoriasApp: App {
                         Task { await eventsViewModel.fetchData() }
                     }
             } else {
-                CustomTabView(eventsViewModel: eventsViewModel)
+                CustomTabView()
             }
         }
         .environmentObject(authViewModel)
+        .environmentObject(eventsViewModel)
         .onChange(of: scenePhase) { _, newValue in
             if newValue == .active {
                 becomeActiveSetup()

@@ -40,6 +40,10 @@ import MapKit
 
     @Published var eventFromShare: Event?
 
+    // Participants
+
+    @Published private(set) var toggleParticipate = false
+
     // MARK: Private properties
 
     private struct AddEventForm {
@@ -129,5 +133,30 @@ extension EventsViewModel {
         }
         /// Fetch event with its id
         eventFromShare = try? await eventRepo.fetchEvent(withId: url.lastPathComponent)
+    }
+}
+
+// MARK: Participants
+
+extension EventsViewModel {
+
+    func setParticipation(to event: Event, user: AuthUser?) {
+        if let userId = user?.uid {
+            toggleParticipate = event.participants.contains(userId)
+        }
+    }
+
+    func toggleParticipation(to value: Bool, event: Event, user: AuthUser?) async {
+        toggleParticipate = value
+        
+        if toggleParticipate {
+            /// User want to participate
+            await eventRepo.addParticipant(eventId: event.id, userId: user?.uid)
+        } else {
+            /// User doesn't want to participate
+            await eventRepo.removeParticipant(eventId: event.id, userId: user?.uid)
+        }
+        /// Refresh events
+        await fetchData()
     }
 }

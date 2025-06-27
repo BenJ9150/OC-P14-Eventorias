@@ -89,6 +89,19 @@ extension AppEventRepository {
     }
 }
 
+// MARK: Participants
+
+extension AppEventRepository {
+
+    func addParticipant(eventId: String?, userId: String?) async {
+        try? await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", addValue: userId)
+    }
+
+    func removeParticipant(eventId: String?, userId: String?) async {
+        try? await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", removeValue: userId)
+    }
+}
+
 // MARK: Private
 
 extension AppEventRepository {

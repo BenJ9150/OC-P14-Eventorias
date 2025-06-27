@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CalendarView: View {
 
-    @ObservedObject var viewModel: EventsViewModel
+    @EnvironmentObject var viewModel: EventsViewModel
 
     private var calendarDetailIsPresented: Binding<Bool> {
         Binding(
@@ -20,7 +20,7 @@ struct CalendarView: View {
 
     var body: some View {
         NavigationStack {
-            CalendarUIViewRepresentable(viewModel: viewModel)
+            CalendarUIViewRepresentable()
                 .padding(.horizontal, 8)
                 .background(
                     Rectangle()
@@ -29,8 +29,8 @@ struct CalendarView: View {
                 .padding(.top)
                 .navigationDestination(isPresented: calendarDetailIsPresented) {
                     if let selected = viewModel.calendarEventsSelection {
-                        if selected.count == 1 {
-                            EventDetailView(event: selected.first!)
+                        if selected.count == 1, let event = selected.first {
+                            EventDetailView(event: event)
                         } else {
                             CalendarDetailsView(events: selected)
                         }
@@ -44,7 +44,7 @@ struct CalendarView: View {
 
 struct CalendarUIViewRepresentable: UIViewRepresentable {
     
-    @ObservedObject var viewModel: EventsViewModel
+    @EnvironmentObject var viewModel: EventsViewModel
     
     func makeUIView(context: Context) -> UIView {
         let container = UIView()
@@ -167,10 +167,7 @@ extension CalendarUIViewRepresentable {
 
 // MARK: - Preview
 
-#Preview {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository())
-    CalendarView(viewModel: viewModel)
-        .onAppear {
-            Task { await viewModel.fetchData() }
-        }
+@available(iOS 18.0, *)
+#Preview(traits: .withViewModels()) {
+    CalendarView()
 }

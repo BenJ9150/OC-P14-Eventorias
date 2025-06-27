@@ -12,7 +12,7 @@ struct CustomTabView: View {
     @Environment(\.dynamicTypeSize) var dynamicSize
     @Environment(\.verticalSizeClass) var verticalSize
 
-    @ObservedObject var eventsViewModel: EventsViewModel
+    @EnvironmentObject var eventsViewModel: EventsViewModel
 
     @State private var selectedTab: Tab = .events
     @State private var showAddEventView = false
@@ -33,7 +33,7 @@ struct CustomTabView: View {
                 
                 VStack(spacing: 0) {
                     TabView(selection: $selectedTab) {
-                        MainEventsView(viewModel: eventsViewModel, showAddEventView: $showAddEventView)
+                        MainEventsView(showAddEventView: $showAddEventView)
                             .tag(Tab.events)
                         
                         ProfileView()
@@ -104,13 +104,6 @@ private extension CustomTabView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModel()) {
-    let viewModel = EventsViewModel(eventRepo: PreviewEventRepository(withNetworkError: false))
-
-    CustomTabView(eventsViewModel: viewModel)
-        .onAppear {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                Task { await viewModel.fetchData() }
-            }
-        }
+#Preview(traits: .withViewModels()) {
+    CustomTabView()
 }

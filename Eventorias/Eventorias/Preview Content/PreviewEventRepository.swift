@@ -28,10 +28,7 @@ extension PreviewEventRepository: EventRepository {
     }
 
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        if networkError {
-            throw AppError.networkError
-        }
+        try await canPerform()
         var events = previewEvents()
         
         if !categories.isEmpty {
@@ -49,29 +46,29 @@ extension PreviewEventRepository: EventRepository {
     }
     
     func fetchCategories() async throws -> [EventCategory] {
-        if networkError {
-            throw AppError.networkError
-        }
+        try await canPerform()
         /// Try to return decoded data
         return try JSONDecoder().decode([EventCategory].self, from: getData(jsonFile: "EventCategories"))
     }
 
     func addEvent(_ event: Event, image: UIImage) async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        if networkError {
-            throw AppError.networkError
-        }
+        try await canPerform()
     }
 
     func searchEvents(with query: String) async throws -> [Event] {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
-        if networkError {
-            throw AppError.networkError
-        }
+        try await canPerform()
         let searchTerm = query.keywords()
         return previewEvents().filter { event in
             !Set(event.keywords).isDisjoint(with: searchTerm)
         }
+    }
+
+    func addParticipant(eventId: String?, userId: String?) async {
+        try? await canPerform()
+    }
+    
+    func removeParticipant(eventId: String?, userId: String?) async {
+        try? await canPerform()
     }
 }
 
@@ -105,7 +102,8 @@ extension PreviewEventRepository {
                 description: event.description,
                 photoURL: photoURL,
                 title: event.title,
-                keywords: event.keywords
+                keywords: event.keywords,
+                participants: event.participants
             )
         }
     }
@@ -159,5 +157,12 @@ private extension PreviewEventRepository {
             fatalError("Failed to get url of \(imageName).png")
         }
         return url.absoluteString
+    }
+
+    func canPerform() async throws {
+        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if networkError {
+            throw AppError.networkError
+        }
     }
 }
