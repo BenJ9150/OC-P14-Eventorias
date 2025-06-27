@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SignInView: View {
 
-    @Environment(\.verticalSizeClass) var verticalSizeClass
+    @Environment(\.verticalSizeClass) var verticalSize
     @EnvironmentObject var viewModel: AuthViewModel
 
     @State private var showEmailSignInView: Bool = false
@@ -21,9 +21,10 @@ struct SignInView: View {
                 Color.mainBackground
                     .ignoresSafeArea()
                 
-                if verticalSizeClass == .compact {
-                    HStack(spacing: 24) {
+                if verticalSize == .compact {
+                    HStack(spacing: 48) {
                         eventoriasIcon
+                            .frame(maxWidth: 200)
                         VStack(spacing: 0) {
                             Spacer()
                             signInButton
@@ -42,8 +43,7 @@ struct SignInView: View {
                         Spacer()
                         signUpButton
                     }
-                    /// Set max width for iPad
-                    .frame(maxWidth: 440)
+                    .frame(maxWidth: .maxWidthForPad)
                     .padding(.horizontal, 74)
                 }
             }
@@ -84,7 +84,7 @@ private extension SignInView {
             }
         }
         .buttonStyle(AppButtonPlain())
-        .padding(.top, verticalSizeClass == .compact ? 24 : 64)
+        .padding(.top, verticalSize == .compact ? 24 : 64)
     }
 
     var signUpButton: some View {
@@ -109,6 +109,11 @@ private extension SignInView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModel()) {
+#Preview(traits: .withAuthViewModel(withError: true)) {
+    @Previewable @EnvironmentObject var viewModel: AuthViewModel
     SignInView()
+        .onAppear {
+            viewModel.email = "test@example.com"
+            viewModel.password = "xxxxx"
+        }
 }

@@ -31,13 +31,55 @@ struct MainEventsView: View {
         return viewModel.searchEventsError
     }
 
+    init(showAddEventView: Binding<Bool>) {
+        self._showAddEventView = showAddEventView
+        UISegmentedControl.appearance().backgroundColor = UIColor(Color.itemBackground)
+        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.accentColor)
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .normal)
+    }
+
     // MARK: Body
 
     var body: some View {
         VStack(spacing: 0) {
-            searchBarWithCancelBtn
-            filterToolbar
+            if verticalSize == .compact {
+                HStack {
+                    VStack(spacing: 0) {
+                        searchBarWithCancelBtn
+                        displayModePicker
+                        if mode == .list {
+                            filterToolbar
+                        }
+                        Spacer()
+                    }
+                    .padding(.top)
+                    .frame(maxWidth: 280)
+                    bodyContent
+                        .frame(maxWidth: .infinity)
+                }
+            } else {
+                VStack(spacing: 0) {
+                    searchBarWithCancelBtn
+                    displayModePicker
+                    if mode == .list {
+                        filterToolbar
+                    }
+                }
+                .frame(maxWidth: .maxWidthForPad)
+                bodyContent
+                    .frame(maxWidth: .maxWidthForPad * 2)
+            }
+        }
+    }
+}
 
+// MARK: Body content
+
+private extension MainEventsView {
+
+    private var bodyContent: some View {
+        VStack(spacing: 0) {
             if viewModel.fetchingEvents {
                 Spacer()
                 AppProgressView()
@@ -50,6 +92,7 @@ struct MainEventsView: View {
                         eventsList
                     case .calendar:
                         CalendarView()
+                            .frame(maxWidth: verticalSize == .compact ? 250 : nil)
                     }
                 }
             } else {
@@ -159,23 +202,30 @@ private extension MainEventsView {
 
     var filterToolbar: some View {
         VStack {
-            if dynamicSize.isAccessibilitySize {
-                VStack(spacing: 8) {
-                    sortButton
-                    displayModePicker
-                }
+            if verticalSize == .compact {
+                sortButton
+                chooseCategoriesButton
             } else {
                 HStack(spacing: 0) {
+                    Spacer()
                     sortButton
                     Spacer()
-                    displayModePicker
+                    chooseCategoriesButton
+                    Spacer()
                 }
             }
-            chooseCategoriesButton
+            if !viewModel.categoriesSelection.isEmpty {
+                categoriesSelection
+            }
         }
-        .dynamicTypeSize(.xSmall ... .accessibility2)
+        .dynamicTypeSize(.xSmall ... .xxxLarge)
         .padding(.bottom, 8)
-        .padding(.horizontal)
+        .sheet(isPresented: $showCategoryPicker) {
+            ChooseCategoryView()
+        }
+        .onChange(of: viewModel.categoriesSelection) {
+            Task { await viewModel.fetchData() }
+        }
     }
 }
 
@@ -184,32 +234,20 @@ private extension MainEventsView {
 private extension MainEventsView {
 
     var chooseCategoriesButton: some View {
-        VStack {
+        Button {
+            showCategoryPicker.toggle()
+        } label: {
             HStack {
-                if !dynamicSize.isAccessibilitySize {
-                    Spacer()
-                }
-                Button {
-                    showCategoryPicker.toggle()
-                } label: {
-                    Text("Choose category")
-                        .foregroundStyle(.white)
-                        .font(.callout)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal)
-                        .background(Capsule().fill(Color.itemBackground))
-                }
-                .padding(.top, 4)
+                Image(systemName: "checklist")
+                    .font(.caption)
+                Text("Category")
+                    .font(.callout)
             }
-            if !viewModel.categoriesSelection.isEmpty {
-                categoriesSelection
-            }
-        }
-        .sheet(isPresented: $showCategoryPicker) {
-            ChooseCategoryView()
-        }
-        .onChange(of: viewModel.categoriesSelection) {
-            Task { await viewModel.fetchData() }
+            .foregroundStyle(.white)
+            .padding(.vertical, 8)
+            .padding(.horizontal)
+            .frame(minHeight: 40)
+            .background(Capsule().fill(Color.itemBackground))
         }
     }
 
@@ -241,6 +279,7 @@ private extension MainEventsView {
                 .frame(height: 0.5)
                 .padding(.horizontal, 24)
         }
+        .padding(.horizontal)
     }
 }
 
@@ -280,6 +319,7 @@ private extension MainEventsView {
                 .font(.callout)
             }
             .padding(.vertical, 8)
+            .frame(minHeight: 40)
             
         }
         .foregroundStyle(.white)
@@ -294,19 +334,23 @@ private extension MainEventsView {
 // MARK: Display mode picker
 
 private extension MainEventsView {
-
+    
     var displayModePicker: some View {
-        Picker("Mode", selection: $mode) {
-            Text("List")
-                .tag(DisplayMode.list)
-            Text("Calendar")
-                .tag(DisplayMode.calendar)
+        VStack(spacing: 16) {
+            Picker("Mode", selection: $mode) {
+                Text("List")
+                    .tag(DisplayMode.list)
+                Text("Calendar")
+                    .tag(DisplayMode.calendar)
+            }
+            .pickerStyle(.palette)
+            .padding(.horizontal, 24)
+            
+            Rectangle()
+                .fill(Color.itemBackground)
+                .frame(height: 1)
         }
-        .pickerStyle(.menu)
-        .tint(.white)
-        .background(
-            Capsule().fill(Color.itemBackground)
-        )
+        .padding(.bottom, 16)
     }
 }
 
@@ -331,6 +375,7 @@ private extension MainEventsView {
                 }
             }
         }
+        .dynamicTypeSize(.xSmall ... .accessibility2)
         .animation(.easeIn(duration: 0.2), value: searchBarIsFocused)
         .padding(.vertical, 8)
         .padding(.horizontal)

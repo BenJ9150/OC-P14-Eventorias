@@ -41,13 +41,13 @@ struct PasswordResetView: View {
                             .padding(.top, 24)
                     }
                 }
+                .frame(maxWidth: .maxWidthForPad)
                 .animation(.easeInOut(duration: 0.3), value: viewModel.resetPasswordSuccess)
                 .animation(.easeInOut(duration: 0.3), value: viewModel.resetPasswordError)
                 .scrollIndicators(.hidden)
-                /// Set max width for iPad or iPhone in landscape
-                .frame(maxWidth: 440)
                 .padding()
             }
+            .frame(maxWidth: .infinity)
             .background(Color.sheetBackground)
             .toolbar {
                 CloseButtonItem()

@@ -56,7 +56,7 @@ struct BackButtonView: View {
             .foregroundStyle(.white)
             Spacer()
         }
-        .padding(.bottom, 12)
+        .padding(.bottom, isPad ? 48 : 12)
     }
 }
 

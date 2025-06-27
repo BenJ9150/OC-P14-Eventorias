@@ -40,6 +40,7 @@ struct AppTextFieldView: View {
                 }
             }
             .textInputAutocapitalization(.never)
+            .dynamicTypeSize(.xSmall ... .accessibility2)
             .onChange(of: text) { oldValue, newValue in
                 if oldValue != newValue {
                     error.removeAll()

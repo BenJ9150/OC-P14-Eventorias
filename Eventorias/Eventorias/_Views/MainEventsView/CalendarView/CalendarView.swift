@@ -26,7 +26,6 @@ struct CalendarView: View {
                     Rectangle()
                         .fill(Color.itemBackground)
                 )
-                .padding(.top)
                 .navigationDestination(isPresented: calendarDetailIsPresented) {
                     if let selected = viewModel.calendarEventsSelection {
                         if selected.count == 1, let event = selected.first {

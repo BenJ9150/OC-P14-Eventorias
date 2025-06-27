@@ -8,6 +8,7 @@
 import SwiftUI
 
 extension View {
+
     var isPad: Bool {
         UIDevice.isPad
     }

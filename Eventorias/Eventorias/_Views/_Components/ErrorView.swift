@@ -59,9 +59,11 @@ struct ErrorView: View {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .padding(.bottom, 5)
+                .dynamicTypeSize(.xSmall ... .accessibility2)
             Text(error)
                 .font(.callout)
                 .multilineTextAlignment(.center)
+                .dynamicTypeSize(.xSmall ... .accessibility2)
         }
         .padding(.horizontal)
         .accessibilityElement(children: .ignore)

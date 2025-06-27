@@ -10,12 +10,9 @@ import SwiftUI
 @available(iOS 18.0, *)
 extension PreviewTrait where T == Preview.ViewTraits {
 
-    static func withAuthViewModel() -> Self {
-        .modifier(AuthViewModelPreview())
-    }
-
-    static func withAuthViewModelError() -> Self {
-        .modifier(AuthViewModelPreviewWithError())
+    static func withAuthViewModel(withError error: Bool = false) -> Self {
+        AuthViewModelPreview.error = error
+        return .modifier(AuthViewModelPreview())
     }
 
     static func withViewModels() -> Self {
@@ -24,31 +21,17 @@ extension PreviewTrait where T == Preview.ViewTraits {
 }
 
 struct AuthViewModelPreview: PreviewModifier {
+    static var error: Bool = false
 
     static func makeSharedContext() async throws -> AuthViewModel {
-        let userRepo = PreviewUserRepository()
+        let userRepo = PreviewUserRepository(withError: error ? 17020 : nil)
         let authViewModel = AuthViewModel(userRepo: userRepo)
         authViewModel.refreshCurrentUser()
         return authViewModel
     }
 
     func body(content: Content, context: AuthViewModel) -> some View {
-        content
-            .environmentObject(context)
-    }
-}
-
-struct AuthViewModelPreviewWithError: PreviewModifier {
-
-    static func makeSharedContext() async throws -> AuthViewModel {
-        let userRepo = PreviewUserRepository(withError: 17020)
-        let authViewModel = AuthViewModel(userRepo: userRepo)
-        return authViewModel
-    }
-
-    func body(content: Content, context: AuthViewModel) -> some View {
-        content
-            .environmentObject(context)
+        content.environmentObject(context)
     }
 }
 

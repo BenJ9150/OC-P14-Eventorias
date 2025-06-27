@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ProfileView: View {
 
+    @Environment(\.verticalSizeClass) var verticalSize
     @Environment(\.scenePhase) var scenePhase
+
     @EnvironmentObject var viewModel: AuthViewModel
     @StateObject private var notifViewModel = NotificationsViewModel()
 
@@ -21,55 +23,89 @@ struct ProfileView: View {
     // MARK: Body
 
     var body: some View {
-        VStack(spacing: 0) {
-            titleAndAvatar
-            ScrollView {
-                VStack {
-                    textFields
+        bodyContent
+            .onTapGesture {
+                hideKeyboard()
+            }
+            .onAppear {
+                viewModel.showUpdateButtonsIfNeeded()
+            }
+        
+            /// Need new authentification to update email alert
+            .alert(
+                AppError.emailUpdateNeedAuth.userMessage,
+                isPresented: $viewModel.showNeedAuthAlert
+            ) {
+                Button("Sign out", role: .destructive, action: { viewModel.signOutToRefreshAuth() })
+                Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
+            }
+        
+            /// Need to comfirm new email alert
+            .alert("Success!", isPresented: $viewModel.showConfirmEmailAlert) {
+                Button("Sign out", role: .destructive, action: { viewModel.signOut() })
+                Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
+            } message: {
+                Text("A confirmation email has been sent to your new email address.\n\n")
+                + Text("Once confirmed, you will need to log in again using this new email.")
+            }
+        
+            /// Need notifications authorization
+            .alert("We need your permission to send notifications", isPresented: $notifViewModel.showPermissionAlert) {
+                Button("Open Settings") {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Please enable notifications for this app in Settings.")
+            }
+    }
+}
+
+// MARK: Body content
+
+private extension ProfileView {
+
+    @ViewBuilder private var bodyContent: some View {
+        if verticalSize == .compact {
+            HStack(spacing: 24) {
+                VStack(alignment: .leading) {
+                    titleAndAvatar
                     toggleNotifications
-                    updateButtons
+                    Spacer()
+                    signOutButton
                 }
-            }
-            .scrollIndicators(.hidden)
-            Button("Sign out") {
-                viewModel.signOut()
-            }
-            .buttonStyle(AppButtonPlain(small: true))
-            .padding()
-        }
-        .padding(.horizontal)
-        .onTapGesture {
-            hideKeyboard()
-        }
-        .onAppear {
-            viewModel.showUpdateButtonsIfNeeded()
-        }
-        /// Need new authentification to update email alert
-        .alert(
-            AppError.emailUpdateNeedAuth.userMessage,
-            isPresented: $viewModel.showNeedAuthAlert
-        ) {
-            Button("Sign out", role: .destructive, action: { viewModel.signOutToRefreshAuth() })
-            Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
-        }
-        /// Need to comfirm new email alert
-        .alert("Success!", isPresented: $viewModel.showConfirmEmailAlert) {
-            Button("Sign out", role: .destructive, action: { viewModel.signOut() })
-            Button("Cancel", role: .cancel, action: { viewModel.refreshCurrentUser() })
-        } message: {
-            Text("A confirmation email has been sent to your new email address.\n\n")
-            + Text("Once confirmed, you will need to log in again using this new email.")
-        }
-        /// Need notifications authorization
-        .alert("We need your permission to send notifications", isPresented: $notifViewModel.showPermissionAlert) {
-            Button("Open Settings") {
-                if let url = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                .padding(.vertical, 24)
+                VStack(spacing: 0) {
+                    ScrollView {
+                        VStack {
+                            textFields
+                            updateButtons
+                        }
+                        .padding(.vertical, 24)
+                    }
+                    .scrollIndicators(.hidden)
+                    
                 }
+                .frame(maxWidth: .infinity)
+                .padding(.horizontal)
             }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("Please enable notifications for this app in Settings.")
+        } else {
+            VStack(spacing: 0) {
+                titleAndAvatar
+                ScrollView {
+                    VStack {
+                        textFields
+                        toggleNotifications
+                        updateButtons
+                    }
+                }
+                .scrollIndicators(.hidden)
+                signOutButton
+            }
+            .frame(maxWidth: .maxWidthForPad)
+            .padding(.horizontal)
         }
     }
 }
@@ -84,7 +120,11 @@ private extension ProfileView {
                 .foregroundStyle(.white)
                 .font(.title3)
                 .fontWeight(.semibold)
-            Spacer()
+                .dynamicTypeSize(.xSmall ... .accessibility3)
+
+            if verticalSize != .compact {
+                Spacer()
+            }
 
             Menu {
                 Button {
@@ -118,7 +158,8 @@ private extension ProfileView {
                 .mask(Circle())
             }
         }
-        .padding(.bottom, 24)
+        .padding(.top, isPad ? 48 : 0)
+        .padding(.bottom, isPad ? 48 : 24)
         .onChange(of: viewModel.newAvatar) {
             viewModel.showUpdateButtonsIfNeeded()
         }
@@ -157,8 +198,6 @@ private extension ProfileView {
             .keyboardType(.emailAddress)
             .submitLabel(.done)
         }
-        /// Set max width for iPad or iphone in landscape
-        .frame(maxWidth: 440)
         .onChange(of: viewModel.userName) {
             viewModel.showUpdateButtonsIfNeeded()
         }
@@ -183,7 +222,6 @@ private extension ProfileView {
                 }
                 Button("Update") {
                     hideKeyboard()
-                    viewModel.showUpdateButtons = false
                     Task { await viewModel.udpate() }
                 }
                 .buttonStyle(AppButtonPlain(small: true))
@@ -197,6 +235,21 @@ private extension ProfileView {
             }
         }
         .padding(.top, 24)
+    }
+}
+
+// MARK: Sign out button
+
+private extension ProfileView {
+
+    @ViewBuilder var signOutButton: some View {
+        if !viewModel.showUpdateButtons && viewModel.updateError.isEmpty {
+            Button("Sign out") {
+                viewModel.signOut()
+            }
+            .buttonStyle(AppButtonPlain(small: true))
+            .padding(.all, verticalSize == .compact ? 0 : 16)
+        }
     }
 }
 
@@ -219,9 +272,13 @@ private extension ProfileView {
             Text("Notifications")
                 .font(.callout)
                 .foregroundStyle(.white)
-            Spacer()
+
+            if verticalSize != .compact {
+                Spacer()
+            }
         }
-        .padding(.top, 8)
+        .dynamicTypeSize(.xSmall ... .accessibility3)
+        .padding(.top, verticalSize == .compact ? -4 : 8)
         .task { await notifViewModel.updateStatus() }
         .onChange(of: scenePhase) { _, newValue in
             if newValue == .active {
@@ -234,7 +291,7 @@ private extension ProfileView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModel()) {
+#Preview(traits: .withAuthViewModel(withError: true)) {
     ZStack {
         Color.mainBackground
             .ignoresSafeArea()

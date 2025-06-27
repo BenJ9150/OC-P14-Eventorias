@@ -63,6 +63,7 @@ private extension ChooseCategoryView {
                 .fill(Color.sheetBackground)
                 .frame(height: 1)
         }
+        .dynamicTypeSize(.xSmall ... .accessibility3)
     }
 
     func toggleSelection(for category: EventCategory) {

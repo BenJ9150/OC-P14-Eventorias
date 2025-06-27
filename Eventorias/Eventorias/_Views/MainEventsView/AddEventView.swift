@@ -50,7 +50,9 @@ struct AddEventView: View {
             VStack(spacing: 0) {
                 BackButtonView(title: "Creation of an event")
                 scrollContent
+                    .frame(maxWidth: .maxWidthForPad * 1.5)
                 validateButton
+                    .frame(maxWidth: .maxWidthForPad)
             }
             .onTapGesture {
                 hideKeyboard()
@@ -198,8 +200,6 @@ private extension AddEventView {
 
             categoryPicker
         }
-        /// Set max width for iPad or iphone in landscape
-        .frame(maxWidth: 440)
         .padding(.horizontal)
     }
 }
@@ -318,8 +318,6 @@ private extension AddEventView {
                 .buttonStyle(AppButtonPlain())
             }
         }
-        /// Set max width for iPad or iphone in landscape
-        .frame(maxWidth: 440)
         .padding()
     }
 }

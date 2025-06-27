@@ -16,8 +16,9 @@ struct LargeTitleView: View {
             .font(.largeTitle)
             .foregroundStyle(.white)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.bottom, 24)
+            .padding(.bottom, isPad ? 48 : 24)
             .accessibilityHidden(true)
+            .dynamicTypeSize(.xSmall ... .accessibility4)
     }
 }
 

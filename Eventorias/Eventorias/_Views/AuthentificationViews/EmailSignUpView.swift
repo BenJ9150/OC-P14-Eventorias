@@ -25,16 +25,15 @@ struct EmailSignUpView: View {
                 ScrollView {
                     LargeTitleView(title: "Sign up")
                     textFields
-                    signUpButton
                     if !viewModel.signUpError.isEmpty {
                         ErrorView(error: viewModel.signUpError)
-                            .padding(.top, 24)
+                            .padding(.bottom)
                     }
+                    signUpButton
                 }
+                .frame(maxWidth: .maxWidthForPad)
                 .animation(.easeInOut(duration: 0.3), value: viewModel.signUpError)
                 .scrollIndicators(.hidden)
-                /// Set max width for iPad or iPhone in landscape
-                .frame(maxWidth: 440)
                 .padding()
             }
             .withBackButton {
@@ -113,7 +112,7 @@ private extension EmailSignUpView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModelError()) {
+#Preview(traits: .withAuthViewModel(withError: true)) {
     @Previewable @EnvironmentObject var viewModel: AuthViewModel
     EmailSignUpView()
         .onAppear {

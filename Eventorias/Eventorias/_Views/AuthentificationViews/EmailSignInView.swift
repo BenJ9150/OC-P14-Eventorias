@@ -25,17 +25,16 @@ struct EmailSignInView: View {
                 ScrollView {
                     LargeTitleView(title: "Sign in with Email")
                     textFields
-                    signInButton
                     if !viewModel.signInError.isEmpty {
                         ErrorView(error: viewModel.signInError)
-                            .padding(.top, 24)
+                            .padding(.bottom)
                     }
+                    signInButton
                     forgotPwdButton
                 }
+                .frame(maxWidth: .maxWidthForPad)
                 .animation(.easeInOut(duration: 0.3), value: viewModel.signInError)
                 .scrollIndicators(.hidden)
-                /// Set max width for iPad or iPhone in landscape
-                .frame(maxWidth: 440)
                 .padding()
             }
             .withBackButton {
@@ -117,7 +116,7 @@ private extension EmailSignInView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModelError()) {
+#Preview(traits: .withAuthViewModel(withError: true)) {
     @Previewable @EnvironmentObject var viewModel: AuthViewModel
     EmailSignInView()
         .onAppear {

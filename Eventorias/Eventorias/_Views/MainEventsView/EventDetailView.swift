@@ -229,6 +229,7 @@ private extension EventDetailView {
             }
         }
         .frame(minHeight: 48)
+        .dynamicTypeSize(.xSmall ... .accessibility4)
         .onAppear {
             eventsViewModel.setParticipation(to: event, user: authViewModel.currentUser)
         }

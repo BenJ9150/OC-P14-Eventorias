@@ -44,7 +44,7 @@ import SwiftUI
 
     // MARK: Update properties
 
-    @Published var showUpdateButtons = false
+    @Published private(set) var showUpdateButtons = false
     @Published var isUpdating = false
     @Published var updateError = ""
     @Published var showNeedAuthAlert = false
@@ -156,9 +156,12 @@ extension AuthViewModel {
 extension AuthViewModel {
 
     func udpate() async {
+        showUpdateButtons = false
         updateError = ""
+
         isUpdating = true
         defer { isUpdating = false }
+
         do {
             /// Delete avatar if needed
             if userPhoto.isEmpty {

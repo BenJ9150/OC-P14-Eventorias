@@ -109,7 +109,6 @@ struct AppButtonSquare: ButtonStyle {
             }
         }
         .buttonStyle(AppButtonPlain(small: false))
-        .frame(maxWidth: 440)
         .padding(.horizontal, 74)
 
         Button("Forgot password?") {
