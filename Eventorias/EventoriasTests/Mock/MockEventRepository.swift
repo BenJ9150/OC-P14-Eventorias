@@ -25,39 +25,48 @@ class MockEventRepository {
 extension MockEventRepository: EventRepository {
 
     func fetchEvent(withId eventId: String) async throws -> Event? {
-        if networkError {
-            throw AppError.networkError
-        }
+        try canPerform()
         return MockData().event()
     }
 
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {
-        if networkError {
-            throw AppError.networkError
-        }
+        try canPerform()
         return MockData().events()
     }
     
     func fetchCategories() async throws -> [EventCategory] {
-        if networkError {
-            throw AppError.networkError
-        }
+        try canPerform()
         return MockData().eventCategories()
     }
 
     func addEvent(_ event: Eventorias.Event, image: UIImage) async throws {
-        if networkError {
-            throw AppError.networkError
-        }
+        try canPerform()
     }
 
     func searchEvents(with query: String) async throws -> [Event] {
-        if networkError {
-            throw AppError.networkError
-        }
+        try canPerform()
         let searchTerm = query.keywords()
         return MockData().events().filter { event in
             !Set(event.keywords).isDisjoint(with: searchTerm)
+        }
+    }
+
+    func addParticipant(eventId: String?, userId: String?) async throws {
+        try canPerform()
+    }
+    
+    func removeParticipant(eventId: String?, userId: String?) async throws {
+        try canPerform()
+    }
+}
+
+// MARK: Private
+
+extension MockEventRepository {
+
+    private func canPerform() throws {
+        if networkError {
+            throw AppError.networkError
         }
     }
 }

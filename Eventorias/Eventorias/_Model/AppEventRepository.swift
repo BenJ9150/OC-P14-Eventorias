@@ -93,12 +93,12 @@ extension AppEventRepository {
 
 extension AppEventRepository {
 
-    func addParticipant(eventId: String?, userId: String?) async {
-        try? await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", addValue: userId)
+    func addParticipant(eventId: String?, userId: String?) async throws {
+        try await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", addValue: userId)
     }
 
-    func removeParticipant(eventId: String?, userId: String?) async {
-        try? await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", removeValue: userId)
+    func removeParticipant(eventId: String?, userId: String?) async throws {
+        try await dbRepo.updateDocuments(into: .events, withID: eventId, arrayToUpdate: "participants", removeValue: userId)
     }
 }
 

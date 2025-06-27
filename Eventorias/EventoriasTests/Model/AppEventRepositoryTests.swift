@@ -149,3 +149,24 @@ extension AppEventRepositoryTests {
         XCTAssertEqual(events[0].title, "Charity run")
     }
 }
+
+// MARK: Participants
+
+extension AppEventRepositoryTests {
+
+    func test_UserParticipate() async {
+        // Given
+        let eventRepo = AppEventRepository(
+            dbRepo: MockDatabaseRepository(),
+            storageRepo: MockStorageRepository()
+        )
+        // When user want to participate or not
+        do {
+            try await eventRepo.addParticipant(eventId: "xxxxx", userId: "xxxxx")
+            try await eventRepo.removeParticipant(eventId: "xxxxx", userId: "xxxxx")
+            // Then no error is throw
+        } catch {
+            XCTFail("test_UserParticipate error: \(error.localizedDescription)")
+        }
+    }
+}

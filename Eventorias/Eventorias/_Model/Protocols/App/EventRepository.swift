@@ -15,6 +15,6 @@ protocol EventRepository {
     func fetchCategories() async throws -> [EventCategory]
     func addEvent(_ event: Event, image: UIImage) async throws
     func searchEvents(with query: String) async throws -> [Event]
-    func addParticipant(eventId: String?, userId: String?) async
-    func removeParticipant(eventId: String?, userId: String?) async
+    func addParticipant(eventId: String?, userId: String?) async throws
+    func removeParticipant(eventId: String?, userId: String?) async throws
 }

@@ -192,29 +192,43 @@ private extension EventDetailView {
 private extension EventDetailView {
 
     var toggleParticipate: some View {
-        HStack(spacing: 12) {
-            Toggle("Participate", isOn:
-                    Binding(
-                        get: { eventsViewModel.toggleParticipate },
-                        set: { newValue in
-                            Task {
-                                await eventsViewModel.toggleParticipation(
-                                    to: newValue,
-                                    event: event,
-                                    user: authViewModel.currentUser
-                                )
+        VStack(spacing: 16) {
+            HStack(spacing: 12) {
+                Toggle("Participate", isOn:
+                        Binding(
+                            get: { eventsViewModel.toggleParticipate },
+                            set: { newValue in
+                                Task {
+                                    await eventsViewModel.toggleParticipation(
+                                        to: newValue,
+                                        event: event,
+                                        user: authViewModel.currentUser
+                                    )
+                                }
                             }
-                        }
-                    )
-            )
-            .labelsHidden()
-            .tint(.accent)
-            Text("I participate")
-                .font(.callout)
-                .foregroundStyle(.white)
-            Spacer()
+                        )
+                )
+                .labelsHidden()
+                .tint(.accent)
+
+                Text("I participate")
+                    .font(.callout)
+                    .foregroundStyle(.white)
+
+                if eventsViewModel.updatingParticipant {
+                    AppProgressView()
+                        .scaleEffect(0.4)
+                }
+                Spacer()
+            }
+            if !eventsViewModel.toggleParticipateError.isEmpty {
+                Text("* \(eventsViewModel.toggleParticipateError)")
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .font(.footnote.bold())
+                    .foregroundStyle(Color.textError)
+            }
         }
-        .padding(.top, 8)
+        .frame(minHeight: 48)
         .onAppear {
             eventsViewModel.setParticipation(to: event, user: authViewModel.currentUser)
         }

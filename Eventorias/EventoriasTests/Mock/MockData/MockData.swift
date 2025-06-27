@@ -11,7 +11,7 @@ import SwiftUI
 
 class MockData {
 
-    func event() -> Event {
+    func event(participant: String = "xxxxxxxxxxxxx") -> Event {
         Event(
             id: "1",
             createdBy: "xxxxxxxxxxxxx",
@@ -22,7 +22,8 @@ class MockData {
             description: "Participate in our Charity Run to support local NGOs. All participants get a T-shirt and a finisher medal!",
             photoURL: "",
             title: "Charity run",
-            keywords: ["charity", "run"]
+            keywords: ["charity", "run"],
+            participants: [participant]
         )
     }
 
@@ -40,5 +41,9 @@ class MockData {
 
     func image() -> UIImage {
         return UIImage(named: "ImageTest", in: Bundle(for: MockData.self), with: nil)!
+    }
+
+    func user() -> AuthUser {
+        MockUser(email: "test@gmail.com", displayName: "Test", photoURL: nil)
     }
 }

@@ -43,6 +43,8 @@ import MapKit
     // Participants
 
     @Published private(set) var toggleParticipate = false
+    @Published var updatingParticipant = false
+    @Published var toggleParticipateError = ""
 
     // MARK: Private properties
 
@@ -147,14 +149,24 @@ extension EventsViewModel {
     }
 
     func toggleParticipation(to value: Bool, event: Event, user: AuthUser?) async {
+        let lastState = toggleParticipate
+        toggleParticipateError.removeAll()
         toggleParticipate = value
-        
-        if toggleParticipate {
-            /// User want to participate
-            await eventRepo.addParticipant(eventId: event.id, userId: user?.uid)
-        } else {
-            /// User doesn't want to participate
-            await eventRepo.removeParticipant(eventId: event.id, userId: user?.uid)
+
+        updatingParticipant = true
+        defer { updatingParticipant = false }
+        do {
+            if toggleParticipate {
+                /// User wants to participate
+                try await eventRepo.addParticipant(eventId: event.id, userId: user?.uid)
+            } else {
+                /// User no longer wants to participate
+                try await eventRepo.removeParticipant(eventId: event.id, userId: user?.uid)
+            }
+        } catch let nsError as NSError {
+            print("💥 Toggle participation error \(nsError.code): \(nsError.localizedDescription)")
+            toggleParticipateError = AppError(forCode: nsError.code).userMessage
+            toggleParticipate = lastState
         }
         /// Refresh events
         await fetchData()

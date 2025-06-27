@@ -138,3 +138,77 @@ extension EventsViewModelTests {
         XCTAssertEqual(viewModel.searchEventsError, AppError.networkError.userMessage)
     }
 }
+
+// MARK: Participants
+
+extension EventsViewModelTests {
+
+    func test_UserParticipateAtTheEvent() {
+        // Given user is on the participants list
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let user = MockData().user()
+        let event = MockData().event(participant: user.uid)
+
+        // When check if user is a participant
+        viewModel.setParticipation(to: event, user: user)
+
+        // Then user is a participant
+        XCTAssertTrue(viewModel.toggleParticipate)
+    }
+
+    func test_UserNotParticipateAtTheEvent() {
+        // Given user is not on the participants list
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let user = MockData().user()
+        let event = MockData().event()
+
+        // When check if user is a participant
+        viewModel.setParticipation(to: event, user: user)
+
+        // Then user is not a participant
+        XCTAssertFalse(viewModel.toggleParticipate)
+    }
+
+    func test_UserWantsToParticipateSuccess() async {
+        // Given user is not on the participants list
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let user = MockData().user()
+        let event = MockData().event()
+
+        // When user wants to participate
+        await viewModel.toggleParticipation(to: true, event: event, user: user)
+
+        // Then user is a participant and no error is thrown
+        XCTAssertTrue(viewModel.toggleParticipate)
+        XCTAssertTrue(viewModel.toggleParticipateError.isEmpty)
+    }
+
+    func test_UserNoLongerWantsToParticipateSuccess() async {
+        // Given user is on the participants list
+        let viewModel = EventsViewModel(eventRepo: MockEventRepository())
+        let user = MockData().user()
+        let event = MockData().event(participant: user.uid)
+
+        // When user no longer wants to participate
+        await viewModel.toggleParticipation(to: false, event: event, user: user)
+
+        // Then user is not a participant and no error is thrown
+        XCTAssertFalse(viewModel.toggleParticipate)
+        XCTAssertTrue(viewModel.toggleParticipateError.isEmpty)
+    }
+
+    func test_UserWantsToParticipateFailure() async {
+        // Given user is not on the participants list and network error
+        let eventRepo = MockEventRepository(withNetworkError: true)
+        let viewModel = EventsViewModel(eventRepo: eventRepo)
+        let user = MockData().user()
+        let event = MockData().event()
+
+        // When user wants to participate
+        await viewModel.toggleParticipation(to: true, event: event, user: user)
+
+        // Then user is still not on the list and error is thrown
+        XCTAssertFalse(viewModel.toggleParticipate)
+        XCTAssertEqual(viewModel.toggleParticipateError, AppError.networkError.userMessage)
+    }
+}
