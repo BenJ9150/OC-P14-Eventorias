@@ -33,9 +33,9 @@ class FirebaseFirestoreRepository: DatabaseRepository {
         return try await query.getDocuments().documents
     }
 
-    func addDocument<T: Encodable>(_ data: T, into collection: CollectionName) async throws {
+    func addDocument<T: Encodable>(_ data: T, withID documentID: String, into collection: CollectionName) async throws {
         let encodedData = try Firestore.Encoder().encode(data)
-        try await db.collection(collection.rawValue).document().setData(encodedData)
+        try await db.collection(collection.rawValue).document(documentID).setData(encodedData)
     }
 
     func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws {

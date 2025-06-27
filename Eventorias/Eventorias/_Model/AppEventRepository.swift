@@ -64,7 +64,6 @@ extension AppEventRepository {
 
         /// Update Event
         let finalEvent = Event(
-            id: eventId,
             createdBy: event.createdBy,
             avatar: event.avatar,
             address: event.address,
@@ -76,7 +75,7 @@ extension AppEventRepository {
             keywords: event.title.keywords()
         )
         /// Add event
-        try await dbRepo.addDocument(finalEvent, into: .events)
+        try await dbRepo.addDocument(finalEvent, withID: eventId, into: .events)
     }
 }
 

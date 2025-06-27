@@ -30,7 +30,7 @@ class MockDatabaseRepository: DatabaseRepository {
         return [MockDatabaseDoc(withDecodingError: decodingError)]
     }
 
-    func addDocument<T>(_ data: T, into collection: CollectionName) async throws where T : Encodable {}
+    func addDocument<T>(_ data: T, withID documentID: String, into collection: CollectionName) async throws where T : Encodable {}
 
     func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws {}
 
