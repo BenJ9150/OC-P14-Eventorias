@@ -46,6 +46,17 @@
                ReferencedContainer = "container:Eventorias.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO"
+            parallelizable = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "4368E2E42E0FD97F00D414BD"
+               BuildableName = "EventoriasUITests.xctest"
+               BlueprintName = "EventoriasUITests"
+               ReferencedContainer = "container:Eventorias.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

@@ -81,7 +81,9 @@ extension PreviewUserRepository: UserRepository {
 extension PreviewUserRepository {
 
     private func canPerform() async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if !AppFlags.isTestingSignIn {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
         try checkError()
     }
 

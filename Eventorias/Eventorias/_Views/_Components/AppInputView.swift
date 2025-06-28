@@ -45,7 +45,8 @@ struct AppInputView<Content: View>: View {
                 .scaleEffect(error.isEmpty ? 0.8 : 1)
                 .opacity(error.isEmpty ? 0 : 1)
                 .frame(minHeight: 24)
-                .accessibilityHidden(true)
+                .accessibilityIdentifier(error.isEmpty ? "" : error)
+                .accessibilityLabel("") /// not hidden for UI Testing
         }
         .animation(.interactiveSpring(duration: 0.3, extraBounce: 0.5), value: error)
         .onChange(of: error) { _, newValue in

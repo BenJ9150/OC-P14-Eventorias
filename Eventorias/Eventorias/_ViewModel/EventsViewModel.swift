@@ -60,7 +60,11 @@ import MapKit
     // MARK: Init
 
     init(eventRepo: EventRepository = AppEventRepository()) {
+#if DEBUG
+        self.eventRepo = AppFlags.isTesting ? PreviewEventRepository() : eventRepo
+#else
         self.eventRepo = eventRepo
+#endif
     }
 }
 

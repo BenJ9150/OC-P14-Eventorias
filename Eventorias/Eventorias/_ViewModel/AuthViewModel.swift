@@ -58,7 +58,17 @@ import SwiftUI
     // MARK: Init
 
     init(userRepo: UserRepository = AppUserRepository()) {
+#if DEBUG
+        if AppFlags.isTestingSignIn {
+            self.userRepo = PreviewUserRepository(isConnected: false)
+        } else if AppFlags.isTesting {
+            self.userRepo = PreviewUserRepository()
+        } else {
+            self.userRepo = userRepo
+        }
+#else
         self.userRepo = userRepo
+#endif
         refreshCurrentUser()
     }
 }

@@ -100,6 +100,7 @@ private extension SignInView {
                 showEmailSignUpView.toggle()
             }
             .buttonStyle(AppButtonBorderless())
+            .accessibilityIdentifier("GoToSignUp")
             .accessibilityLabel("Don't have an account yet? Sign up")
         }
     }

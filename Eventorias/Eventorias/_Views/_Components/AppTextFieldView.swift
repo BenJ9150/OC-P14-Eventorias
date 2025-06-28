@@ -39,6 +39,7 @@ struct AppTextFieldView: View {
                     TextField("", text: $text, prompt: formattedPrompt)
                 }
             }
+            .accessibilityIdentifier(title)
             .textInputAutocapitalization(.never)
             .dynamicTypeSize(.xSmall ... .accessibility2)
             .onChange(of: text) { oldValue, newValue in

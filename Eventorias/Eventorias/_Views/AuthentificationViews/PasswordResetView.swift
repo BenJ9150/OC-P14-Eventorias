@@ -24,6 +24,7 @@ struct PasswordResetView: View {
                         .onSubmit {
                             Task { await viewModel.sendPasswordReset() }
                         }
+                        .accessibilityIdentifier("EmailPasswordReset")
 
                     if !viewModel.resetPasswordSuccess.isEmpty {
                         Text(viewModel.resetPasswordSuccess)
