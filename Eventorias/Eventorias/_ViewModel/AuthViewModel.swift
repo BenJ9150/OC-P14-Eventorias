@@ -59,10 +59,11 @@ import SwiftUI
 
     init(userRepo: UserRepository = AppUserRepository()) {
 #if DEBUG
-        if AppFlags.isTestingSignIn {
-            self.userRepo = PreviewUserRepository(isConnected: false)
-        } else if AppFlags.isTesting {
-            self.userRepo = PreviewUserRepository()
+        if AppFlags.isTesting {
+            self.userRepo = PreviewUserRepository(
+                withError: AppFlags.isTestingUpdateNeedAuth ? 17014 : nil,
+                isConnected: !AppFlags.isTestingSignIn
+            )
         } else {
             self.userRepo = userRepo
         }

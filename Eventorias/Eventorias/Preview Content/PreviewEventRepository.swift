@@ -160,7 +160,9 @@ private extension PreviewEventRepository {
     }
 
     func canPerform() async throws {
-        try await Task.sleep(nanoseconds: 1_000_000_000)
+        if !AppFlags.isTesting {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+        }
         if networkError {
             throw AppError.networkError
         }

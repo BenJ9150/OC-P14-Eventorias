@@ -30,7 +30,7 @@ extension PreviewUserRepository: UserRepository {
 
     func signUp(email: String, password: String, name: String) async throws -> AuthUser {
         try await canPerform()
-        let user = PreviewUser(email: email, name: name)
+        let user = PreviewUser(email: email, name: name, avatarURL: nil)
         currentUser = user
         return user
     }
@@ -43,7 +43,7 @@ extension PreviewUserRepository: UserRepository {
     }
     
     func signOut() throws {
-        try checkError()
+        currentUser = nil
     }
     
     func sendPasswordReset(withEmail email: String) async throws {
@@ -60,7 +60,7 @@ extension PreviewUserRepository: UserRepository {
     
     func udpateUser(name: String, avatar: UIImage?) async throws -> AuthUser {
         try await canPerform()
-        currentUser = PreviewUser(name: name)
+        currentUser = PreviewUser(email: currentUser?.email, name: name, withAvatar: avatar != nil)
         return currentUser!
     }
     
@@ -71,7 +71,7 @@ extension PreviewUserRepository: UserRepository {
     
     func deleteUserPhoto() async throws  -> AuthUser {
         try await canPerform()
-        currentUser = PreviewUser(name: currentUser?.displayName, avatarURL: nil)
+        currentUser = PreviewUser(email: currentUser?.email, name: currentUser?.displayName, avatarURL: nil)
         return currentUser!
     }
 }
@@ -81,7 +81,7 @@ extension PreviewUserRepository: UserRepository {
 extension PreviewUserRepository {
 
     private func canPerform() async throws {
-        if !AppFlags.isTestingSignIn {
+        if !AppFlags.isTesting {
             try await Task.sleep(nanoseconds: 1_000_000_000)
         }
         try checkError()

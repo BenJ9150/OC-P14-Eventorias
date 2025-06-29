@@ -13,6 +13,7 @@ struct CustomTabView: View {
     @Environment(\.verticalSizeClass) var verticalSize
 
     @EnvironmentObject var eventsViewModel: EventsViewModel
+    @StateObject private var notifViewModel = NotificationsViewModel()
 
     @State private var selectedTab: Tab = .events
     @State private var showAddEventView = false
@@ -36,7 +37,7 @@ struct CustomTabView: View {
                         MainEventsView(showAddEventView: $showAddEventView)
                             .tag(Tab.events)
                         
-                        ProfileView()
+                        ProfileView(notifViewModel: notifViewModel)
                             .tag(Tab.profile)
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))

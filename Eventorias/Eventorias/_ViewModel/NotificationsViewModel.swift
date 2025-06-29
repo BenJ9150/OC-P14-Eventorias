@@ -15,7 +15,11 @@ import SwiftUI
     let notifRepo: NotificationsRepository
 
     init(notifRepo: NotificationsRepository = FirebaseNotifRepository()) {
+#if DEBUG
+        self.notifRepo = AppFlags.isTesting ? PreviewNotifRepository() : notifRepo
+#else
         self.notifRepo = notifRepo
+#endif
     }
 }
 

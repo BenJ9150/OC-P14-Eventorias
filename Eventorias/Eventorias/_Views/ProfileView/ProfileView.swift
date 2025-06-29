@@ -13,7 +13,7 @@ struct ProfileView: View {
     @Environment(\.scenePhase) var scenePhase
 
     @EnvironmentObject var viewModel: AuthViewModel
-    @StateObject private var notifViewModel = NotificationsViewModel()
+    @ObservedObject var notifViewModel: NotificationsViewModel
 
     // Avatar
 
@@ -151,6 +151,7 @@ private extension ProfileView {
                         Image(uiImage: newAvatar)
                             .resizable()
                             .scaledToFill()
+                            .accessibilityLabel("Avatar")
                     } else {
                         ImageView(url: viewModel.userPhoto, isAvatar: true)
                     }
@@ -158,6 +159,7 @@ private extension ProfileView {
                 .frame(width: 48, height: 48)
                 .mask(Circle())
             }
+            .accessibilityIdentifier("UserAvatar")
         }
         .padding(.top, isPad ? 48 : 0)
         .padding(.bottom, isPad ? 48 : 24)
@@ -281,10 +283,14 @@ private extension ProfileView {
 // MARK: - Preview
 
 @available(iOS 18.0, *)
-#Preview(traits: .withAuthViewModel(withError: true)) {
+#Preview(traits: .withAuthViewModel(withError: false)) {
+    @Previewable @EnvironmentObject var viewModel: AuthViewModel
     ZStack {
         Color.mainBackground
             .ignoresSafeArea()
-        ProfileView()
+        ProfileView(notifViewModel: NotificationsViewModel(notifRepo: PreviewNotifRepository()))
+            .onAppear {
+//                viewModel.email = "test@test.com"
+            }
     }
 }

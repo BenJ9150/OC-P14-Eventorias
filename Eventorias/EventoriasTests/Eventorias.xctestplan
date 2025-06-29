@@ -27,6 +27,7 @@
   },
   "testTargets" : [
     {
+      "parallelizable" : true,
       "target" : {
         "containerPath" : "container:Eventorias.xcodeproj",
         "identifier" : "4368E2E42E0FD97F00D414BD",

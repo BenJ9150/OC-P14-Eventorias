@@ -11,15 +11,32 @@ import SwiftUI
 
 struct AppFlags {
 
-    static let uiTesting = "--ui_testing"
-    static let uiTestingSignIn = "--ui_testing_sign_in"
+    static let previewEmail = "preview@eventorias.com"
+    static let previewName = "Jean-Baptiste"
 
-    static var isTesting: Bool {
-        CommandLine.arguments.contains(uiTesting)
-    }
+    static let uiTestingSignIn = "--ui_testing_sign_in"
+    static let uiTesting = "--ui_testing"
+    static let uiTestingNotif = "--ui_testing_notif"
+    static let uiTestingUpdateNeedAuth = "--ui_testing_update_need_auth"
 
     static var isTestingSignIn: Bool {
         CommandLine.arguments.contains(uiTestingSignIn)
+    }
+
+    static var isTestingNotif: Bool {
+        CommandLine.arguments.contains(uiTestingNotif)
+    }
+
+    static var isTestingUpdateNeedAuth: Bool {
+        CommandLine.arguments.contains(uiTestingUpdateNeedAuth)
+    }
+
+    static var isTesting: Bool {
+        if CommandLine.arguments.contains(uiTesting) { return true }
+        if CommandLine.arguments.contains(uiTestingSignIn) { return true }
+        if CommandLine.arguments.contains(uiTestingNotif) { return true }
+        if CommandLine.arguments.contains(uiTestingUpdateNeedAuth) { return true }
+        return false
     }
 }
 
