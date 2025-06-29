@@ -109,6 +109,7 @@ private extension AddEventView {
                 Image(systemName: "camera")
             }
             .buttonStyle(AppButtonSquare(white: true))
+            .accessibilityLabel("Take a photo")
             
             Button {
                 showPhotoPicker.toggle()
@@ -117,6 +118,7 @@ private extension AddEventView {
                     .rotationEffect(Angle(degrees: -45))
             }
             .buttonStyle(AppButtonSquare(small: true))
+            .accessibilityLabel("Choose a photo")
             
             if let photo = viewModel.addEventPhoto {
                 selectedPhoto(photo)
@@ -134,6 +136,7 @@ private extension AddEventView {
                 .frame(maxHeight: 220)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 .clipped()
+                .accessibilityHidden(true)
             
             Button {
                 withAnimation(.bouncy(duration: 0.3)) {
@@ -149,6 +152,7 @@ private extension AddEventView {
                 .frame(minWidth: 44, minHeight: 44)
             }
             .foregroundStyle(Color.itemBackground)
+            .accessibilityLabel("Remove photo")
         }
     }
 }
@@ -215,6 +219,8 @@ private extension AddEventView {
             error: $viewModel.addEventDateErr,
             component: .date
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Date: \(viewModel.addEventDate?.toMonthDayYear() ?? "")")
     }
 
     var pickerForTime: some View {
@@ -224,6 +230,8 @@ private extension AddEventView {
             error: $viewModel.addEventTimeErr,
             component: .hourAndMinute
         )
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Time: \(viewModel.addEventDate?.toHourMinuteAMPM() ?? "")")
     }
 
     func datePicker(title: String, date: String, error: Binding<String>, component: DatePicker.Components) -> some View {
@@ -279,10 +287,12 @@ private extension AddEventView {
                                 Text("\(category.emoji) \(category.name)")
                                     .tag(category)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .accessibilityLabel(category.name)
                             }
                         }
                         .pickerStyle(.menu)
                         .labelsHidden()
+                        .accessibilityHidden(true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         Rectangle()
                             .fill(Color.itemBackground)

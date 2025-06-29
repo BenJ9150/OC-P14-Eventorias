@@ -24,6 +24,7 @@ struct BackButtonModifier: ViewModifier {
                             .frame(minWidth: 44, minHeight: 44)
                     }
                     .foregroundStyle(.white)
+                    .accessibilityLabel("Return")
                 }
             }
     }
@@ -57,6 +58,7 @@ struct BackButtonView: View {
             Spacer()
         }
         .padding(.bottom, isPad ? 48 : 12)
+        .accessibilityLabel("Return")
     }
 }
 

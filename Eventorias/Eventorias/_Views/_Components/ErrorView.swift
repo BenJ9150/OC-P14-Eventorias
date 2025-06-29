@@ -39,6 +39,7 @@ struct ErrorView: View {
 
     let error: String
     @State private var startAnimation = false
+    @AccessibilityFocusState private var isFocused: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -68,12 +69,15 @@ struct ErrorView: View {
         .padding(.horizontal)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("Error. \(error)")
+        .accessibilityFocused($isFocused)
         .foregroundStyle(.white)
         .onAppear {
             /// Haptic feedback
             UIFeedbackGenerator.triggerError()
             /// Animation
             startAnimation = true
+            /// Voice Over alert
+            isFocused = true
         }
     }
 }

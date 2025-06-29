@@ -121,6 +121,7 @@ private extension ProfileView {
                 .font(.title3)
                 .fontWeight(.semibold)
                 .dynamicTypeSize(.xSmall ... .accessibility3)
+                .accessibilityHidden(true)
 
             if verticalSize != .compact {
                 Spacer()
@@ -259,20 +260,9 @@ private extension ProfileView {
 
     var toggleNotifications: some View {
         HStack(spacing: 12) {
-            Toggle("Notifications", isOn:
-                    Binding(
-                        get: { notifViewModel.toggleNotifications },
-                        set: { newValue in
-                            Task { await notifViewModel.toggle(to: newValue) }
-                        }
-                    )
-            )
-            .labelsHidden()
-            .tint(.accent)
-            Text("Notifications")
-                .font(.callout)
-                .foregroundStyle(.white)
-
+            ToggleView(title: "Notifications",isOn: notifViewModel.toggleNotifications) { newValue in
+                await notifViewModel.toggle(to: newValue)
+            }
             if verticalSize != .compact {
                 Spacer()
             }

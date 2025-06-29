@@ -46,7 +46,7 @@ struct AppInputView<Content: View>: View {
                 .opacity(error.isEmpty ? 0 : 1)
                 .frame(minHeight: 24)
                 .accessibilityIdentifier(error.isEmpty ? "" : error)
-                .accessibilityLabel("") /// not hidden for UI Testing
+                .accessibilityLabel("\(title) error. \(error)")
         }
         .animation(.interactiveSpring(duration: 0.3, extraBounce: 0.5), value: error)
         .onChange(of: error) { _, newValue in
@@ -57,7 +57,7 @@ struct AppInputView<Content: View>: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 UIAccessibility.post(
                     notification: .announcement,
-                    argument: "\(title) textfield error. \(error)"
+                    argument: "\(title) error. \(error)"
                 )
             }
         }

@@ -68,8 +68,8 @@ private extension EventDetailView {
     var dateAndAuthor: some View {
         HStack {
             VStack(spacing: 12) {
-                bannerItem(image: "icon_calendar", text: event.date.toMonthDayYear())
-                bannerItem(image: "icon_clock", text: event.date.toHourMinuteAMPM())
+                bannerItem(title: "Date", image: "icon_calendar", text: event.date.toMonthDayYear())
+                bannerItem(title: "Hour", image: "icon_clock", text: event.date.toHourMinuteAMPM())
             }
             ImageView(url: event.avatar, isAvatar: true)
                 .frame(width: 60, height: 60)
@@ -78,7 +78,7 @@ private extension EventDetailView {
         .foregroundStyle(.white)
     }
 
-    func bannerItem(image: String, text: String) -> some View {
+    func bannerItem(title: String, image: String, text: String) -> some View {
         HStack(spacing: 12) {
             Image(image)
             Text(text)
@@ -86,6 +86,8 @@ private extension EventDetailView {
                 .fontWeight(.medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("\(title): \(text)")
     }
 }
 
@@ -123,6 +125,7 @@ private extension EventDetailView {
             .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundStyle(.white)
             .dynamicTypeSize(.xSmall ... .accessibility1)
+            .accessibilityLabel("Address: \(event.address)")
     }
 }
 
@@ -139,6 +142,8 @@ private extension EventDetailView {
             }
             .frame(width: 150, height: 72)
             .clipShape(RoundedRectangle(cornerRadius: 12))
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
         } else {
             ProgressView()
                 .frame(width: 150, height: 72)
@@ -194,27 +199,17 @@ private extension EventDetailView {
     var toggleParticipate: some View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
-                Toggle("Participate", isOn:
-                        Binding(
-                            get: { eventsViewModel.toggleParticipate },
-                            set: { newValue in
-                                Task {
-                                    await eventsViewModel.toggleParticipation(
-                                        to: newValue,
-                                        event: event,
-                                        user: authViewModel.currentUser
-                                    )
-                                }
-                            }
-                        )
-                )
-                .labelsHidden()
-                .tint(.accent)
-
-                Text("I participate")
-                    .font(.callout)
-                    .foregroundStyle(.white)
-
+                ToggleView(
+                    title: "Participate",
+                    description: "I participate",
+                    isOn: eventsViewModel.toggleParticipate
+                ) { newValue in
+                    await eventsViewModel.toggleParticipation(
+                        to: newValue,
+                        event: event,
+                        user: authViewModel.currentUser
+                    )
+                }
                 if eventsViewModel.updatingParticipant {
                     AppProgressView()
                         .scaleEffect(0.4)
@@ -226,6 +221,7 @@ private extension EventDetailView {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.footnote.bold())
                     .foregroundStyle(Color.textError)
+                    .accessibilityLabel("Participate error: \(eventsViewModel.toggleParticipateError)")
             }
         }
         .frame(minHeight: 48)

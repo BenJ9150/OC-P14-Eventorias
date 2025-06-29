@@ -49,16 +49,21 @@ private extension ChooseCategoryView {
 
     func categoyItem(for category: EventCategory) -> some View {
         let isTitle = category == viewModel.categories.first
+        let isSelected = currentSelection.contains(category)
         return VStack {
             HStack {
                 Text("\(category.emoji)  \(category.name)")
                     .font(isTitle ? .title3 : .callout)
                     .fontWeight(isTitle ? .semibold : .regular)
+                    .accessibilityLabel("\(isSelected ? "Unselect" : "Select") \(category.name)")
+                    .accessibilityHidden(isTitle)
                 Spacer()
-                if currentSelection.contains(category) {
+                if isSelected {
                     Image(systemName: "checkmark")
+                        .accessibilityHidden(true)
                 }
             }
+            .background(.white.opacity(0.001)) /// For tap gesture
             Rectangle()
                 .fill(Color.sheetBackground)
                 .frame(height: 1)

@@ -117,6 +117,7 @@ private extension MainEventsView {
                 Image(systemName: "plus")
             }
             .buttonStyle(AppButtonSquare())
+            .accessibilityLabel("Add an event")
             .padding(.all, 8)
         }
     }
@@ -133,11 +134,12 @@ private extension MainEventsView {
                 AppProgressView()
                 Spacer()
             } else {
+                let countResult = viewModel.searchResult.count
                 HStack(spacing: 5) {
-                    let countResult = viewModel.searchResult.count
                     Text("\(countResult) event" + (countResult > 1 ? "s" : "") + " found")
                         .font(.callout)
                         .foregroundStyle(.white)
+                        .accessibilityHidden(true)
                     
                     Button {
                         withAnimation { viewModel.clearSearch() }
@@ -151,6 +153,7 @@ private extension MainEventsView {
                         .frame(minWidth: 44, minHeight: 44)
                     }
                     .foregroundStyle(Color.itemBackground)
+                    .accessibilityLabel("\(countResult) event" + (countResult > 1 ? "s" : "") + " found, clear search")
                 }
                 .dynamicTypeSize(.xSmall ... .accessibility3)
                 .padding(.top)
@@ -266,6 +269,8 @@ private extension MainEventsView {
                         .foregroundStyle(.white)
                         .padding(.vertical, 10)
                         .frame(minHeight: 40)
+                        .accessibilityElement(children: .ignore)
+                        .accessibilityLabel("Unselect \(category.name) category")
                         .onTapGesture {
                             withAnimation {
                                 viewModel.categoriesSelection.removeAll { $0 == category }
@@ -404,6 +409,7 @@ private extension MainEventsView {
                         .foregroundStyle(.white)
                         .frame(minHeight: 35)
                 }
+                .accessibilityLabel("Clear search")
             }
         }
         .padding(.horizontal)
