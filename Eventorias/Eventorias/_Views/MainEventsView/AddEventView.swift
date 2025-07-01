@@ -237,7 +237,11 @@ private extension AddEventView {
     func datePicker(title: String, date: String, error: Binding<String>, component: DatePicker.Components) -> some View {
         let dateBinding = Binding<Date>(
             get: { viewModel.addEventDate ?? Date() },
-            set: { viewModel.addEventDate = $0 }
+            set: {
+                viewModel.addEventDate = $0
+                viewModel.addEventDateErr.removeAll()
+                viewModel.addEventTimeErr.removeAll()
+            }
         )
         return AppInputView(title: title, error: error) {
             HStack {
@@ -294,6 +298,11 @@ private extension AddEventView {
                         .labelsHidden()
                         .accessibilityHidden(true)
                         .frame(maxWidth: .infinity, alignment: .leading)
+                        .onChange(of: viewModel.addEventCategory) { _, newCat in
+                            if newCat.id != EventCategory.categoryPlaceholder.id {
+                                viewModel.addEventCategoryErr.removeAll()
+                            }
+                        }
                         Rectangle()
                             .fill(Color.itemBackground)
                             .allowsHitTesting(false)

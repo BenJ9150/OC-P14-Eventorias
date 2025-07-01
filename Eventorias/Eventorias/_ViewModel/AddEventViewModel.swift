@@ -63,10 +63,6 @@ extension AddEventViewModel {
         /// Clean old error
         cleanAddEventErrors()
 
-        /// Check data
-        guard fieldsNotEmpty() else {
-            return false
-        }
         guard let addEventForm = await checkAddEventFormValidity(byUser: user) else {
             return false
         }
@@ -100,7 +96,48 @@ extension AddEventViewModel {
 
 extension AddEventViewModel {
 
-    private func fieldsNotEmpty() -> Bool {
+    private func checkAddEventFormValidity(byUser user: AuthUser?) async -> AddEventForm? {
+        /// Check empty field
+        guard let dateAndCat = fieldsNotEmpty() else {
+            return nil
+        }
+        /// Check user
+        guard let currentUser = user else {
+            addEventError = AppError.currentUserNotFound.userMessage
+            return nil
+        }
+        /// Check if address is valid
+        do {
+            _ = try await CLGeocoder().coordinate(for: addEventAddress)
+        } catch {
+            addEventAddressErr = AppError.invalidAddress.userMessage
+            return nil
+        }
+        /// Check if there is a photo
+        guard let eventImage = addEventPhoto else {
+            addEventError = AppError.emptyImage.userMessage
+            return nil
+        }
+        /// Return form data
+        return AddEventForm(
+            user: currentUser,
+            date: dateAndCat.date,
+            categoryId: dateAndCat.categoryId,
+            image: eventImage
+        )
+    }
+
+    private func cleanAddEventErrors() {
+        addEventError.removeAll()
+        addEventDateErr.removeAll()
+        addEventTimeErr.removeAll()
+        addEventTitleErr.removeAll()
+        addEventDescErr.removeAll()
+        addEventAddressErr.removeAll()
+        addEventCategoryErr.removeAll()
+    }
+
+    private func fieldsNotEmpty() -> (date: Date, categoryId: String)? {
         var notEmpty = true
 
         if addEventTitle.isEmpty {
@@ -115,54 +152,18 @@ extension AddEventViewModel {
             addEventAddressErr = AppError.emptyField.userMessage
             notEmpty = false
         }
-        return notEmpty
-    }
-
-    private func checkAddEventFormValidity(byUser user: AuthUser?) async -> AddEventForm? {
-        /// Check user
-        guard let currentUser = user else {
-            addEventError = AppError.currentUserNotFound.userMessage
-            return nil
-        }
-        /// Check date of event
-        guard let eventDate = addEventDate else {
+        if addEventDate == nil {
             addEventDateErr = AppError.emptyField.userMessage
             addEventTimeErr = AppError.emptyField.userMessage
-            return nil
+            notEmpty = false
         }
-        /// Check if address is valid
-        do {
-            _ = try await CLGeocoder().coordinate(for: addEventAddress)
-        } catch {
-            addEventAddressErr = AppError.invalidAddress.userMessage
-            return nil
-        }
-        /// Check category
-        guard let categoryId = addEventCategory.id,
-              categoryId != EventCategory.categoryPlaceholder.id else {
+        if addEventCategory.id == EventCategory.categoryPlaceholder.id {
             addEventCategoryErr = AppError.emptyField.userMessage
-            return nil
+            notEmpty = false
         }
-        /// Check if there is a photo
-        guard let eventImage = addEventPhoto else {
-            addEventError = AppError.emptyImage.userMessage
-            return nil
+        if notEmpty, let date = addEventDate, let cat = addEventCategory.id {
+            return (date, cat)
         }
-        /// Return form data
-        return AddEventForm(
-            user: currentUser,
-            date: eventDate,
-            categoryId: categoryId,
-            image: eventImage
-        )
-    }
-
-    private func cleanAddEventErrors() {
-        addEventError.removeAll()
-        addEventDateErr.removeAll()
-        addEventTimeErr.removeAll()
-        addEventTitleErr.removeAll()
-        addEventDescErr.removeAll()
-        addEventAddressErr.removeAll()
+        return nil
     }
 }

@@ -15,10 +15,10 @@ struct CustomTabView: View {
     @EnvironmentObject var eventsViewModel: EventsViewModel
     @StateObject private var notifViewModel = NotificationsViewModel()
 
-    @State private var selectedTab: Tab = .events
+    @State private var selectedTab: TabIdentifier = .events
     @State private var showAddEventView = false
 
-    enum Tab {
+    enum TabIdentifier {
         case events, profile
     }
 
@@ -34,11 +34,13 @@ struct CustomTabView: View {
                 
                 VStack(spacing: 0) {
                     TabView(selection: $selectedTab) {
-                        MainEventsView(showAddEventView: $showAddEventView)
-                            .tag(Tab.events)
+                        Tab(value: TabIdentifier.events) {
+                            MainEventsView(showAddEventView: $showAddEventView)
+                        }
                         
-                        ProfileView(notifViewModel: notifViewModel)
-                            .tag(Tab.profile)
+                        Tab(value: TabIdentifier.profile) {
+                            ProfileView(notifViewModel: notifViewModel)
+                        }
                     }
                     .tabViewStyle(.page(indexDisplayMode: .never))
                     customTabView

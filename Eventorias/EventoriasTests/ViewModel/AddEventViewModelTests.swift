@@ -51,28 +51,10 @@ extension AddEventViewModelTests {
         XCTAssertFalse(success)
         XCTAssertEqual(viewModel.addEventTitleErr, AppError.emptyField.userMessage)
         XCTAssertEqual(viewModel.addEventDescErr, AppError.emptyField.userMessage)
-        XCTAssertEqual(viewModel.addEventAddressErr, AppError.emptyField.userMessage)
-    }
-
-    func test_AddEventFailureCauseDate() async {
-        // Given no date
-        let viewModel = AddEventViewModel(
-            eventRepo: MockEventRepository(),
-            categories: MockData().eventCategories()
-        )
-        viewModel.addEventTitle = "Test Event"
-        viewModel.addEventDesc = "Test Desc"
-        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
-        viewModel.addEventPhoto = MockData().image()
-        viewModel.addEventCategory = MockData().eventCategory()
-
-        // When add event
-        let success = await viewModel.addEvent(byUser: MockUser())
-
-        // Then there is a failure and error messages
-        XCTAssertFalse(success)
         XCTAssertEqual(viewModel.addEventDateErr, AppError.emptyField.userMessage)
         XCTAssertEqual(viewModel.addEventTimeErr, AppError.emptyField.userMessage)
+        XCTAssertEqual(viewModel.addEventAddressErr, AppError.emptyField.userMessage)
+        XCTAssertEqual(viewModel.addEventCategoryErr, AppError.emptyField.userMessage)
     }
 
     func test_AddEventFailureCauseUser() async {
@@ -115,26 +97,6 @@ extension AddEventViewModelTests {
         // Then there is a failure and error messages
         XCTAssertFalse(success)
         XCTAssertEqual(viewModel.addEventAddressErr, AppError.invalidAddress.userMessage)
-    }
-
-    func test_AddEventFailureCauseCategory() async {
-        // Given no category
-        let viewModel = AddEventViewModel(
-            eventRepo: MockEventRepository(),
-            categories: MockData().eventCategories()
-        )
-        viewModel.addEventTitle = "Test Event"
-        viewModel.addEventDesc = "Test Desc"
-        viewModel.addEventAddress = "1 Apple Park Way, Cupertino, CA"
-        viewModel.addEventDate = Date()
-        viewModel.addEventPhoto = MockData().image()
-
-        // When add event
-        let success = await viewModel.addEvent(byUser: MockUser())
-
-        // Then there is a failure with network error
-        XCTAssertFalse(success)
-        XCTAssertEqual(viewModel.addEventCategoryErr, AppError.emptyField.userMessage)
     }
 
     func test_AddEventFailureCausePhoto() async {
