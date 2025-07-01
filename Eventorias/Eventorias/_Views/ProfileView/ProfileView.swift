@@ -151,7 +151,6 @@ private extension ProfileView {
                         Image(uiImage: newAvatar)
                             .resizable()
                             .scaledToFill()
-                            .accessibilityLabel("Avatar")
                     } else {
                         ImageView(url: viewModel.userPhoto, isAvatar: true)
                     }
@@ -160,6 +159,7 @@ private extension ProfileView {
                 .mask(Circle())
             }
             .accessibilityIdentifier("UserAvatar")
+            .accessibilityLabel(avatarLabel())
         }
         .padding(.top, isPad ? 48 : 0)
         .padding(.bottom, isPad ? 48 : 24)
@@ -174,6 +174,13 @@ private extension ProfileView {
             showCamera: $showCamera,
             showPhotoPicker: $showPhotoPicker
         )
+    }
+
+    func avatarLabel() -> String {
+        if viewModel.newAvatar == nil && viewModel.userPhoto.isEmpty {
+            return "Choose an avatar"
+        }
+        return "Change your avatar"
     }
 }
 

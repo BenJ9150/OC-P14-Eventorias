@@ -7,7 +7,9 @@
 
 import XCTest
 
-final class AuthentificationUITests: XCTestCase {
+// MARK: Sign In
+
+final class SignInUITests: XCTestCase {
     
     private var app: XCUIApplication!
     
@@ -17,11 +19,6 @@ final class AuthentificationUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTestingSignIn)
         app.launch()
     }
-}
-
-// MARK: Sign In
-
-extension AuthentificationUITests {
 
     func test_EmailSignIn() {
         // Given user is on sign in with email view
@@ -59,7 +56,16 @@ extension AuthentificationUITests {
 
 // MARK: Sign Up
 
-extension AuthentificationUITests {
+final class SignUpUITests: XCTestCase {
+    
+    private var app: XCUIApplication!
+    
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTestingSignIn)
+        app.launch()
+    }
 
     func test_SignUp() {
         // Given user is on sign up view
@@ -100,7 +106,16 @@ extension AuthentificationUITests {
 
 // MARK: Forgot password
 
-extension AuthentificationUITests {
+final class ForgotPwdUITests: XCTestCase {
+    
+    private var app: XCUIApplication!
+    
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTestingSignIn)
+        app.launch()
+    }
 
     func test_ForgotPassword() {
         // Given user is on forgot password view
@@ -152,5 +167,31 @@ extension AuthentificationUITests {
         let error = app.staticTexts["This field is required."]
         let errorExist = error.waitForExistence(timeout: 2)
         XCTAssertTrue(errorExist)
+    }
+}
+
+// MARK: Sign out
+
+final class SignOutUITests: XCTestCase {
+
+    private var app: XCUIApplication!
+    
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments.append(AppFlags.uiTesting)
+        app.launch()
+    }
+
+    func test_SignOut() {
+        // Given user is on profile view
+        app.buttons["Profile"].tap()
+
+        // When clic on sign out button
+        app.buttons["Sign out"].tap()
+
+        // Then user is disconnected
+        let signInViewButton = app.buttons["Sign in with email"]
+        XCTAssertTrue(signInViewButton.waitForExistence(timeout: 2))
     }
 }

@@ -28,7 +28,6 @@ struct ImageView: View {
                             .scaledToFit()
                             .foregroundStyle(.black)
                             .accessibilityIdentifier("ProfileIcon")
-                            .accessibilityLabel("Choose an avatar")
                     } else {
                         placeHolder(imageName: "photo.fill")
                     }
