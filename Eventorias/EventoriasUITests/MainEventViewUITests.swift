@@ -1,5 +1,5 @@
 //
-//  MainEventViewTests.swift
+//  MainEventViewUITests.swift
 //  EventoriasUITests
 //
 //  Created by Benjamin LEFRANCOIS on 04/07/2025.

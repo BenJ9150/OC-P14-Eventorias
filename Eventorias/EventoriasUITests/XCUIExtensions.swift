@@ -48,8 +48,8 @@ extension XCUIApplication {
 
 extension XCUIElement {
 
-    func assertExists(withButtons buttons: [String] = []) {
-        XCTAssertTrue(self.waitForExistence(timeout: 1))
+    func assertExists(withButtons buttons: [String] = [], timeout: TimeInterval = 1) {
+        XCTAssertTrue(self.waitForExistence(timeout: timeout))
         for button in buttons {
             XCTAssertTrue(self.buttons[button].exists)
         }

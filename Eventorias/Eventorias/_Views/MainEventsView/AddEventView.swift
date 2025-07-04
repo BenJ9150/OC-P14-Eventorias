@@ -169,7 +169,7 @@ private extension AddEventView {
                 prompt: "New event",
                 error: $viewModel.addEventTitleErr
             )
-            .submitLabel(.continue)
+            .submitLabel(.next)
             .onSubmit { descIsFocused = true }
 
             AppTextFieldView(
@@ -179,7 +179,7 @@ private extension AddEventView {
                 error: $viewModel.addEventDescErr
             )
             .focused($descIsFocused)
-            .submitLabel(.continue)
+            .submitLabel(.next)
             .onSubmit { addressIsFocused = true }
 
             if dynamicSize.isAccessibilitySize {
