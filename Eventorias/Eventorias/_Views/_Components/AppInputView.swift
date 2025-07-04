@@ -41,7 +41,7 @@ struct AppInputView<Content: View>: View {
             )
             Text(error.isEmpty ? "" : "* \(error)")
                 .font(.footnote.bold())
-                .foregroundStyle(Color.textError)
+                .foregroundStyle(Color.textRed)
                 .scaleEffect(error.isEmpty ? 0.8 : 1)
                 .opacity(error.isEmpty ? 0 : 1)
                 .frame(minHeight: 24)

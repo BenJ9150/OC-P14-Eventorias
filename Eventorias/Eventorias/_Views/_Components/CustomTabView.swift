@@ -72,12 +72,12 @@ private extension CustomTabView {
             Button(action: { selectedTab = .events }) {
                 tabItem(image: "icon_tab_event", text: "Events")
             }
-            .foregroundStyle(selectedTab == .events ? .accent : .white)
+            .foregroundStyle(selectedTab == .events ? .textRed : .white)
             
             Button(action: { selectedTab = .profile }) {
                 tabItem(image: "icon_tab_profile", text: "Profile")
             }
-            .foregroundStyle(selectedTab == .profile ? .accent : .white)
+            .foregroundStyle(selectedTab == .profile ? .textRed : .white)
         }
     }
 

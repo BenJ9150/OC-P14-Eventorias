@@ -220,7 +220,7 @@ private extension EventDetailView {
                 Text("* \(eventsViewModel.toggleParticipateError)")
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.footnote.bold())
-                    .foregroundStyle(Color.textError)
+                    .foregroundStyle(Color.textRed)
                     .accessibilityLabel("Participate error: \(eventsViewModel.toggleParticipateError)")
             }
         }
