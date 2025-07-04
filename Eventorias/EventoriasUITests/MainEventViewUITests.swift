@@ -14,6 +14,7 @@ final class SearchUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -49,6 +50,7 @@ final class SortUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -57,6 +59,8 @@ final class SortUITests: XCTestCase {
     }
 
     func test_SortByCategory() throws {
+        XCUIDevice.shared.orientation = .landscapeLeft
+
         // Given user tap on category filter
         app.buttons["Category"].tap()
     

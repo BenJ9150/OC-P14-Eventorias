@@ -196,7 +196,7 @@ private extension ProfileView {
                 prompt: "Enter your name"
             )
             .textContentType(.name)
-            .submitLabel(.done)
+            .submitLabel(.return)
 
             AppTextFieldView(
                 "Email",
@@ -206,7 +206,7 @@ private extension ProfileView {
             )
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
-            .submitLabel(.done)
+            .submitLabel(.return)
         }
         .onChange(of: viewModel.userName) {
             viewModel.showUpdateButtonsIfNeeded()

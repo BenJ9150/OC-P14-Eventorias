@@ -188,6 +188,7 @@ private extension EventDetailView {
                     .frame(minWidth: 44, minHeight: 44)
             }
             .padding(.all, 5)
+            .accessibilityLabel("Share")
         }
     }
 }

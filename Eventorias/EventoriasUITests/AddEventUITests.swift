@@ -12,6 +12,7 @@ final class AddEventUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -52,8 +53,7 @@ final class AddEventUITests: XCTestCase {
 
         // And choose picture
         app.buttons["Choose a photo"].tap()
-        /// Wait that photos of photoPicker are loaded (Cancel button appear when photos are loaded)
-        app.buttons["Annuler"].assertExists(timeout: 10)
+        app.buttons["Photos"].assertExists(timeout: 10) /// Button of photoPicker
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)).tap()
         
         // When user tap on validate button

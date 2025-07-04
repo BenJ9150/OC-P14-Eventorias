@@ -14,6 +14,7 @@ final class SignInUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingSignIn)
@@ -21,6 +22,8 @@ final class SignInUITests: XCTestCase {
     }
 
     func test_EmailSignIn() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+
         // Given user is on sign in with email view
         app.buttons["Sign in with email"].tap()
     
@@ -56,6 +59,7 @@ final class SignUpUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingSignIn)
@@ -63,6 +67,8 @@ final class SignUpUITests: XCTestCase {
     }
 
     func test_SignUp() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+
         // Given user is on sign up view
         app.buttons["GoToSignUp"].tap()
     
@@ -100,6 +106,7 @@ final class ForgotPwdUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingSignIn)
@@ -123,6 +130,8 @@ final class ForgotPwdUITests: XCTestCase {
     }
 
     func test_ForgotPasswordEmailOnSignInView() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+
         // Given user is on sign in with email view and enters email
         app.buttons["Sign in with email"].tap()
         app.textFields["Email"].tap()

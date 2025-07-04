@@ -14,6 +14,7 @@ final class UpdateNameAndEmailUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -22,9 +23,12 @@ final class UpdateNameAndEmailUITests: XCTestCase {
     }
 
     func test_UpdateNameAndEmailSuccess() {
+        XCUIDevice.shared.orientation = .landscapeLeft
+
         // Given user has changed his name and email
         app.textFields["Name"].clearAndTypeText("test")
         app.textFields["Email"].clearAndTypeText("test@gmail.com")
+        app.keyboards.buttons["retour"].tap()
         app.buttons["Update"].tap()
 
         // When clic on sign out button of alert "Confirmation email has been sent"
@@ -59,6 +63,7 @@ final class UpdateEmailNeedAuthUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingUpdateNeedAuth)
@@ -92,6 +97,7 @@ final class NotificationsUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingNotif)
@@ -121,6 +127,7 @@ final class AvatarUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
+        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
