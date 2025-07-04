@@ -29,14 +29,11 @@ final class UpdateNameAndEmailUITests: XCTestCase {
 
         // When clic on sign out button of alert "Confirmation email has been sent"
         let successAlert = app.alerts["Success!"]
-        XCTAssertTrue(successAlert.waitForExistence(timeout: 2))
-        XCTAssertTrue(successAlert.buttons["Sign out"].exists)
-        XCTAssertTrue(successAlert.buttons["Cancel"].exists)
+        successAlert.assertExists(withButtons: ["Sign out", "Cancel"])
         successAlert.buttons["Sign out"].tap()
 
         // Then user is disconnected
-        let signInViewButton = app.buttons["Sign in with email"]
-        XCTAssertTrue(signInViewButton.waitForExistence(timeout: 2))
+        app.assertSignInViewIsVisible()
     }
 
     func test_UpdateNameAndEmailCancel() {
@@ -76,19 +73,15 @@ final class UpdateEmailNeedAuthUITests: XCTestCase {
 
         // When clic on sign out button of alert "This operation requires recent authentication"
         let needAuthAlert = app.alerts["This operation requires recent authentication. Please sign out and log in again before trying to update your email"]
-        XCTAssertTrue(needAuthAlert.waitForExistence(timeout: 2))
-        XCTAssertTrue(needAuthAlert.buttons["Sign out"].exists)
-        XCTAssertTrue(needAuthAlert.buttons["Cancel"].exists)
+        needAuthAlert.assertExists(withButtons: ["Sign out", "Cancel"])
         needAuthAlert.buttons["Sign out"].tap()
 
         // Then user is disconnected
-        let signInViewButton = app.buttons["Sign in with email"]
-        XCTAssertTrue(signInViewButton.waitForExistence(timeout: 2))
+        app.assertSignInViewIsVisible()
 
         // And old email is already set
-        signInViewButton.tap()
-        let signInEmailField = app.textFields["Email"]
-        XCTAssertEqual(signInEmailField.value as? String, AppFlags.previewEmail)
+        app.buttons["Sign in with email"].tap()
+        XCTAssertEqual(app.textFields["Email"].value as? String, AppFlags.previewEmail)
     }
 }
 
@@ -113,9 +106,7 @@ final class NotificationsUITests: XCTestCase {
 
         // When clic on cancel button of alert "We need your permission to send notifications"
         let needPermissionAlert = app.alerts["We need your permission to send notifications"]
-        XCTAssertTrue(needPermissionAlert.waitForExistence(timeout: 2))
-        XCTAssertTrue(needPermissionAlert.buttons["Open Settings"].exists)
-        XCTAssertTrue(needPermissionAlert.buttons["Cancel"].exists)
+        needPermissionAlert.assertExists(withButtons: ["Open Settings", "Cancel"])
         needPermissionAlert.buttons["Cancel"].tap()
 
         // Then toggle is not activated
@@ -138,8 +129,8 @@ final class AvatarUITests: XCTestCase {
     }
 
     func test_DeleteAvatar() {
-        let avatarPlaceholder = app.images["ProfileIcon"]
-        XCTAssertFalse(avatarPlaceholder.exists)
+        // Placeholder of avatar not exist (there is an avatar)
+        app.images["ProfileIcon"].assertNotExists()
 
         // Given user clic on avatar
         app.buttons["UserAvatar"].tap()
@@ -151,23 +142,6 @@ final class AvatarUITests: XCTestCase {
         app.buttons["Update"].tap()
 
         // Then avatar is deleted (placeholder is shown)
-        XCTAssertTrue(avatarPlaceholder.exists)
-    }
-}
-
-// MARK: Extension XCUIElement
-
-private extension XCUIElement {
-
-    func clearAndTypeText(_ text: String) {
-        guard let stringValue = self.value as? String else {
-            self.tap()
-            self.typeText(text)
-            return
-        }
-        self.tap()
-        let deleteString = String(repeating: XCUIKeyboardKey.delete.rawValue, count: stringValue.count)
-        self.typeText(deleteString)
-        self.typeText(text)
+        app.images["ProfileIcon"].assertExists()
     }
 }

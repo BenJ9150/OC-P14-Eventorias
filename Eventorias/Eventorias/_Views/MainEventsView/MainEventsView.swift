@@ -153,6 +153,7 @@ private extension MainEventsView {
                         .frame(minWidth: 44, minHeight: 44)
                     }
                     .foregroundStyle(Color.itemBackground)
+                    .accessibilityIdentifier("ClearSearchButton")
                     .accessibilityLabel("\(countResult) event" + (countResult > 1 ? "s" : "") + " found, clear search")
                 }
                 .dynamicTypeSize(.xSmall ... .accessibility3)

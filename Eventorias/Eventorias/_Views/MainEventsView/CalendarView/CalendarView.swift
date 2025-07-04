@@ -49,6 +49,7 @@ struct CalendarUIViewRepresentable: UIViewRepresentable {
         let container = UIView()
         let calendarView = UICalendarView()
         calendarView.overrideUserInterfaceStyle = .dark
+        calendarView.accessibilityIdentifier = "CalendarView"
 
         /// Autorize clic on date
         let selection = UICalendarSelectionSingleDate(delegate: context.coordinator)

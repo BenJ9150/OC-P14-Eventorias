@@ -60,7 +60,7 @@ private extension EmailSignUpView {
             )
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
-            .submitLabel(.continue)
+            .submitLabel(.next)
             .onSubmit { pwdIsFocused = true }
 
             AppTextFieldView(
@@ -72,7 +72,7 @@ private extension EmailSignUpView {
             )
             .textContentType(.newPassword)
             .focused($pwdIsFocused)
-            .submitLabel(.continue)
+            .submitLabel(.next)
             .onSubmit { nameIsFocused = true }
 
             AppTextFieldView("Name", text: $viewModel.userName, prompt: "Enter your name")

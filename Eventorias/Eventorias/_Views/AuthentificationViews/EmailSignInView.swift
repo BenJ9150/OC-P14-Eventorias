@@ -59,7 +59,7 @@ private extension EmailSignInView {
             AppTextFieldView("Email", text: $viewModel.email, prompt: "Enter your email", error: $viewModel.emailError)
                 .textContentType(.emailAddress)
                 .keyboardType(.emailAddress)
-                .submitLabel(.continue)
+                .submitLabel(.next)
                 .onSubmit { pwdIsFocused = true }
 
             AppTextFieldView(

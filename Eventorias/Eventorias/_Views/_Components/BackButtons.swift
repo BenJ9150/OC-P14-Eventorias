@@ -77,6 +77,7 @@ struct CloseButtonItem: ToolbarContent {
                     .frame(minWidth: 44, minHeight: 44)
             }
             .foregroundStyle(.white)
+            .accessibilityLabel("Close")
         }
     }
 }

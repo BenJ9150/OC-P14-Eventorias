@@ -23,21 +23,18 @@ final class SignInUITests: XCTestCase {
     func test_EmailSignIn() {
         // Given user is on sign in with email view
         app.buttons["Sign in with email"].tap()
-        let emailField = app.textFields["Email"]
-        let pwdField = app.secureTextFields["Password"]
     
         // When user enters email and password
-        emailField.tap()
-        emailField.typeText("test@gmail.com")
-        pwdField.tap()
-        pwdField.typeText("test")
+        app.textFields["Email"].tap()
+        app.textFields["Email"].typeText("test@gmail.com")
+        app.keyboards.buttons["suivant"].tap()
+        app.secureTextFields["Password"].typeText("test")
 
         // And user taps on sign in button
         app.buttons["Sign in"].tap()
 
         // Then user should be redirected to the main view
-        let searchFieldOfMainView = app.textFields["Search"]
-        XCTAssertTrue(searchFieldOfMainView.waitForExistence(timeout: 2))
+        app.assertMainViewIsVisible()
     }
 
     func test_EmailSignInEmptyField() throws {
@@ -48,9 +45,7 @@ final class SignInUITests: XCTestCase {
         app.buttons["Sign in"].tap()
 
         // Then 2 textfields are required
-        let errors = app.staticTexts.matching(identifier: "This field is required.")
-        _ = errors.firstMatch.waitForExistence(timeout: 2)
-        XCTAssertEqual(errors.count, 2)
+        app.assertStaticTextsCount("This field is required.", count: 2)
     }
 }
 
@@ -70,24 +65,20 @@ final class SignUpUITests: XCTestCase {
     func test_SignUp() {
         // Given user is on sign up view
         app.buttons["GoToSignUp"].tap()
-        let emailField = app.textFields["Email"]
-        let pwdField = app.secureTextFields["Password"]
-        let nameField = app.textFields["Name"]
     
         // When user enters email, password and name
-        emailField.tap()
-        emailField.typeText("test@gmail.com")
-        pwdField.tap()
-        pwdField.typeText("test")
-        nameField.tap()
-        nameField.typeText("test")
+        app.textFields["Email"].tap()
+        app.textFields["Email"].typeText("test@gmail.com")
+        app.keyboards.buttons["suivant"].tap() // pwdField.tap()
+        app.secureTextFields["Password"].typeText("test")
+        app.keyboards.buttons["suivant"].tap() // nameField.tap()
+        app.textFields["Name"].typeText("test")
 
         // And user taps on sign up button
         app.buttons["Sign up"].tap()
 
         // Then user should be redirected to the main view
-        let searchFieldOfMainView = app.textFields["Search"]
-        XCTAssertTrue(searchFieldOfMainView.waitForExistence(timeout: 2))
+        app.assertMainViewIsVisible()
     }
 
     func test_SignUpEmptyField() throws {
@@ -98,9 +89,7 @@ final class SignUpUITests: XCTestCase {
         app.buttons["Sign up"].tap()
 
         // Then 2 textfields are required (name is optional)
-        let errors = app.staticTexts.matching(identifier: "This field is required.")
-        _ = errors.firstMatch.waitForExistence(timeout: 2)
-        XCTAssertEqual(errors.count, 2)
+        app.assertStaticTextsCount("This field is required.", count: 2)
     }
 }
 
@@ -121,27 +110,23 @@ final class ForgotPwdUITests: XCTestCase {
         // Given user is on forgot password view
         app.buttons["Sign in with email"].tap()
         app.buttons["Forgot password?"].tap()
-        let emailField = app.textFields["EmailPasswordReset"]
     
         // When user enters email
-        emailField.tap()
-        emailField.typeText("test@gmail.com")
+        app.textFields["EmailPasswordReset"].tap()
+        app.textFields["EmailPasswordReset"].typeText("test@gmail.com")
 
         // And tap on send password reset button
         app.buttons["Send password reset"].tap()
     
         // Then success message is presented
-        let successMessage = app.staticTexts["Password reset email sent successfully!"]
-        let successMessageExist = successMessage.waitForExistence(timeout: 2)
-        XCTAssertTrue(successMessageExist)
+        app.assertStaticTextExists("Password reset email sent successfully!")
     }
 
     func test_ForgotPasswordEmailOnSignInView() {
         // Given user is on sign in with email view and enters email
         app.buttons["Sign in with email"].tap()
-        let emailField = app.textFields["Email"]
-        emailField.tap()
-        emailField.typeText("test@gmail.com")
+        app.textFields["Email"].tap()
+        app.textFields["Email"].typeText("test@gmail.com")
         
         // When user tap on forgot password button
         app.buttons["Forgot password?"].tap()
@@ -150,9 +135,7 @@ final class ForgotPwdUITests: XCTestCase {
         app.buttons["Send password reset"].tap()
     
         // Then success message is presented
-        let successMessage = app.staticTexts["Password reset email sent successfully!"]
-        let successMessageExist = successMessage.waitForExistence(timeout: 2)
-        XCTAssertTrue(successMessageExist)
+        app.assertStaticTextExists("Password reset email sent successfully!")
     }
 
     func test_ForgotPasswordEmptyField() {
@@ -163,10 +146,8 @@ final class ForgotPwdUITests: XCTestCase {
         // When user tap on send password reset button
         app.buttons["Send password reset"].tap()
 
-        // Then there is an error
-        let error = app.staticTexts["This field is required."]
-        let errorExist = error.waitForExistence(timeout: 2)
-        XCTAssertTrue(errorExist)
+        // Then a textfield is required
+        app.assertStaticTextsCount("This field is required.", count: 1)
     }
 }
 
@@ -191,7 +172,6 @@ final class SignOutUITests: XCTestCase {
         app.buttons["Sign out"].tap()
 
         // Then user is disconnected
-        let signInViewButton = app.buttons["Sign in with email"]
-        XCTAssertTrue(signInViewButton.waitForExistence(timeout: 2))
+        app.assertSignInViewIsVisible()
     }
 }

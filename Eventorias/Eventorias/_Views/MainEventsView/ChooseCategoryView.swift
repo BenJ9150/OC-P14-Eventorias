@@ -55,6 +55,7 @@ private extension ChooseCategoryView {
                 Text("\(category.emoji)  \(category.name)")
                     .font(isTitle ? .title3 : .callout)
                     .fontWeight(isTitle ? .semibold : .regular)
+                    .accessibilityIdentifier(category.name)
                     .accessibilityLabel("\(isSelected ? "Unselect" : "Select") \(category.name)")
                     .accessibilityHidden(isTitle)
                 Spacer()
