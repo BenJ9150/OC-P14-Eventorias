@@ -219,7 +219,6 @@ private extension AddEventView {
             error: $viewModel.addEventDateErr,
             component: .date
         )
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel("Date: \(viewModel.addEventDate?.toMonthDayYear() ?? "")")
     }
 
@@ -230,7 +229,6 @@ private extension AddEventView {
             error: $viewModel.addEventTimeErr,
             component: .hourAndMinute
         )
-        .accessibilityElement(children: .ignore)
         .accessibilityLabel("Time: \(viewModel.addEventDate?.toHourMinuteAMPM() ?? "")")
     }
 
@@ -270,6 +268,9 @@ private extension AddEventView {
             }
             .dynamicTypeSize(.xSmall ... .accessibility4)
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityAddTraits(.isButton)
+        .accessibilityIdentifier("\(title)Picker")
     }
 }
 
@@ -291,12 +292,12 @@ private extension AddEventView {
                                 Text("\(category.emoji) \(category.name)")
                                     .tag(category)
                                     .frame(maxWidth: .infinity, alignment: .leading)
+                                    .accessibilityIdentifier(category.name)
                                     .accessibilityLabel(category.name)
                             }
                         }
                         .pickerStyle(.menu)
                         .labelsHidden()
-                        .accessibilityHidden(true)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .onChange(of: viewModel.addEventCategory) { _, newCat in
                             if newCat.id != EventCategory.categoryPlaceholder.id {
@@ -310,6 +311,10 @@ private extension AddEventView {
                 )
                 .clipped()
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityIdentifier("CategoryPicker")
+        .accessibilityAddTraits(.isButton)
+        .accessibilityLabel(viewModel.addEventCategory.name)
     }
 }
 
