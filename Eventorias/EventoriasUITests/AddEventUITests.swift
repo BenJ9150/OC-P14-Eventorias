@@ -17,22 +17,15 @@ final class AddEventUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        app.buttons["Add an event"].tap()
     }
 
-    func test_AddEventEmptyField() {
-        // Given user is on add event view
-        app.buttons["Add an event"].tap()
-
-        // When user tap on validate button
+    func test_AddEvent() {
+        // Given user tap on validate button, there are 6 empty field errors
         app.buttons["Validate"].tap()
-
-        // Then 6 textfields are required
         app.assertStaticTextsCount("This field is required.", count: 6)
-    }
 
-    func test_AddEventSuccess() {
-        // Given user complete text fiels
-        app.buttons["Add an event"].tap()
+        // When user complete text fiels
         app.textFields["Title"].tap()
         app.textFields["Title"].typeText("Title")
         app.keyboards.buttons["suivant"].tap()
@@ -51,12 +44,12 @@ final class AddEventUITests: XCTestCase {
         app.buttons["CategoryPicker"].tap()
         app.buttons["Art & Exhibitions"].tap()
 
-        // And choose picture
+        // Choose picture
         app.buttons["Choose a photo"].tap()
         app.buttons["Photos"].assertExists(timeout: 10) /// Button of photoPicker
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)).tap()
         
-        // When user tap on validate button
+        // And tap on validate button
         app.buttons["Validate"].tap()
 
         // Then sheet is closed

@@ -14,7 +14,7 @@ final class SearchUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        XCUIDevice.shared.orientation = .portrait
+        XCUIDevice.shared.orientation = .landscapeLeft
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
@@ -59,8 +59,6 @@ final class SortUITests: XCTestCase {
     }
 
     func test_SortByCategory() throws {
-        XCUIDevice.shared.orientation = .landscapeLeft
-
         // Given user tap on category filter
         app.buttons["Category"].tap()
     
@@ -83,7 +81,12 @@ final class SortUITests: XCTestCase {
     }
 
     func test_SortByDate() throws {
-        // Given user tap on sort button
+        // Given events have sorted by title ("Art exhibition" before "Charity run")
+        XCTAssertLessThan(
+            app.assertStaticTextExistsAtPosition("Art exhibition"),
+            app.assertStaticTextExistsAtPosition("Charity run")
+        )
+        // When user tap on sort button
         app.buttons["Sorting by title"].tap()
     
         // And choose "Sorting by date"
@@ -93,16 +96,6 @@ final class SortUITests: XCTestCase {
         XCTAssertLessThan(
             app.assertStaticTextExistsAtPosition("Charity run"),
             app.assertStaticTextExistsAtPosition("Art exhibition")
-        )
-
-        // And when user choose "Sorting by title"
-        app.buttons["Sorting by date"].tap()
-        app.buttons["Sorting by title"].tap()
-
-        // Then "Art exhibition" is before "Charity run"
-        XCTAssertLessThan(
-            app.assertStaticTextExistsAtPosition("Art exhibition"),
-            app.assertStaticTextExistsAtPosition("Charity run")
         )
     }
 }

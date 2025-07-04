@@ -37,19 +37,6 @@ struct PreviewUser: AuthUser {
             self.avatarURL = getAvatarURL()
         }
     }
-//    init(email: String? = nil, name: String? = nil, avatarURL: URL? = nil) {
-//        if let currentEmail = email {
-//            self.email = currentEmail
-//        }
-//        if let currentName = name {
-//            self.displayName = currentName
-//        }
-//        if let currentAvatarURL = avatarURL {
-//            self.avatarURL = currentAvatarURL
-//        } else {
-//            self.avatarURL = getAvatarURL()
-//        }
-//    }
 
     func createUserProfileChangeRequest() -> AuthUserProfile {
         class TempProfile: AuthUserProfile {

@@ -23,8 +23,6 @@ final class UpdateNameAndEmailUITests: XCTestCase {
     }
 
     func test_UpdateNameAndEmailSuccess() {
-        XCUIDevice.shared.orientation = .landscapeLeft
-
         // Given user has changed his name and email
         app.textFields["Name"].clearAndTypeText("test")
         app.textFields["Email"].clearAndTypeText("test@gmail.com")
@@ -97,7 +95,7 @@ final class NotificationsUITests: XCTestCase {
     private var app: XCUIApplication!
     
     override func setUpWithError() throws {
-        XCUIDevice.shared.orientation = .portrait
+        XCUIDevice.shared.orientation = .landscapeLeft
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingNotif)

@@ -12,17 +12,19 @@ final class DetailViewUITests: XCTestCase {
     private var app: XCUIApplication!
 
     override func setUpWithError() throws {
-        XCUIDevice.shared.orientation = .portrait
         continueAfterFailure = false
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
-        app.launch()
-        app.assertStaticTextExists("Charity run")
-        app.staticTexts["Charity run"].tap()
     }
 
     func test_ToggleParticipate() {
-        // Given user not participate
+        // Given user is on a detail view
+        XCUIDevice.shared.orientation = .portrait
+        app.launch()
+        app.assertStaticTextExists("Charity run")
+        app.staticTexts["Charity run"].tap()
+
+        // And not participate to the event
         let participateSwitch = app.switches["Participate"]
         participateSwitch.assertExists()
         XCTAssertEqual(participateSwitch.value as? String, "0")
@@ -36,13 +38,15 @@ final class DetailViewUITests: XCTestCase {
     }
 
     func test_ShareEvent() {
-        XCUIDevice.shared.orientation = .landscapeLeft
-
         // Given user is on a detail view
-        let shareButton = app.buttons["Share"]
-        shareButton.assertExists()
+        XCUIDevice.shared.orientation = .landscapeLeft
+        app.launch()
+        app.assertStaticTextExists("Charity run")
+        app.staticTexts["Charity run"].tap()
 
         // When user tap on share button
+        let shareButton = app.buttons["Share"]
+        shareButton.assertExists()
         shareButton.tap()
 
         // Then share sheet is presented
