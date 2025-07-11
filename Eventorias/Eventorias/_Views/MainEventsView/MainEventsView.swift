@@ -206,7 +206,7 @@ private extension MainEventsView {
 
     var filterToolbar: some View {
         VStack {
-            if verticalSize == .compact {
+            if verticalSize == .compact || dynamicSize.isAccessibilitySize {
                 sortButton
                 chooseCategoriesButton
             } else {
@@ -222,7 +222,7 @@ private extension MainEventsView {
                 categoriesSelection
             }
         }
-        .dynamicTypeSize(.xSmall ... .xxxLarge)
+        .dynamicTypeSize(.xSmall ... .accessibility2)
         .padding(.bottom, 8)
         .sheet(isPresented: $showCategoryPicker) {
             ChooseCategoryView()

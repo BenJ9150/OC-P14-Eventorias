@@ -10,6 +10,7 @@ import MapKit
 
 struct EventDetailView: View {
 
+    @Environment(\.dynamicTypeSize) var dynamicSize
     @Environment(\.verticalSizeClass) var verticalSize
     @Environment(\.dismiss) var dismiss
 
@@ -86,6 +87,7 @@ private extension EventDetailView {
                 .fontWeight(.medium)
                 .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .dynamicTypeSize(.xSmall ... .accessibility2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(title): \(text)")
     }
@@ -101,6 +103,7 @@ private extension EventDetailView {
             .multilineTextAlignment(.leading)
             .foregroundStyle(.white)
             .padding(.bottom, 48)
+            .dynamicTypeSize(.xSmall ... .accessibility3)
     }
 }
 
@@ -110,9 +113,14 @@ private extension EventDetailView {
 
     var adressAndMap: some View {
         VStack {
-            HStack(spacing: 12) {
+            if dynamicSize.isAccessibilitySize {
                 address
                 map
+            } else {
+                HStack(spacing: 12) {
+                    address
+                    map
+                }
             }
             toggleParticipate
         }
@@ -124,7 +132,8 @@ private extension EventDetailView {
             .fontWeight(.medium)
             .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundStyle(.white)
-            .dynamicTypeSize(.xSmall ... .accessibility1)
+            .fixedSize(horizontal: false, vertical: true)
+            .dynamicTypeSize(.xSmall ... .accessibility2)
             .accessibilityLabel("Address: \(event.address)")
     }
 }
@@ -140,7 +149,7 @@ private extension EventDetailView {
                     Image(systemName: "mappin")
                 }
             }
-            .frame(width: 150, height: 72)
+            .frame(width: dynamicSize.isAccessibilitySize ? nil : 150, height: 72)
             .clipShape(RoundedRectangle(cornerRadius: 12))
             .allowsHitTesting(false)
             .accessibilityHidden(true)
@@ -172,6 +181,7 @@ private extension EventDetailView {
             shareButton
         }
     }
+
     @ViewBuilder var shareButton: some View {
         if let shareURL = event.shareURL {
             ShareLink(

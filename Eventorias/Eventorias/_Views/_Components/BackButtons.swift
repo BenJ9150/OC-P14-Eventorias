@@ -52,7 +52,7 @@ struct BackButtonView: View {
                         .fontWeight(.semibold)
                 }
                 .frame(minWidth: 44, minHeight: 44)
-                .dynamicTypeSize(.xSmall ... .accessibility4)
+                .dynamicTypeSize(.xSmall ... .accessibility2)
             }
             .foregroundStyle(.white)
             Spacer()

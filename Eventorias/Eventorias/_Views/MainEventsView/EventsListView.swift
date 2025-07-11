@@ -83,6 +83,7 @@ private extension EventsListView {
             title(ofEvent: event)
                 .padding(.top)
                 .multilineTextAlignment(.center)
+                .dynamicTypeSize(.xSmall ... .accessibility2)
             Rectangle()
                 .frame(height: 0.5)
                 .foregroundStyle(.white)
@@ -90,7 +91,7 @@ private extension EventsListView {
             HStack(spacing: 16) {
                 date(ofEvent: event)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .dynamicTypeSize(.xSmall ... .accessibility4)
+                    .dynamicTypeSize(.xSmall ... .accessibility3)
                     .padding(.leading, 16)
                 ImageView(url: event.photoURL)
                     .frame(width: imageWidth, height: 100)
