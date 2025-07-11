@@ -163,10 +163,10 @@ private extension ProfileView {
         }
         .padding(.top, isPad ? 48 : 0)
         .padding(.bottom, isPad ? 48 : 24)
-        .onChange(of: viewModel.newAvatar) {
+        .onChange(of: viewModel.newAvatar) { _ in
             viewModel.showUpdateButtonsIfNeeded()
         }
-        .onChange(of: viewModel.userPhoto) {
+        .onChange(of: viewModel.userPhoto) { _ in
             viewModel.showUpdateButtonsIfNeeded()
         }
         .takePhoto(
@@ -208,10 +208,10 @@ private extension ProfileView {
             .keyboardType(.emailAddress)
             .submitLabel(.return)
         }
-        .onChange(of: viewModel.userName) {
+        .onChange(of: viewModel.userName) { _ in
             viewModel.showUpdateButtonsIfNeeded()
         }
-        .onChange(of: viewModel.email) {
+        .onChange(of: viewModel.email) { _ in
             viewModel.showUpdateButtonsIfNeeded()
         }
     }
@@ -279,7 +279,7 @@ private extension ProfileView {
         .dynamicTypeSize(.xSmall ... .accessibility3)
         .padding(.top, verticalSize == .compact ? -4 : 8)
         .task { await notifViewModel.updateStatus() }
-        .onChange(of: scenePhase) { _, newValue in
+        .onChange(of: scenePhase) { newValue in
             if newValue == .active {
                 Task { await notifViewModel.updateStatus() }
             }

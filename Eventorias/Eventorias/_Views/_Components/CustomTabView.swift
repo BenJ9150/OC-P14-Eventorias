@@ -17,6 +17,7 @@ struct CustomTabView: View {
 
     @State private var selectedTab: TabIdentifier = .events
     @State private var showAddEventView = false
+    @State private var showEventDetailsFromShare = false
 
     enum TabIdentifier {
         case events, profile
@@ -32,26 +33,32 @@ struct CustomTabView: View {
                 Color.mainBackground
                     .ignoresSafeArea()
                 
-                VStack(spacing: 0) {
-                    TabView(selection: $selectedTab) {
-                        Tab(value: TabIdentifier.events) {
-                            MainEventsView(showAddEventView: $showAddEventView)
+                if #available(iOS 17.0, *) {
+                    tabView
+                        .navigationDestination(item: $eventsViewModel.eventFromShare) { event in
+                            EventDetailView(event: event)
                         }
-                        
-                        Tab(value: TabIdentifier.profile) {
-                            ProfileView(notifViewModel: notifViewModel)
-                        }
-                    }
-                    .tabViewStyle(.page(indexDisplayMode: .never))
-                    customTabView
+                } else {
+                    // Fallback on earlier versions
+                    tabView
+                        .navigationDestination(isPresented: $showEventDetailsFromShare, destination: {
+                            if let event = eventsViewModel.eventFromShare {
+                                EventDetailView(event: event)
+                                    .onDisappear {
+                                        eventsViewModel.eventFromShare = nil
+                                    }
+                            }
+                        })
                 }
             }
             .ignoresSafeArea(.keyboard, edges: .bottom)
             .onOpenURL { url in
-                Task(priority: .high) { await eventsViewModel.showEvent(from: url) }
-            }
-            .navigationDestination(item: $eventsViewModel.eventFromShare) { event in
-                EventDetailView(event: event)
+                Task(priority: .high) {
+                    do {
+                        try await eventsViewModel.showEvent(from: url)
+                        showEventDetailsFromShare = true
+                    } catch {}
+                }
             }
             .navigationDestination(isPresented: $showAddEventView) {
                 AddEventView(categories: eventsViewModel.categories) {
@@ -66,6 +73,19 @@ struct CustomTabView: View {
 // MARK: Tabview
 
 private extension CustomTabView {
+
+    var tabView: some View {
+        VStack(spacing: 0) {
+            TabView(selection: $selectedTab) {
+                MainEventsView(showAddEventView: $showAddEventView)
+                    .tag(TabIdentifier.events)
+                ProfileView(notifViewModel: notifViewModel)
+                    .tag(TabIdentifier.profile)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            customTabView
+        }
+    }
 
     var customTabView: some View {
         HStack(spacing: 34) {

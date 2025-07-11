@@ -46,26 +46,26 @@ import XCTest
 
 extension EventsViewModelTests {
 
-    func test_ShowEventFromUrlSuccess() async {
+    func test_ShowEventFromUrlSuccess() async throws {
         // Given
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
         let eventToShow = MockData().event()
         let url = eventToShow.shareURL!
 
         // When show event
-        await viewModel.showEvent(from: url)
+        try await viewModel.showEvent(from: url)
         
         // Then event is presented
         XCTAssertEqual(eventToShow.title, viewModel.eventFromShare!.title)
     }
 
-    func test_ShowEventFromUrlfailure() async {
+    func test_ShowEventFromUrlfailure() async throws {
         // Given wrong url
         let viewModel = EventsViewModel(eventRepo: MockEventRepository())
         let url = URL(string: "www.test.com")!
 
         // When show event
-        await viewModel.showEvent(from: url)
+        try await viewModel.showEvent(from: url)
         
         // Then event is not presented
         XCTAssertNil(viewModel.eventFromShare)

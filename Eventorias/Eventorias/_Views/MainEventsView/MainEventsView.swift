@@ -227,7 +227,7 @@ private extension MainEventsView {
         .sheet(isPresented: $showCategoryPicker) {
             ChooseCategoryView()
         }
-        .onChange(of: viewModel.categoriesSelection) {
+        .onChange(of: viewModel.categoriesSelection) { _ in
             Task { await viewModel.fetchData() }
         }
     }
@@ -331,7 +331,7 @@ private extension MainEventsView {
         .foregroundStyle(.white)
         .padding(.horizontal)
         .background(Capsule().fill(Color.itemBackground))
-        .onChange(of: viewModel.eventSorting) {
+        .onChange(of: viewModel.eventSorting) { _ in
             Task { await viewModel.fetchData() }
         }
     }
@@ -349,7 +349,7 @@ private extension MainEventsView {
                 Text("Calendar")
                     .tag(DisplayMode.calendar)
             }
-            .pickerStyle(.palette)
+            .pickerStyle(.segmented)
             .padding(.horizontal, 24)
             
             Rectangle()

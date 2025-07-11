@@ -42,23 +42,29 @@ struct AppTextFieldView: View {
             .accessibilityIdentifier(title)
             .textInputAutocapitalization(.never)
             .dynamicTypeSize(.xSmall ... .accessibility2)
-            .onChange(of: text) { oldValue, newValue in
-                if oldValue != newValue {
-                    error.removeAll()
-                }
+            .onChange(of: text) { _ in
+                error.removeAll()
             }
         }
     }
 
     private var formattedPrompt: Text {
-        Text(prompt)
-            .font(.callout)
-            .foregroundStyle(Color.textLightGray)
+        if #available(iOS 17.0, *) {
+            Text(prompt)
+                .font(.callout)
+                .foregroundStyle(Color.textLightGray)
+        } else {
+            // Fallback on earlier versions
+            Text(prompt)
+                .font(.callout)
+                .foregroundColor(Color.textLightGray)
+        }
     }
 }
 
 // MARK: - Preview
 
+@available(iOS 17.0, *)
 #Preview {
     @Previewable @State var text = ""
     @Previewable @State var error = ""

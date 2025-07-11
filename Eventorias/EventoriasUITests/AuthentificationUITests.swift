@@ -108,13 +108,14 @@ final class ForgotPwdUITests: XCTestCase {
         app.launch()
         app.buttons["Sign in with email"].tap()
         app.buttons["Forgot password?"].tap()
+        app.buttons["Send password reset"].assertExists()
     }
 
     func test_ForgotPassword() {
         // Given user enters email
         app.textFields["EmailPasswordReset"].tap()
         app.textFields["EmailPasswordReset"].typeText("test@gmail.com")
-
+   
         // When tap on send password reset button
         app.keyboards.buttons["envoyer"].tap()
     

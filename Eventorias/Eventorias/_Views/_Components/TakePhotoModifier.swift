@@ -23,7 +23,7 @@ struct TakePhotoModifier: ViewModifier {
                 selection: $photoPicker,
                 matching: .any(of: [.images, .screenshots, .panoramas])
             )
-            .onChange(of: photoPicker) {
+            .onChange(of: photoPicker) { _ in
                 Task {
                     if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
                         withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .default) {

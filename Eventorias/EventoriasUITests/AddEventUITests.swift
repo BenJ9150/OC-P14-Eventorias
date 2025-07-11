@@ -18,6 +18,7 @@ final class AddEventUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
         app.buttons["Add an event"].tap()
+        app.assertStaticTextExists("Creation of an event")
     }
 
     func test_AddEvent() {
@@ -35,20 +36,19 @@ final class AddEventUITests: XCTestCase {
         app.keyboards.buttons["retour"].tap()
 
         // Choose time
-        app.buttons["TimePicker"].tap()
+        app.tapCustomButtons("TimePicker")
         app.pickerWheels.element(boundBy: 0).adjust(toPickerWheelValue: "21")
         app.pickerWheels.element(boundBy: 1).adjust(toPickerWheelValue: "00")
-        app.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.1)).tap()
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.9, dy: 0.1)).tap()
 
         // Choose category
-        app.buttons["CategoryPicker"].tap()
+        app.tapCustomButtons("CategoryPicker")
         app.buttons["Art & Exhibitions"].tap()
 
         // Choose picture
         app.buttons["Choose a photo"].tap()
         app.buttons["Photos"].assertExists(timeout: 10) /// Button of photoPicker
-        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.7)).tap()
-        
+        app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)).tap()
         // And tap on validate button
         app.buttons["Validate"].tap()
 

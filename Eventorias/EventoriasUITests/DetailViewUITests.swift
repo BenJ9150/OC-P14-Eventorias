@@ -50,6 +50,10 @@ final class DetailViewUITests: XCTestCase {
         shareButton.tap()
 
         // Then share sheet is presented
-        app.otherElements["ShareSheet.RemoteContainerView"].assertExists()
+        if #available(iOS 17.0, *) {
+            app.otherElements["ShareSheet.RemoteContainerView"].assertExists()
+        } else {
+            app.otherElements["ActivityListView"].assertExists()
+        }
     }
 }

@@ -14,7 +14,7 @@ struct ErrorView: View {
 
         var yOffset: CGFloat {
             switch self {
-            case .initial: UIAccessibility.isReduceMotionEnabled ? 0 : 10
+            case .initial: 10
             case .lift, .shakeLeft, .shakRight: 0
             }
         }
@@ -22,8 +22,8 @@ struct ErrorView: View {
         var rotation: Angle {
             switch self {
             case .initial, .lift: Angle.degrees(0)
-            case .shakeLeft: Angle.degrees(UIAccessibility.isReduceMotionEnabled ? 0 : -20)
-            case .shakRight: Angle.degrees(UIAccessibility.isReduceMotionEnabled ? 0 : 20)
+            case .shakeLeft: Angle.degrees(-20)
+            case .shakRight: Angle.degrees(20)
             }
         }
     }
@@ -43,18 +43,29 @@ struct ErrorView: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image("icon_error")
-                .padding(.bottom, 24)
-                .phaseAnimator(animations, trigger: startAnimation) { content, phase in
-                    content
-                        .offset(y: phase.yOffset)
-                        .rotationEffect(phase.rotation, anchor: .top)
-                } animation: { phase in
-                    switch phase {
-                    case .initial, .lift: .spring(bounce: 0.5)
-                    case .shakeLeft, .shakRight: .easeInOut(duration: 0.15)
+            if UIAccessibility.isReduceMotionEnabled {
+                Image("icon_error")
+                    .padding(.bottom, 24)
+            } else if #available(iOS 17.0, *) {
+                Image("icon_error")
+                    .padding(.bottom, 24)
+                    .phaseAnimator(animations, trigger: startAnimation) { content, phase in
+                        content
+                            .offset(y: phase.yOffset)
+                            .rotationEffect(phase.rotation, anchor: .top)
+                    } animation: { phase in
+                        switch phase {
+                        case .initial, .lift: .spring(bounce: 0.5)
+                        case .shakeLeft, .shakRight: .easeInOut(duration: 0.15)
+                        }
                     }
-                }
+            } else {
+                // Fallback on earlier versions
+                Image("icon_error")
+                    .padding(.bottom, 24)
+                    .rotationEffect(.degrees(startAnimation ? 0 : 45), anchor: .top)
+                    .animation(.spring(response: 0.6, dampingFraction: 0.2), value: startAnimation)
+            }
                 
             Text("Error")
                 .font(.title3)

@@ -131,14 +131,14 @@ extension EventsViewModel {
 
 extension EventsViewModel {
     
-    func showEvent(from url: URL) async {
+    func showEvent(from url: URL) async throws {
         /// Get event id from url
         guard url.scheme == Event.shareUrlScheme,
               url.host == Event.shareUrlHost else {
             return
         }
         /// Fetch event with its id
-        eventFromShare = try? await eventRepo.fetchEvent(withId: url.lastPathComponent)
+        eventFromShare = try await eventRepo.fetchEvent(withId: url.lastPathComponent)
     }
 }
 

@@ -13,25 +13,38 @@ struct EventoriasApp: App {
     @Environment(\.scenePhase) var scenePhase
     @StateObject private var authViewModel = AuthViewModel()
     @StateObject private var eventsViewModel = EventsViewModel()
+    @State private var checkingUser = true
 
     /// Register app delegate for Firebase setup
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
 
     var body: some Scene {
         WindowGroup {
-            if authViewModel.currentUser == nil {
-                SignInView()
-                    .onDisappear {
-                        /// User just sign in, fetch data
-                        Task { await eventsViewModel.fetchData() }
+            Group {
+                if checkingUser {
+                    ZStack {
+                        Color.mainBackground
+                            .ignoresSafeArea()
+                        AppProgressView()
                     }
-            } else {
-                CustomTabView()
+                } else if authViewModel.currentUser == nil {
+                    SignInView()
+                        .onDisappear {
+                            /// User just sign in, fetch data
+                            Task.detached { await eventsViewModel.fetchData() }
+                        }
+                } else {
+                    CustomTabView()
+                }
+            }
+            .environmentObject(authViewModel)
+            .environmentObject(eventsViewModel)
+            .onAppear {
+                authViewModel.refreshCurrentUser()
+                checkingUser = false
             }
         }
-        .environmentObject(authViewModel)
-        .environmentObject(eventsViewModel)
-        .onChange(of: scenePhase) { _, newValue in
+        .onChange(of: scenePhase) { newValue in
             if newValue == .active {
                 becomeActiveSetup()
             }

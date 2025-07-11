@@ -78,9 +78,14 @@ struct CalendarUIViewRepresentable: UIViewRepresentable {
         guard let calendarView = uiView.subviews.compactMap({ $0 as? UICalendarView }).first else { return }
         
         /// Reload decorations when UI is updated
-        let dateComponents = viewModel.events.map {
-            Calendar.current.dateComponents([.year, .month, .day], from: $0.date)
-        }
+        let dateComponents = Array(
+            /// Use Set cause dateComponent must be unique
+            Set(
+                viewModel.events.map {
+                    Calendar.current.dateComponents([.year, .month, .day], from: $0.date)
+                }
+            )
+        )
         calendarView.reloadDecorations(forDateComponents: dateComponents, animated: true)
     }
 }

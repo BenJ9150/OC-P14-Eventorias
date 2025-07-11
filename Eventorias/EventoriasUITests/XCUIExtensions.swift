@@ -13,18 +13,18 @@ extension XCUIApplication {
 
     func assertStaticTextExists(_ label: String) {
         let element = staticTexts[label]
-        XCTAssertTrue(element.waitForExistence(timeout: 1), "\"\(label)\" doesn't exist")
+        XCTAssertTrue(element.waitForExistence(timeout: 2), "\"\(label)\" doesn't exist")
     }
 
     func assertStaticTextExistsAtPosition(_ label: String) -> CGFloat {
         let element = staticTexts[label]
-        XCTAssertTrue(element.waitForExistence(timeout: 1), "\"\(label)\" doesn't exist")
+        XCTAssertTrue(element.waitForExistence(timeout: 2), "\"\(label)\" doesn't exist")
         return element.frame.origin.y
     }
 
     func assertStaticTextDisappears(_ label: String) {
         let element = staticTexts[label]
-        XCTAssertTrue(element.waitForNonExistence(timeout: 1), "\"\(label)\" did not disappear")
+        XCTAssertTrue(element.waitForNonExistence(timeout: 2), "\"\(label)\" did not disappear")
     }
 
     func assertStaticTextsCount(_ matching: String, count: Int) {
@@ -34,13 +34,34 @@ extension XCUIApplication {
     }
 
     func assertMainViewIsVisible() {
-        XCTAssertTrue(textFields["Search"].waitForExistence(timeout: 1))
-        XCTAssertTrue(buttons["List"].waitForExistence(timeout: 1))
+        XCTAssertTrue(textFields["Search"].waitForExistence(timeout: 2))
+        XCTAssertTrue(buttons["List"].waitForExistence(timeout: 2))
     }
 
     func assertSignInViewIsVisible() {
-        XCTAssertTrue(buttons["Sign in with email"].waitForExistence(timeout: 1))
-        XCTAssertTrue(buttons["GoToSignUp"].waitForExistence(timeout: 1))
+        XCTAssertTrue(buttons["Sign in with email"].waitForExistence(timeout: 2))
+        XCTAssertTrue(buttons["GoToSignUp"].waitForExistence(timeout: 2))
+    }
+
+    func forceUIStabilization() {
+        if #available(iOS 17, *) {
+            /// No need to do that...
+        } else {
+            let dummyCoord = self.coordinate(withNormalizedOffset: CGVector(dx: 0.99, dy: 0.01))
+            dummyCoord.tap()
+        }
+    }
+
+    func tapCustomButtons(_ name: String) {
+        if #available(iOS 17.0, *) {
+            buttons[name].tap()
+        } else {
+            /// Search localisation and tap
+            let x = buttons[name].frame.midX
+            let y = buttons[name].frame.midY
+            let normalizedOffset = CGVector(dx: x / frame.width, dy: y / frame.height)
+            coordinate(withNormalizedOffset: normalizedOffset).tap()
+        }
     }
 }
 
@@ -48,7 +69,7 @@ extension XCUIApplication {
 
 extension XCUIElement {
 
-    func assertExists(withButtons buttons: [String] = [], timeout: TimeInterval = 1) {
+    func assertExists(withButtons buttons: [String] = [], timeout: TimeInterval = 2) {
         XCTAssertTrue(self.waitForExistence(timeout: timeout))
         for button in buttons {
             XCTAssertTrue(self.buttons[button].exists)
@@ -56,7 +77,7 @@ extension XCUIElement {
     }
 
     func assertNotExists() {
-        XCTAssertFalse(self.waitForExistence(timeout: 1))
+        XCTAssertFalse(self.waitForExistence(timeout: 2))
     }
 
     func clearAndTypeText(_ text: String) {

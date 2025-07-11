@@ -276,6 +276,7 @@ extension AuthViewModelTests {
         // Given user is connected
         let userRepo = MockUserRepository(isConnected: true, withAvatar: false)
         let viewModel = AuthViewModel(userRepo: userRepo)
+        viewModel.refreshCurrentUser()
 
         // When checking if need to show update buttons
         viewModel.showUpdateButtonsIfNeeded()

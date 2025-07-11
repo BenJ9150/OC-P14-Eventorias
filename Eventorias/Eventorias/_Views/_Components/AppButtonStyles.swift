@@ -31,11 +31,6 @@ struct AppButtonPlain: ButtonStyle {
             )
             .fixedSize(horizontal: false, vertical: true)
             .dynamicTypeSize(.xSmall ... .accessibility4)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    UIFeedbackGenerator.triggerTap()
-                }
-            )
     }
 }
 
@@ -50,11 +45,6 @@ struct AppButtonBorderless: ButtonStyle {
             .foregroundStyle(.white)
             .frame(minHeight: 44)
             .multilineTextAlignment(.center)
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    UIFeedbackGenerator.triggerTap()
-                }
-            )
     }
 }
 
@@ -85,11 +75,6 @@ struct AppButtonSquare: ButtonStyle {
             .background(
                 RoundedRectangle(cornerRadius: 16)
                     .fill(white ? .white : Color.accentColor)
-            )
-            .simultaneousGesture(
-                TapGesture().onEnded {
-                    UIFeedbackGenerator.triggerTap()
-                }
             )
     }
 }

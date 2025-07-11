@@ -85,7 +85,7 @@ private extension AddEventView {
                 }
             }
             .scrollIndicators(.hidden)
-            .onChange(of: viewModel.addEventError) { _, newValue in
+            .onChange(of: viewModel.addEventError) { newValue in
                 if !newValue.isEmpty {
                     withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .default) {
                         proxy.scrollTo("top", anchor: .top)
@@ -299,7 +299,7 @@ private extension AddEventView {
                         .pickerStyle(.menu)
                         .labelsHidden()
                         .frame(maxWidth: .infinity, alignment: .leading)
-                        .onChange(of: viewModel.addEventCategory) { _, newCat in
+                        .onChange(of: viewModel.addEventCategory) { newCat in
                             if newCat.id != EventCategory.categoryPlaceholder.id {
                                 viewModel.addEventCategoryErr.removeAll()
                             }

@@ -142,23 +142,43 @@ private extension EventDetailView {
 
 private extension EventDetailView {
 
+    private struct MapItem: Identifiable {
+        let id = UUID()
+        let coordinate: CLLocationCoordinate2D
+    }
+
     @ViewBuilder var map: some View {
         if let coordinate, let region {
-            Map(initialPosition: .region(region)) {
-                Marker(coordinate: coordinate) {
-                    Image(systemName: "mappin")
-                }
-            }
-            .frame(width: dynamicSize.isAccessibilitySize ? nil : 150, height: 72)
-            .clipShape(RoundedRectangle(cornerRadius: 12))
-            .allowsHitTesting(false)
-            .accessibilityHidden(true)
+            mapView(for: coordinate, region: region)
+                .frame(width: dynamicSize.isAccessibilitySize ? nil : 150, height: 72)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
         } else {
             ProgressView()
                 .frame(width: 150, height: 72)
                 .onAppear {
                     Task { await geocodeAddress() }
                 }
+        }
+    }
+
+    @ViewBuilder func mapView(for coordinate: CLLocationCoordinate2D, region: MKCoordinateRegion) -> some View {
+        if #available(iOS 17.0, *) {
+            Map(initialPosition: .region(region)) {
+                Marker(coordinate: coordinate) {
+                    Image(systemName: "mappin")
+                }
+            }
+        } else {
+            // Fallback on earlier versions
+            Map(coordinateRegion: .constant(region), annotationItems: [MapItem(coordinate: coordinate)]) { item in
+                MapAnnotation(coordinate: item.coordinate) {
+                    Image(systemName: "mappin")
+                        .foregroundColor(.red)
+                        .font(.title)
+                }
+            }
         }
     }
 

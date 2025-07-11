@@ -10,20 +10,18 @@ import FirebaseFirestore
 
 class FirebaseFirestoreRepository: DatabaseRepository {
 
-    private let db = Firestore.firestore()
-
     // MARK: Fetch
 
     func fetchDocument(into collection: CollectionName, docID: String) async throws -> DatabaseDoc {
-        return try await db.collection(collection.rawValue).document(docID).getDocument()
+        return try await Firestore.firestore().collection(collection.rawValue).document(docID).getDocument()
     }
 
     func fetchDocuments(into collection: CollectionName) async throws -> [DatabaseDoc] {
-        try await db.collection(collection.rawValue).getDocuments().documents
+        try await Firestore.firestore().collection(collection.rawValue).getDocuments().documents
     }
 
     func fetchUpcomingDoc(into collection: CollectionName, orderBy: DBSorting, where field: String, isIn filters: [String]) async throws -> [DatabaseDoc] {
-        var query = db
+        var query = Firestore.firestore()
             .collection(collection.rawValue)
             /// greater than yesterday
             .whereField(DBSorting.byDate.rawValue, isGreaterThan: Timestamp(date: Date().addingTimeInterval(-86400)))
@@ -38,18 +36,18 @@ class FirebaseFirestoreRepository: DatabaseRepository {
     // MARK: Add
 
     func generateDocumentID(for collection: CollectionName) -> String {
-        return db.collection(collection.rawValue).document().documentID
+        return Firestore.firestore().collection(collection.rawValue).document().documentID
     }
 
     func addDocument<T: Encodable>(_ data: T, withID documentID: String, into collection: CollectionName) async throws {
         let encodedData = try Firestore.Encoder().encode(data)
-        try await db.collection(collection.rawValue).document(documentID).setData(encodedData)
+        try await Firestore.firestore().collection(collection.rawValue).document(documentID).setData(encodedData)
     }
 
     // MARK: Update
 
     func updateDocuments(into collection: CollectionName, where field: String, isEqualTo value: Any, fieldToUpdate: String, newValue: Any) async throws {
-        let documents = try await db
+        let documents = try await Firestore.firestore()
             .collection(collection.rawValue)
             .whereField(field, isEqualTo: value)
             .getDocuments()
@@ -64,20 +62,26 @@ class FirebaseFirestoreRepository: DatabaseRepository {
         guard let docID = documentID, let value = addValue else {
             throw AppError.unknown
         }
-        try await db.collection(collection.rawValue).document(docID).updateData([arrayToUpdate: FieldValue.arrayUnion([value])])
+        try await Firestore.firestore()
+            .collection(collection.rawValue)
+            .document(docID)
+            .updateData([arrayToUpdate: FieldValue.arrayUnion([value])])
     }
 
     func updateDocuments(into collection: CollectionName, withID documentID: String?, arrayToUpdate: String, removeValue: Any?) async throws {
         guard let docID = documentID, let value = removeValue else {
             throw AppError.unknown
         }
-        try await db.collection(collection.rawValue).document(docID).updateData([arrayToUpdate: FieldValue.arrayRemove([value])])
+        try await Firestore.firestore()
+            .collection(collection.rawValue)
+            .document(docID)
+            .updateData([arrayToUpdate: FieldValue.arrayRemove([value])])
     }
 
     // MARK: Search
 
     func search(into collection: CollectionName, field: String, contains values: [String]) async throws -> [DatabaseDoc] {
-        try await db
+        try await Firestore.firestore()
             .collection(collection.rawValue)
             .whereField(field, arrayContainsAny: values)
             .getDocuments()

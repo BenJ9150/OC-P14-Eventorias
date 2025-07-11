@@ -101,6 +101,8 @@ final class NotificationsUITests: XCTestCase {
         app.launchArguments.append(AppFlags.uiTestingNotif)
         app.launch()
         app.buttons["Profile"].tap()
+        app.assertStaticTextExists("User profile")
+        app.forceUIStabilization()
     }
 
     func test_NotificationsNeedPermission() {
@@ -110,6 +112,7 @@ final class NotificationsUITests: XCTestCase {
 
         // When clic on cancel button of alert "We need your permission to send notifications"
         let needPermissionAlert = app.alerts["We need your permission to send notifications"]
+        XCTAssertTrue(needPermissionAlert.waitForExistence(timeout: 3))
         needPermissionAlert.assertExists(withButtons: ["Open Settings", "Cancel"])
         needPermissionAlert.buttons["Cancel"].tap()
 

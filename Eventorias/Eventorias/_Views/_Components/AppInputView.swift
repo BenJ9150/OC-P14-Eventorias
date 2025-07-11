@@ -52,7 +52,7 @@ struct AppInputView<Content: View>: View {
             UIAccessibility.isReduceMotionEnabled ? .easeInOut : .interactiveSpring(duration: 0.3, extraBounce: 0.5),
             value: error
         )
-        .onChange(of: error) { _, newValue in
+        .onChange(of: error) { newValue in
             if newValue.isEmpty { return }
             /// Haptic feedback
             UIFeedbackGenerator.triggerError()

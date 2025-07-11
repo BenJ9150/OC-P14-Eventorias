@@ -70,7 +70,6 @@ import SwiftUI
 #else
         self.userRepo = userRepo
 #endif
-        refreshCurrentUser()
     }
 }
 
