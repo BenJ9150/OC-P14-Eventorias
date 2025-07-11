@@ -87,7 +87,7 @@ private extension AddEventView {
             .scrollIndicators(.hidden)
             .onChange(of: viewModel.addEventError) { _, newValue in
                 if !newValue.isEmpty {
-                    withAnimation {
+                    withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .default) {
                         proxy.scrollTo("top", anchor: .top)
                     }
                 }
@@ -139,7 +139,7 @@ private extension AddEventView {
                 .accessibilityHidden(true)
             
             Button {
-                withAnimation(.bouncy(duration: 0.3)) {
+                withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .bouncy(duration: 0.3)) {
                     viewModel.addEventPhoto = nil
                 }
             } label: {

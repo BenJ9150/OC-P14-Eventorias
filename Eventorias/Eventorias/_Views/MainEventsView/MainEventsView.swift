@@ -382,7 +382,7 @@ private extension MainEventsView {
             }
         }
         .dynamicTypeSize(.xSmall ... .accessibility2)
-        .animation(.easeIn(duration: 0.2), value: searchBarIsFocused)
+        .animation(UIAccessibility.isReduceMotionEnabled ? nil : .easeIn(duration: 0.2), value: searchBarIsFocused)
         .padding(.vertical, 8)
         .padding(.horizontal)
     }

@@ -30,27 +30,37 @@ struct AppProgressView: View {
 
     @State private var onAppearAnimation = false
 
-    var body: some View {
-        Image("circular_progress_view")
-            .opacity(onAppearAnimation ? 1 : 0)
-            .phaseAnimator(ProgressAnimationPhase.allCases) { content, phase in
-                content
-                    .scaleEffect(phase.scale)
-                    .rotationEffect(phase.rotation)
-            } animation: { phase in
-                switch phase {
-                case .initial: onAppearAnimation ? .spring(bounce: 0.5) : nil
-                case .normal, .fast, .slow: onAppearAnimation ? .easeInOut(duration: 1) : nil
+    @ViewBuilder var body: some View {
+        if UIAccessibility.isReduceMotionEnabled {
+            ProgressView()
+                .tint(.white)
+                .controlSize(.large)
+        } else {
+            Image("circular_progress_view")
+                .opacity(onAppearAnimation ? 1 : 0)
+                .phaseAnimator(ProgressAnimationPhase.allCases) { content, phase in
+                    content
+                        .scaleEffect(phase.scale)
+                        .rotationEffect(phase.rotation)
+                } animation: { phase in
+                    switch phase {
+                    case .initial: onAppearAnimation ? .spring(bounce: 0.5) : nil
+                    case .normal, .fast, .slow: onAppearAnimation ? .easeInOut(duration: 1) : nil
+                    }
                 }
-            }
-            .onAppear {
-                withAnimation { onAppearAnimation = true }
-            }
+                .onAppear {
+                    withAnimation { onAppearAnimation = true }
+                }
+        }
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    AppProgressView()
+    ZStack {
+        Color.itemBackground
+            .ignoresSafeArea()
+        AppProgressView()
+    }
 }

@@ -14,7 +14,7 @@ struct ErrorView: View {
 
         var yOffset: CGFloat {
             switch self {
-            case .initial: 10
+            case .initial: UIAccessibility.isReduceMotionEnabled ? 0 : 10
             case .lift, .shakeLeft, .shakRight: 0
             }
         }
@@ -22,8 +22,8 @@ struct ErrorView: View {
         var rotation: Angle {
             switch self {
             case .initial, .lift: Angle.degrees(0)
-            case .shakeLeft: Angle.degrees(-20)
-            case .shakRight: Angle.degrees(20)
+            case .shakeLeft: Angle.degrees(UIAccessibility.isReduceMotionEnabled ? 0 : -20)
+            case .shakRight: Angle.degrees(UIAccessibility.isReduceMotionEnabled ? 0 : 20)
             }
         }
     }

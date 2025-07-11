@@ -26,7 +26,7 @@ struct TakePhotoModifier: ViewModifier {
             .onChange(of: photoPicker) {
                 Task {
                     if let data = try? await photoPicker?.loadTransferable(type: Data.self) {
-                        withAnimation {
+                        withAnimation(UIAccessibility.isReduceMotionEnabled ? nil : .default) {
                             image = UIImage(data: data)
                         }
                     }

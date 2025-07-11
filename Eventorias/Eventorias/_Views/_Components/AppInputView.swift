@@ -48,7 +48,10 @@ struct AppInputView<Content: View>: View {
                 .accessibilityIdentifier(error.isEmpty ? "" : error)
                 .accessibilityLabel("\(title) error. \(error)")
         }
-        .animation(.interactiveSpring(duration: 0.3, extraBounce: 0.5), value: error)
+        .animation(
+            UIAccessibility.isReduceMotionEnabled ? .easeInOut : .interactiveSpring(duration: 0.3, extraBounce: 0.5),
+            value: error
+        )
         .onChange(of: error) { _, newValue in
             if newValue.isEmpty { return }
             /// Haptic feedback
