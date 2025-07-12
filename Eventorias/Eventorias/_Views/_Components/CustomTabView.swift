@@ -93,11 +93,15 @@ private extension CustomTabView {
                 tabItem(image: "icon_tab_event", text: "Events")
             }
             .foregroundStyle(selectedTab == .events ? .textRed : .white)
+            .accessibilityIdentifier("Events")
+            .accessibilityLabel("Events, tab, 1 of 2 \(selectedTab == .events ? ", selected" : "")")
             
             Button(action: { selectedTab = .profile }) {
                 tabItem(image: "icon_tab_profile", text: "Profile")
             }
             .foregroundStyle(selectedTab == .profile ? .textRed : .white)
+            .accessibilityIdentifier("Profile")
+            .accessibilityLabel("Profile, tab, 2 of 2 \(selectedTab == .profile ? ", selected" : "")")
         }
     }
 
