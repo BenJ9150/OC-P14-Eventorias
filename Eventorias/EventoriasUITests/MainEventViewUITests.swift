@@ -63,6 +63,7 @@ final class SortUITests: XCTestCase {
         app.buttons["Category"].tap()
     
         // And choose categories
+        app.assertStaticTextExists("Select a category")
         app.staticTexts["Art & Exhibitions"].tap()
         app.staticTexts["Charity & Volunteering"].tap()
 

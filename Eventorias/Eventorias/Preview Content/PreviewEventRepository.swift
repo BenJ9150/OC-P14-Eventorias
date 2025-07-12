@@ -24,7 +24,7 @@ class PreviewEventRepository {
 extension PreviewEventRepository: EventRepository {
 
     func fetchEvent(withId eventId: String) async throws -> Event? {
-        return nil
+        return previewEvents().first(where: { $0.id == eventId })
     }
 
     func fetchEvents(orderBy: DBSorting, from categories: [EventCategory]) async throws -> [Event] {

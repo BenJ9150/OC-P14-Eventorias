@@ -12,9 +12,12 @@ struct ImageView: View {
     let url: String
     let isAvatar: Bool
 
-    init(url: String, isAvatar: Bool = false) {
+    @Binding var eventImage: Image?
+
+    init(url: String, isAvatar: Bool = false, image: Binding<Image?> = .constant(nil)) {
         self.url = url
         self.isAvatar = isAvatar
+        self._eventImage = image
     }
 
     @ViewBuilder
@@ -41,6 +44,7 @@ struct ImageView: View {
                             image
                                 .resizable()
                                 .scaledToFill()
+                                .onAppear { eventImage = image }
                         default:
                             placeHolder(imageName: "photo.badge.exclamationmark")
                         }

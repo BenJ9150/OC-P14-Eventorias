@@ -19,6 +19,7 @@ struct EventDetailView: View {
 
     @State private var coordinate: CLLocationCoordinate2D?
     @State private var region: MKCoordinateRegion?
+    @State private var eventImage: Image?
 
     let event: Event
 
@@ -197,17 +198,18 @@ private extension EventDetailView {
 
     var imageAndShareButton: some View {
         ZStack(alignment: .topTrailing) {
-            ImageView(url: event.photoURL)
+            ImageView(url: event.photoURL, image: $eventImage)
             shareButton
         }
     }
 
     @ViewBuilder var shareButton: some View {
-        if let shareURL = event.shareURL {
+        if let shareURL = event.shareURL, let image = eventImage {
             ShareLink(
-                item: shareURL.absoluteString,
-                message: Text("\n---\nRegarde ça !"),
-                preview: SharePreview(event.title)
+                item: URL(string: event.photoURL) ?? shareURL,
+                subject: Text("Événement : \(event.title)"),
+                message: Text("\(shareURL)\n---\nRegarde cet événement : \(event.title)"),
+                preview: SharePreview(event.title, image: image)
             ) {
                 Image(systemName: "square.and.arrow.up")
                     .foregroundStyle(Color.itemBackground)
