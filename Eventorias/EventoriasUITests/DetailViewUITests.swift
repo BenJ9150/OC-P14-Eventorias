@@ -23,6 +23,7 @@ final class ParticipateUITests: XCTestCase {
         // Given user is on a detail view
         XCUIDevice.shared.orientation = .portrait
         app.launch()
+        disableNotifications(for: app)
         app.assertStaticTextExists("Charity run")
         app.staticTexts["Charity run"].tap()
         app.forceUIStabilization()
@@ -57,6 +58,7 @@ final class ShareEventUITests: XCTestCase {
         // Given user is on a detail view
         XCUIDevice.shared.orientation = .landscapeLeft
         app.launch()
+        disableNotifications(for: app)
         app.assertStaticTextExists("Charity run")
         app.staticTexts["Charity run"].tap()
 
@@ -77,6 +79,7 @@ final class ShareEventUITests: XCTestCase {
         // Given user open an event from share
         XCUIDevice.shared.orientation = .portrait
         app.launch()
+        disableNotifications(for: app)
         SafariUrlOpener.shared.open(url: "eventorias://event/1")
 
         // When app become active

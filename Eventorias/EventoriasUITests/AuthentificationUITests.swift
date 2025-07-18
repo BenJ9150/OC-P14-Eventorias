@@ -22,6 +22,7 @@ final class SignInUITests: XCTestCase {
     func test_EmailSignIn() {
         XCUIDevice.shared.orientation = .landscapeLeft
         app.launch()
+        disableNotifications(for: app)
 
         // Given user is on sign in with email view
         app.buttons["Sign in with email"].tap()
@@ -42,6 +43,7 @@ final class SignInUITests: XCTestCase {
     func test_EmailSignInEmptyField() throws {
         XCUIDevice.shared.orientation = .portrait
         app.launch()
+        disableNotifications(for: app)
 
         // Given user is on sign in with email view
         app.buttons["Sign in with email"].tap()
@@ -66,6 +68,7 @@ final class SignUpUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingSignIn)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["GoToSignUp"].tap()
     }
 
@@ -106,6 +109,7 @@ final class ForgotPwdUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingSignIn)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Sign in with email"].tap()
         app.buttons["Forgot password?"].tap()
         app.buttons["Send password reset"].assertExists()
@@ -144,6 +148,7 @@ final class SignOutUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
     }
 
     func test_SignOut() {

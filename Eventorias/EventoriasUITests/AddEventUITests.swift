@@ -17,6 +17,7 @@ final class AddEventUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Add an event"].tap()
         app.assertStaticTextExists("Creation of an event")
     }
@@ -49,6 +50,8 @@ final class AddEventUITests: XCTestCase {
         app.buttons["Choose a photo"].tap()
         app.buttons["Photos"].assertExists(timeout: 10) /// Button of photoPicker
         app.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.4)).tap()
+        app.buttons["Remove photo"].assertExists()
+
         // And tap on validate button
         app.buttons["Validate"].tap()
 

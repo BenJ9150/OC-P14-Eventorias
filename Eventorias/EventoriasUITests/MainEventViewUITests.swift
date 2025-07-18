@@ -19,6 +19,7 @@ final class SearchUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.assertStaticTextExists("Charity run")
     }
 
@@ -55,6 +56,7 @@ final class SortUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.assertStaticTextExists("Charity run")
     }
 
@@ -112,6 +114,7 @@ final class ShowCalendarUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.assertStaticTextExists("Charity run")
     }
 

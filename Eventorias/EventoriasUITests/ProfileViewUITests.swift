@@ -19,6 +19,7 @@ final class UpdateNameAndEmailUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Profile"].tap()
     }
 
@@ -66,6 +67,7 @@ final class UpdateEmailNeedAuthUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingUpdateNeedAuth)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Profile"].tap()
     }
 
@@ -100,6 +102,7 @@ final class NotificationsUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTestingNotif)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Profile"].tap()
         app.assertStaticTextExists("User profile")
         app.forceUIStabilization()
@@ -133,6 +136,7 @@ final class AvatarUITests: XCTestCase {
         app = XCUIApplication()
         app.launchArguments.append(AppFlags.uiTesting)
         app.launch()
+        disableNotifications(for: app)
         app.buttons["Profile"].tap()
     }
 

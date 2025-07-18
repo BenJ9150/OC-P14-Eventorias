@@ -29,7 +29,7 @@ struct ImageView: View {
                         Image(systemName: "person.circle.fill")
                             .resizable()
                             .scaledToFit()
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.white)
                             .accessibilityIdentifier("ProfileIcon")
                     } else {
                         placeHolder(imageName: "photo.fill")

@@ -92,3 +92,19 @@ extension XCUIElement {
         self.typeText(text)
     }
 }
+
+// MARK: XCTestCase
+
+extension XCTestCase {
+
+    func disableNotifications(for app: XCUIApplication) {
+        addUIInterruptionMonitor(withDescription: "System Dialog") { alert in
+            if alert.buttons["Refuser"].exists {
+                alert.buttons["Refuser"].tap()
+                return true
+            }
+            return false
+        }
+        app.activate()
+    }
+}
