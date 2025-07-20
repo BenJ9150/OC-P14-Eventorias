@@ -12,4 +12,5 @@ Cette application doit permettre aux utilisateurs de créer, organiser, et parta
 
 # Captures d'écran de l'application
 
-À venir...
+![Login and events list](Eventorias/Screenshots/Evantorias_1.png)
+![Detail, creation and profile](Eventorias/Screenshots/Evantorias_2.png)
